@@ -1,4 +1,4 @@
-const { FB_VERIFY_TOKEN } = require("../../config");
+const { VERIFY_TOKEN } = require("../../config");
 const facebookService = require("../services/facebook-service");
 
 exports.verifyWebhook = (req, res) => {
@@ -6,7 +6,7 @@ exports.verifyWebhook = (req, res) => {
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
 
-  if (mode === "subscribe" && token === FB_VERIFY_TOKEN) {
+  if (mode === "subscribe" && token === VERIFY_TOKEN) {
     console.log("WEBHOOK_VERIFIED");
     return res.status(200).send(challenge);
   }

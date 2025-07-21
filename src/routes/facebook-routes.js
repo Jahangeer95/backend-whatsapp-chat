@@ -1,7 +1,11 @@
 const { Router } = require("express");
+const facebookController = require("../controllers/facebook-controller");
 
 const router = Router();
 
-// router.use("/webhook");
+router
+  .route("/webhook")
+  .get(facebookController.verifyWebhook)
+  .post(facebookController.receiveWebhook);
 
 module.exports = router;

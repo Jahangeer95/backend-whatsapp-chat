@@ -10,7 +10,6 @@ const errorMiddleware = require("./src/middlewares/error-middleware");
 dotenv.config();
 
 const PORT = process.env.PORT || 4048;
-
 const app = express();
 
 const corsOptions = {
