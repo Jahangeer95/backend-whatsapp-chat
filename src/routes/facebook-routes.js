@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const facebookController = require("../controllers/facebook-controller");
+const upload = require("../middlewares/multer");
 
 const router = Router();
 
@@ -8,7 +9,12 @@ router
   .get(facebookController.verifyWebhook)
   .post(facebookController.receiveWebhook);
 
-router.post("/send-message", facebookController.sendMessage);
+router.post(
+  "/send-message",
+  upload.single("file"),
+  facebookController.sendMessage
+);
+router.get("/participants/:pageId", facebookController.fetchParticipants);
 
 router.get("/conversations/:pageId", facebookController.fetchAllConversations);
 router.get(

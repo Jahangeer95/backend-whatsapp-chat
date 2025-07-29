@@ -1,5 +1,80 @@
+const fs = require("fs");
 const axios = require("axios");
-const { FB_ACCESS_TOKEN } = require("../config");
+const FormData = require("form-data");
+const { FB_ACCESS_TOKEN, GRAPH_BASE_URL } = require("../config");
+const path = require("path");
+const logger = require("../utils/logger");
+
+sendTextMessage = async ({ recipientId, message }) => {
+  return axios.post(
+    `${GRAPH_BASE_URL}/me/messages`,
+    {
+      recipient: { id: recipientId },
+      message: { text: message },
+    },
+    {
+      params: { access_token: FB_ACCESS_TOKEN },
+    }
+  );
+};
+
+sendAttachmentMessage = async ({ recipientId, file, type }) => {
+  const resolvedPath = path.resolve(file.path);
+
+  if (!fs.existsSync(resolvedPath)) {
+    console.error("File does not exist:", resolvedPath);
+    throw new Error("Uploaded file not found");
+  }
+
+  const fileStream = fs.createReadStream(resolvedPath);
+
+  fileStream.on("error", (err) => {
+    console.error("File stream error:", err);
+    throw err;
+  });
+  const form = new FormData();
+
+  form.append("message", JSON.stringify({ attachment: { type, payload: {} } }));
+  form.append("filedata", fileStream);
+
+  try {
+    const uploadRes = await axios.post(
+      `${GRAPH_BASE_URL}/me/message_attachments`,
+      form,
+      {
+        headers: form.getHeaders(),
+        params: { access_token: FB_ACCESS_TOKEN },
+      }
+    );
+
+    const attachment_id = uploadRes.data.attachment_id;
+
+    const sendRes = await axios.post(
+      `${GRAPH_BASE_URL}/me/messages`,
+      {
+        recipient: { id: recipientId },
+        message: {
+          attachment: {
+            type,
+            payload: { attachment_id },
+          },
+        },
+      },
+      {
+        params: { access_token: FB_ACCESS_TOKEN },
+      }
+    );
+  } catch (error) {
+    logger.error(
+      "Attachment message error:",
+      error.response?.data || error.message
+    );
+  } finally {
+    fs.unlink(file.path, (err) => {
+      if (err) logger.error("File cleanup failed:", err.message);
+    });
+  }
+};
 
 const handleEntry = (entry, io) => {
   const webhookEvent = entry.messaging ? entry.messaging[0] : entry;
@@ -7,8 +82,6 @@ const handleEntry = (entry, io) => {
 
   if (webhookEvent.message) {
     const userMessage = webhookEvent.message.text;
-
-    console.log("User sent message:", userMessage);
 
     // Emit to all connected sockets (or use room for specific users)
     io.emit("message_from_user", {
@@ -18,11 +91,6 @@ const handleEntry = (entry, io) => {
   }
 
   if (webhookEvent.read) {
-    console.log(
-      `User ${webhookEvent.sender.id} has read messages up to:`,
-      new Date(webhookEvent.read.watermark)
-    );
-
     io.emit("message_read", {
       userId: webhookEvent.sender.id,
       timestamp: webhookEvent.read.watermark,
@@ -32,20 +100,45 @@ const handleEntry = (entry, io) => {
 
 const FacebookService = {
   async getConversations(pageId) {
-    const url = `https://graph.facebook.com/v19.0/${pageId}/conversations?access_token=${FB_ACCESS_TOKEN}`;
+    const url = `${GRAPH_BASE_URL}/${pageId}/conversations?access_token=${FB_ACCESS_TOKEN}`;
     const response = await axios.get(url);
     return response.data;
   },
 
   async getMessages(conversationId) {
     const params = {
-      fields: "message,from,to,created_time",
+      fields: "message,attachments,sticker,quick_reply,from,to,created_time",
       access_token: FB_ACCESS_TOKEN,
     };
-    const url = `https://graph.facebook.com/v19.0/${conversationId}/messages?access_token=${FB_ACCESS_TOKEN}`;
+    const url = `${GRAPH_BASE_URL}/${conversationId}/messages?access_token=${FB_ACCESS_TOKEN}`;
     const response = await axios.get(url, { params });
     return response.data;
   },
 };
 
-module.exports = { handleEntry, FacebookService };
+const getConversationParticipants = async (pageId) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/conversations?fields=participants&access_token=${FB_ACCESS_TOKEN}`;
+
+  try {
+    const response = await axios.get(url);
+    const formatted = response.data.data.map((conversation) => ({
+      conversationId: conversation.id,
+      participants: conversation.participants.data,
+    }));
+    return formatted;
+  } catch (error) {
+    console.error(
+      "Error fetching FB participants:",
+      error.response?.data || error.message
+    );
+    throw new Error("Failed to fetch Facebook participants");
+  }
+};
+
+module.exports = {
+  handleEntry,
+  FacebookService,
+  getConversationParticipants,
+  sendTextMessage,
+  sendAttachmentMessage,
+};

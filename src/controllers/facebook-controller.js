@@ -1,5 +1,9 @@
 const axios = require("axios");
-const { VERIFY_TOKEN, FB_ACCESS_TOKEN } = require("../config/index");
+const {
+  VERIFY_TOKEN,
+  FB_ACCESS_TOKEN,
+  GRAPH_BASE_URL,
+} = require("../config/index");
 const facebookService = require("../services/facebook-service");
 const logger = require("../utils/logger");
 
@@ -19,8 +23,6 @@ exports.receiveWebhook = (req, res) => {
   const body = req.body;
   const io = req.app.get("io"); // Access socket instance
 
-  console.log("received");
-
   if (body.object === "page") {
     body.entry.forEach((entry) => {
       facebookService.handleEntry(entry, io);
@@ -31,37 +33,35 @@ exports.receiveWebhook = (req, res) => {
 };
 
 exports.sendMessage = async (req, res) => {
-  const { recipientId, message } = req.body;
-  console.log({ message, recipientId });
+  const { recipientId, message, type } = req.body;
+  const file = req.file || null;
 
-  if (!recipientId || !message) {
+  if (!recipientId || !message || !type) {
     return res
       .status(400)
-      .json({ error: "recipientId and message are required" });
+      .json({ error: "recipientId, type and message are required" });
   }
 
   try {
-    // // Save message to MongoDB
-    // await MessageModel.create({
-    //   direction: "outgoing",
-    //   psid,
-    //   message,
-    //   timestamp: Date.now(),
-    // });
-
     // Send message to Facebook
-    await axios.post(
-      `https://graph.facebook.com/v19.0/me/messages?access_token=${FB_ACCESS_TOKEN}`,
-      {
-        recipient: { id: recipientId },
-        message: { text: message },
+
+    if (type === "text") {
+      await facebookService.sendTextMessage({ recipientId, message });
+    } else {
+      if (!file) {
+        return res
+          .status(400)
+          .json({ error: "Attachment file is required for non-text message" });
       }
-    );
+      await facebookService.sendAttachmentMessage({ recipientId, file, type });
+    }
 
     res.status(200).json({ success: true, message: "Message sent" });
   } catch (err) {
     logger.error("Send message error:", err.response?.data || err.message);
-    res.status(500).json({ error: "Failed to send message" });
+    res.status(500).json({
+      error: err?.message || err.data?.message || "Failed to send message",
+    });
   }
 };
 
@@ -85,5 +85,15 @@ exports.fetchMessagesByConversationId = async (req, res) => {
     res.json(messages);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.fetchParticipants = async (req, res) => {
+  try {
+    const { pageId } = req.params;
+    const data = await facebookService.getConversationParticipants(pageId);
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
