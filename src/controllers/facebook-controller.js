@@ -79,8 +79,10 @@ exports.fetchAllConversations = async (req, res) => {
 exports.fetchMessagesByConversationId = async (req, res) => {
   try {
     const { conversationId } = req.params;
+    const { after } = req.query;
     const messages = await facebookService.FacebookService.getMessages(
-      conversationId
+      conversationId,
+      after
     );
     res.json(messages);
   } catch (error) {

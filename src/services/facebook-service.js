@@ -1,9 +1,10 @@
 const fs = require("fs");
 const axios = require("axios");
 const FormData = require("form-data");
-const { FB_ACCESS_TOKEN, GRAPH_BASE_URL } = require("../config");
+const { FB_ACCESS_TOKEN, GRAPH_BASE_URL, FB_PAGE_ID } = require("../config");
 const path = require("path");
 const logger = require("../utils/logger");
+const { FbUser } = require("../models/user-modal");
 
 sendTextMessage = async ({ recipientId, message }) => {
   return axios.post(
@@ -76,7 +77,7 @@ sendAttachmentMessage = async ({ recipientId, file, type }) => {
   }
 };
 
-const handleEntry = (entry, io) => {
+const handleEntry = async (entry, io) => {
   const webhookEvent = entry.messaging ? entry.messaging[0] : entry;
   console.log("Webhook event received:", webhookEvent);
 
@@ -90,10 +91,40 @@ const handleEntry = (entry, io) => {
     });
   }
 
+  if (webhookEvent.delivery) {
+    const userId = webhookEvent?.sender?.id;
+    const delivery_timestamp = webhookEvent?.delivery?.watermark.toString();
+
+    await FbUser.findOneAndUpdate(
+      {
+        userId,
+      },
+      { delivery_timestamp },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
+
+    io.emit("message_delivered", {
+      userId: webhookEvent.sender.id,
+    });
+  }
+
   if (webhookEvent.read) {
+    const userId = webhookEvent?.sender?.id;
+    const read_timestamp = webhookEvent?.read?.watermark?.toString();
+
+    await FbUser.findOneAndUpdate(
+      { userId },
+      { read_timestamp },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
     io.emit("message_read", {
       userId: webhookEvent.sender.id,
-      timestamp: webhookEvent.read.watermark,
     });
   }
 };
@@ -105,14 +136,59 @@ const FacebookService = {
     return response.data;
   },
 
-  async getMessages(conversationId) {
+  async getMessages(conversationId, after = null) {
     const params = {
       fields: "message,attachments,sticker,quick_reply,from,to,created_time",
       access_token: FB_ACCESS_TOKEN,
+      limit: 100,
     };
-    const url = `${GRAPH_BASE_URL}/${conversationId}/messages?access_token=${FB_ACCESS_TOKEN}`;
+    if (after) {
+      params.after = after;
+    }
+    const url = `${GRAPH_BASE_URL}/${conversationId}/messages`;
     const response = await axios.get(url, { params });
-    return response.data;
+
+    const messages = response?.data?.data || [];
+    const paging = response?.data?.paging || {};
+
+    const recipientMessage = messages.find((msg) => {
+      return msg.from.id === FB_PAGE_ID;
+    });
+    const userMessage = messages.find((msg) => msg.from.id !== FB_PAGE_ID);
+    const recipientId =
+      recipientMessage?.to?.data?.[0]?.id || userMessage?.from?.id;
+
+    let fbUser = null;
+    if (recipientId) {
+      fbUser = await FbUser.findOne({ userId: recipientId });
+    }
+
+    const messagesArray = messages.map((msg) => {
+      let status = "sent";
+
+      if (msg.from.id === FB_PAGE_ID && fbUser) {
+        const messageTimestamp = new Date(msg.created_time).getTime();
+        if (messageTimestamp <= Number(fbUser.read_timestamp)) {
+          status = "read";
+        } else if (messageTimestamp <= Number(fbUser.delivery_timestamp)) {
+          status = "delivered";
+        }
+        return {
+          ...msg,
+          status,
+        };
+      }
+
+      return {
+        ...msg,
+        ...(msg.from.id === FB_PAGE_ID && { status }),
+      };
+    });
+
+    return {
+      messages: messagesArray,
+      paging,
+    };
   },
 };
 
