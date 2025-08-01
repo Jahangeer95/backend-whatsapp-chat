@@ -11,6 +11,8 @@ const FB_PAGE_ID = process.env.FB_PAGE_ID;
 const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 const PHONE_NO_ID = process.env.PHONE_NO_ID;
 
+const DATABASE_URI = process.env.DATABASE_URI;
+
 module.exports = {
   VERIFY_TOKEN,
   FB_ACCESS_TOKEN,
@@ -19,4 +21,5 @@ module.exports = {
   FB_PAGE_ID,
   WHATSAPP_ACCESS_TOKEN,
   PHONE_NO_ID,
+  DATABASE_URI,
 };

@@ -29,4 +29,5 @@ const receiveWebHook = (req, res) => {
 
 module.exports = {
   verifyWebhook,
+  receiveWebHook,
 };

@@ -7,7 +7,7 @@ const compression = require("compression");
 const logger = require("./src/utils/logger");
 const routes = require("./src/routes/index");
 const errorMiddleware = require("./src/middlewares/error-middleware");
-const { PORT } = require("./src/config");
+const { PORT, DATABASE_URI } = require("./src/config");
 const { Server } = require("socket.io");
 const http = require("http");
 
@@ -48,7 +48,7 @@ const corsOptions = {
 };
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/chat-app", {
+  .connect(DATABASE_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
