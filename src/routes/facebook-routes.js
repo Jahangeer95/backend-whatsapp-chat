@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const facebookController = require("../controllers/facebook-controller");
-const upload = require("../middlewares/multer");
+const { upload } = require("../middlewares/multer");
 
 const router = Router();
 
