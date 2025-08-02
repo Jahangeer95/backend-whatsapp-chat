@@ -213,7 +213,7 @@ const getConversationParticipants = async (pageId) => {
 
 const getParticipantsProfilePicById = async (psid) => {
   const urlForPagePic = `${GRAPH_BASE_URL}/${psid}/picture`;
-  const url = `${GRAPH_BASE_URL}/${psid}?fields=profile_pic,first_name,last_name,email&access_token=${FB_ACCESS_TOKEN}`;
+  const url = `${GRAPH_BASE_URL}/${psid}?fields=profile_pic,first_name,last_name&access_token=${FB_ACCESS_TOKEN}`;
 
   try {
     if (psid === FB_PAGE_ID) {
@@ -221,6 +221,7 @@ const getParticipantsProfilePicById = async (psid) => {
       return response?.data;
     } else {
       const response = await axios.get(url);
+
       return response?.data?.profile_pic;
     }
   } catch (error) {
