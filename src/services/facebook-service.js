@@ -211,10 +211,25 @@ const getConversationParticipants = async (pageId) => {
   }
 };
 
+const getParticipantsProfilePicById = async (psid) => {
+  const url = `${GRAPH_BASE_URL}/${psid}?fields=profile_pic,first_name,last_name,email&access_token=${FB_ACCESS_TOKEN}`;
+  try {
+    const response = await axios.get(url);
+    return response?.data?.profile_pic;
+  } catch (error) {
+    console.error(
+      "Error fetching FB participants:",
+      error.response?.data || error.message
+    );
+    throw new Error("Failed to fetch Facebook User Profile Pic");
+  }
+};
+
 module.exports = {
   handleEntry,
   FacebookService,
   getConversationParticipants,
   sendTextMessage,
   sendAttachmentMessage,
+  getParticipantsProfilePicById,
 };

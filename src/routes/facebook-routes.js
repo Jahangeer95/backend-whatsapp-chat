@@ -14,6 +14,7 @@ router.post(
   upload.single("file"),
   facebookController.sendMessage
 );
+router.get("/user/:userId", facebookController.fetchUserProfilePic);
 router.get("/participants/:pageId", facebookController.fetchParticipants);
 
 router.get("/conversations/:pageId", facebookController.fetchAllConversations);
