@@ -115,6 +115,7 @@ exports.fetchUserProfilePic = async (req, res) => {
     });
 
     res.setHeader("Content-Type", imageResponse.headers["content-type"]);
+    res.setHeader("Access-Control-Allow-Origin", "*");
     imageResponse.data.pipe(res);
     // res.status(200).json(data);
   } catch (error) {
