@@ -104,7 +104,7 @@ exports.fetchUserProfilePic = async (req, res) => {
   try {
     const { userId } = req.params;
     const data = await facebookService.getParticipantsProfilePicById(userId);
-    res.status(200).json({ success: true, data });
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
