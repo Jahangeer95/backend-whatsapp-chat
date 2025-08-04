@@ -104,7 +104,19 @@ exports.fetchUserProfilePic = async (req, res) => {
   try {
     const { userId } = req.params;
     const data = await facebookService.getParticipantsProfilePicById(userId);
-    res.status(200).json(data);
+
+    if (!data) {
+      return res.status(404).send("Profile picture not found");
+    }
+
+    // Fetch the image from Facebook and pipe it to the response
+    const imageResponse = await axios.get(data, {
+      responseType: "stream",
+    });
+
+    res.setHeader("Content-Type", imageResponse.headers["content-type"]);
+    imageResponse.data.pipe(res);
+    // res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

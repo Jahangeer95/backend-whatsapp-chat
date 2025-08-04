@@ -217,8 +217,8 @@ const getParticipantsProfilePicById = async (psid) => {
 
   try {
     if (psid === FB_PAGE_ID) {
-      const response = await axios.get(urlForPagePic);
-      return response?.data;
+      // const response = await axios.get(urlForPagePic);
+      return urlForPagePic;
     } else {
       const response = await axios.get(url);
 
