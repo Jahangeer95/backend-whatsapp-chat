@@ -43,7 +43,6 @@ const corsOptions = {
   // exposedHeaders: [],
   // allowedHeaders: [],
   optionsSuccessStatus: 200,
-  credentials: true,
   origin: "*",
 };
 
