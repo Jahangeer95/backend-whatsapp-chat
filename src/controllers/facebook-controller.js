@@ -93,7 +93,11 @@ exports.fetchMessagesByConversationId = async (req, res) => {
 exports.fetchParticipants = async (req, res) => {
   try {
     const { pageId } = req.params;
-    const data = await facebookService.getConversationParticipants(pageId);
+    const { after } = req.query;
+    const data = await facebookService.getConversationParticipants(
+      pageId,
+      after
+    );
     res.status(200).json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

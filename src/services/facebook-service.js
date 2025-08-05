@@ -192,16 +192,31 @@ const FacebookService = {
   },
 };
 
-const getConversationParticipants = async (pageId) => {
-  const url = `${GRAPH_BASE_URL}/${pageId}/conversations?fields=participants&access_token=${FB_ACCESS_TOKEN}`;
+const getConversationParticipants = async (pageId, after = null) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/conversations`;
+
+  const params = {
+    fields: "participants,updated_time,unread_count",
+    access_token: FB_ACCESS_TOKEN,
+    limit: 1,
+  };
+
+  if (after) {
+    params.after = after;
+  }
 
   try {
-    const response = await axios.get(url);
-    const formatted = response.data.data.map((conversation) => ({
+    const response = await axios.get(url, { params });
+
+    const paging = response?.data?.paging || {};
+
+    const formatted = response?.data?.data.map((conversation) => ({
       conversationId: conversation.id,
-      participants: conversation.participants.data,
+      updated_time: conversation?.updated_time,
+      unread_count: conversation?.unread_count,
+      participants: conversation?.participants?.data,
     }));
-    return formatted;
+    return { participants: formatted, paging };
   } catch (error) {
     console.error(
       "Error fetching FB participants:",
