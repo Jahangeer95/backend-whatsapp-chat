@@ -198,7 +198,7 @@ const getConversationParticipants = async (pageId, after = null) => {
   const params = {
     fields: "participants,updated_time,unread_count",
     access_token: FB_ACCESS_TOKEN,
-    limit: 1,
+    limit: 25,
   };
 
   if (after) {
