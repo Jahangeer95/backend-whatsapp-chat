@@ -191,6 +191,12 @@ const fetchMessagesByUserId = async (userId) => {
     .sort({ timestamp: 1 });
 };
 
+const getMediaImageById = async (mediaId) => {
+  return await axios.get(`${GRAPH_BASE_URL}/${mediaId}`, {
+    headers,
+  });
+};
+
 module.exports = {
   handleEntry,
   sendTextMessage,
@@ -200,4 +206,5 @@ module.exports = {
   fetchWhatsappContacts,
   createOrUpdateContact,
   fetchMessagesByUserId,
+  getMediaImageById,
 };

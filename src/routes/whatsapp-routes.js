@@ -22,4 +22,6 @@ router
   .route("/messages/:userId")
   .get(validateUserId, whatsappController.getAllMessagesForUser);
 
+router.route("/media/:id").get(whatsappController.getMediaByMediaId);
+
 module.exports = router;

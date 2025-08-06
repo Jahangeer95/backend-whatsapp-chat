@@ -1,5 +1,6 @@
+const axios = require("axios");
 const mime = require("mime-types");
-const { VERIFY_TOKEN } = require("../config");
+const { VERIFY_TOKEN, WHATSAPP_ACCESS_TOKEN } = require("../config");
 const whatsappService = require("../services/whatsapp-service");
 
 const verifyWebhook = (req, res) => {
@@ -99,10 +100,34 @@ const getAllMessagesForUser = async (req, res) => {
   }
 };
 
+const getMediaByMediaId = async (req, res) => {
+  try {
+    const mediaId = req.params.id;
+
+    const metadataRes = await whatsappService.getMediaImageById(mediaId);
+
+    const mediaUrl = metadataRes.data.url;
+
+    const mediaRes = await axios.get(mediaUrl, {
+      headers: {
+        Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+      },
+      responseType: "stream",
+    });
+
+    res.setHeader("Content-Type", metadataRes.data.mime_type || "image/jpeg");
+    mediaRes.data.pipe(res);
+  } catch (error) {
+    console.error("Error getting media:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch media" });
+  }
+};
+
 module.exports = {
   verifyWebhook,
   receiveWebHook,
   sendMessage,
   getAllContacts,
   getAllMessagesForUser,
+  getMediaByMediaId,
 };
