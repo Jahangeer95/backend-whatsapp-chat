@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const whatsappController = require("../controllers/whatsapp-controller");
 const { whatsappUploads } = require("../middlewares/multer");
+const { validateUserId } = require("../validator");
 
 const router = Router();
 
@@ -17,6 +18,8 @@ router.post(
 
 router.route("/contacts").get(whatsappController?.getAllContacts);
 
-router.route("/messages/:userId").get(whatsappController.getAllMessagesForUser);
+router
+  .route("/messages/:userId")
+  .get(validateUserId, whatsappController.getAllMessagesForUser);
 
 module.exports = router;
