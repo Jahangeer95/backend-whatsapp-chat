@@ -1,3 +1,4 @@
+const mime = require("mime-types");
 const { VERIFY_TOKEN } = require("../config");
 const whatsappService = require("../services/whatsapp-service");
 
@@ -31,7 +32,7 @@ const receiveWebHook = (req, res) => {
 
 const sendMessage = async (req, res) => {
   const { to, message, type } = req.body;
-  const file = req.file || null;
+  const file = req?.file || null;
 
   if (!to || !type) {
     return res
@@ -42,6 +43,8 @@ const sendMessage = async (req, res) => {
   try {
     if (type === "text") {
       const response = await whatsappService.sendTextMessage(to, message);
+      console.log(response.data, "===");
+
       return res.status(200).json({ success: true, data: response.data });
     }
 
@@ -51,7 +54,7 @@ const sendMessage = async (req, res) => {
     }
 
     if (type === "file") {
-      const mimeType = mime.lookup(file.originalname);
+      const mimeType = mime.lookup(file?.originalname);
       const type = mimeType.startsWith("image") ? "image" : "document";
 
       const mediaId = await whatsappService.uploadMediaFromFile(
@@ -62,7 +65,7 @@ const sendMessage = async (req, res) => {
         to,
         mediaId,
         type,
-        file.originalname
+        file?.originalname
       );
       res.json({ success: true, messageId: response.messages[0].id });
     }
@@ -75,8 +78,31 @@ const sendMessage = async (req, res) => {
   }
 };
 
+const getAllContacts = async (req, res) => {
+  try {
+    const contacts = await whatsappService.fetchWhatsappContacts();
+    res.send({ success: true, data: contacts });
+  } catch (error) {
+    console.error("Error getting contacts:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch contacts" });
+  }
+};
+
+const getAllMessagesForUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const messages = await whatsappService.fetchMessagesByUserId(userId);
+    res.send({ success: true, data: { messages } });
+  } catch (error) {
+    console.error("Error getting messages:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch messages" });
+  }
+};
+
 module.exports = {
   verifyWebhook,
   receiveWebHook,
   sendMessage,
+  getAllContacts,
+  getAllMessagesForUser,
 };

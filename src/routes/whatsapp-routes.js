@@ -15,4 +15,8 @@ router.post(
   whatsappController.sendMessage
 );
 
+router.route("/contacts").get(whatsappController?.getAllContacts);
+
+router.route("/messages/:userId").get(whatsappController.getAllMessagesForUser);
+
 module.exports = router;
