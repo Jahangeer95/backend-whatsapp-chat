@@ -23,4 +23,6 @@ router.get(
   facebookController.fetchMessagesByConversationId
 );
 
+router.post("/mark-as-read", facebookController.markedConversationAsRead);
+
 module.exports = router;

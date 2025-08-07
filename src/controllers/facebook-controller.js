@@ -124,6 +124,26 @@ exports.fetchUserProfilePic = async (req, res) => {
     imageResponse.data.pipe(res);
     // res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error?.message });
+  }
+};
+
+exports.markedConversationAsRead = async (req, res) => {
+  try {
+    const { conversationId } = req.body;
+
+    await facebookService.markedConversationAsReadBasedOnConversationId(
+      conversationId
+    );
+
+    res.status(200).json({ message: "Conversation marked as read" });
+  } catch (error) {
+    res.json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
   }
 };

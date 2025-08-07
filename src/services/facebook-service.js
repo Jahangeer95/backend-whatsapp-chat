@@ -248,6 +248,20 @@ const getParticipantsProfilePicById = async (psid) => {
   }
 };
 
+const markedConversationAsReadBasedOnConversationId = async (
+  conversationId
+) => {
+  const url = `${GRAPH_BASE_URL}/${conversationId}`;
+
+  const params = {
+    access_token: FB_ACCESS_TOKEN,
+  };
+
+  const data = { read: true };
+
+  return await axios.post(url, data, { params });
+};
+
 module.exports = {
   handleEntry,
   FacebookService,
@@ -255,4 +269,5 @@ module.exports = {
   sendTextMessage,
   sendAttachmentMessage,
   getParticipantsProfilePicById,
+  markedConversationAsReadBasedOnConversationId,
 };
