@@ -93,6 +93,8 @@ const handleStatusEvents = async (value, io) => {
     for (const status of statuses) {
       const { id: message_id, status: type, timestamp } = status;
 
+      console.log({ type, status });
+
       if (!message_id || !type) continue;
 
       const date = new Date(Number(timestamp) * 1000);
@@ -193,6 +195,20 @@ const sendTemplateMessage = async (message) => {
   return await axios.post(url, payload, {
     headers,
   });
+};
+
+const saveTemplateMessage = async ({ message_id, userId, template }) => {
+  if (message_id) {
+    return await whatsappMessage.create({
+      message_id,
+      user: userId,
+      direction: "outgoing",
+      message_type: "template",
+      content: template,
+      timestamp: new Date(),
+      status: "sent",
+    });
+  }
 };
 
 const uploadMediaFromFile = async (filePath, mimeType) => {
@@ -300,6 +316,14 @@ const getMediaImageById = async (mediaId) => {
   });
 };
 
+const getPageTemplates = async () => {
+  const url = `${GRAPH_BASE_URL}/${PHONE_NO_ID}/templates`;
+
+  return await axios.get(url, {
+    headers,
+  });
+};
+
 module.exports = {
   handleEntry,
   sendTextMessage,
@@ -312,4 +336,6 @@ module.exports = {
   getMediaImageById,
   saveTextMessage,
   saveMediaMessage,
+  saveTemplateMessage,
+  getPageTemplates,
 };

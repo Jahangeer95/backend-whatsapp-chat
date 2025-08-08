@@ -24,4 +24,6 @@ router
 
 router.route("/media/:id").get(whatsappController.getMediaByMediaId);
 
+router.get("/templates", whatsappController.fetchAllPageTemplates);
+
 module.exports = router;

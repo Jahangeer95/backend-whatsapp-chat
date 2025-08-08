@@ -19,7 +19,15 @@ const whatsappMessageSchema = new Schema(
     },
     message_type: {
       type: String,
-      enum: ["text", "file", "image", "template", "document", "sticker"],
+      enum: [
+        "text",
+        "file",
+        "image",
+        "template",
+        "document",
+        "sticker",
+        "audio",
+      ],
       required: true,
     },
     content: {

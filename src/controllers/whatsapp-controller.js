@@ -32,7 +32,7 @@ const receiveWebHook = (req, res) => {
 };
 
 const sendMessage = async (req, res) => {
-  const { to, message, type, userId } = req.body;
+  const { to, message, type, userId, template } = req.body;
   const file = req?.file || null;
 
   if (!to || !type || !userId) {
@@ -59,7 +59,15 @@ const sendMessage = async (req, res) => {
     if (type === "template") {
       const response = await whatsappService.sendTemplateMessage(req.body);
 
-      console.log(response.data);
+      const message_id = response?.data?.messages?.[0]?.id;
+
+      console.log({ body: req.body });
+
+      await whatsappService.saveTemplateMessage({
+        message_id,
+        userId,
+        template,
+      });
 
       return res.status(200).json({ success: true, data: response.data });
     }
@@ -148,6 +156,21 @@ const getMediaByMediaId = async (req, res) => {
   }
 };
 
+const fetchAllPageTemplates = async (req, res) => {
+  try {
+    await whatsappService.getPageTemplates();
+  } catch (error) {
+    console.error("Error getting templates:", error?.response);
+    res
+      .status(500)
+      .json({
+        success: false,
+        error:
+          error?.response?.data?.error?.message || "Failed to fetch templates",
+      });
+  }
+};
+
 module.exports = {
   verifyWebhook,
   receiveWebHook,
@@ -155,4 +178,5 @@ module.exports = {
   getAllContacts,
   getAllMessagesForUser,
   getMediaByMediaId,
+  fetchAllPageTemplates,
 };
