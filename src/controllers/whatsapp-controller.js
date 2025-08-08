@@ -32,30 +32,45 @@ const receiveWebHook = (req, res) => {
 };
 
 const sendMessage = async (req, res) => {
-  const { to, message, type } = req.body;
+  const { to, message, type, userId } = req.body;
   const file = req?.file || null;
 
-  if (!to || !type) {
-    return res
-      .status(400)
-      .json({ error: "Recipient number and message type are required." });
+  if (!to || !type || !userId) {
+    return res.status(400).json({
+      error: "Recipient number, User Id and message type are required.",
+    });
   }
 
   try {
     if (type === "text") {
       const response = await whatsappService.sendTextMessage(to, message);
-      console.log(response.data, "===");
+
+      const message_id = response?.data?.messages?.[0]?.id;
+
+      await whatsappService.saveTextMessage({
+        message_id,
+        userId,
+        message,
+      });
 
       return res.status(200).json({ success: true, data: response.data });
     }
 
     if (type === "template") {
       const response = await whatsappService.sendTemplateMessage(req.body);
+
+      console.log(response.data);
+
       return res.status(200).json({ success: true, data: response.data });
     }
 
     if (type === "file") {
       const mimeType = mime.lookup(file?.originalname);
+
+      if (!mimeType || typeof mimeType !== "string") {
+        return res.status(400).json({ error: "Invalid file type." });
+      }
+
       const type = mimeType.startsWith("image") ? "image" : "document";
 
       const mediaId = await whatsappService.uploadMediaFromFile(
@@ -68,6 +83,16 @@ const sendMessage = async (req, res) => {
         type,
         file?.originalname
       );
+
+      const message_id = response?.messages?.[0]?.id;
+
+      await whatsappService.saveMediaMessage({
+        message_id,
+        userId,
+        type,
+        mediaId,
+        filename: file?.originalname,
+      });
       res.json({ success: true, messageId: response.messages[0].id });
     }
   } catch (error) {

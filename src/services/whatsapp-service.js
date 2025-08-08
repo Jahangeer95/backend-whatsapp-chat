@@ -9,6 +9,7 @@ const {
 } = require("../config");
 const { whatsappUser } = require("../models/whatsapp-user-modal");
 const { whatsappMessage } = require("../models/whatsapp-message-modal");
+const logger = require("../utils/logger");
 
 const headers = {
   Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
@@ -32,7 +33,7 @@ const handleMessageEvent = async (value, io) => {
 
     if (!contact || !message) return;
 
-    console.log({ message, test: message.text });
+    console.log({ message, test: message.text }, "handle message event");
 
     const wa_id = contact.wa_id;
     const name = contact?.profile?.name || contact?.name;
@@ -69,7 +70,7 @@ const handleMessageEvent = async (value, io) => {
     });
 
     // Optional: Emit via socket
-    io.emit("whatsapp_message_received", {
+    io.emit("message_received", {
       wa_id,
       message_id: message.id,
       message,
@@ -83,15 +84,69 @@ const handleMessageEvent = async (value, io) => {
   }
 };
 
+const handleStatusEvents = async (value, io) => {
+  try {
+    const { statuses } = value;
+
+    if (!statuses || !Array.isArray(statuses)) return;
+
+    for (const status of statuses) {
+      const { id: message_id, status: type, timestamp } = status;
+
+      if (!message_id || !type) continue;
+
+      const date = new Date(Number(timestamp) * 1000);
+
+      const update = {
+        status: type,
+      };
+
+      if (type === "delivered") {
+        update.delivery_timestamp = date;
+      } else if (type === "read") {
+        update.read_timestamp = date;
+      }
+
+      await whatsappMessage.findOneAndUpdate(
+        { message_id },
+        {
+          $set: update,
+        },
+        {
+          new: true,
+        }
+      );
+
+      io.emit("message_status", {
+        message_id,
+        type,
+        timestamp,
+      });
+    }
+  } catch (error) {
+    console.error("Error in handleStatusEvent:", err.message);
+    throw new Error(err);
+  }
+};
+
 const handleEntry = async (entry, io) => {
   const changes = entry?.changes || [];
 
   for (const change of changes) {
     const { field, value } = change;
 
+    console.log({ field, value: value });
+
     switch (field) {
       case "messages":
-        return handleMessageEvent(value, io);
+        if (value?.messages) {
+          return handleMessageEvent(value, io);
+        }
+
+        if (value?.statuses) {
+          return handleStatusEvents(value, io);
+        }
+
       default:
         break;
     }
@@ -110,11 +165,23 @@ const sendTextMessage = async (to, message) => {
     },
   };
 
-  console.log(payload);
-
   return axios.post(url, payload, {
     headers,
   });
+};
+
+const saveTextMessage = async ({ message_id, userId, message }) => {
+  if (message_id) {
+    return await whatsappMessage.create({
+      message_id,
+      user: userId,
+      direction: "outgoing",
+      message_type: "text",
+      content: message,
+      timestamp: new Date(),
+      status: "sent",
+    });
+  }
 };
 
 const sendTemplateMessage = async (message) => {
@@ -122,7 +189,6 @@ const sendTemplateMessage = async (message) => {
   const payload = {
     ...message,
   };
-  console.log({ payload });
 
   return await axios.post(url, payload, {
     headers,
@@ -130,34 +196,47 @@ const sendTemplateMessage = async (message) => {
 };
 
 const uploadMediaFromFile = async (filePath, mimeType) => {
-  const resolvedPath = path.resolve(filePath);
-  const url = `${GRAPH_BASE_URL}/${PHONE_NO_ID}/media`;
+  try {
+    const resolvedPath = path.resolve(filePath);
+    const url = `${GRAPH_BASE_URL}/${PHONE_NO_ID}/media`;
 
-  if (!fs.existsSync(resolvedPath)) {
-    console.error("File does not exist:", resolvedPath);
-    throw new Error("Uploaded file not found");
+    if (!fs.existsSync(resolvedPath)) {
+      console.error("File does not exist:", resolvedPath);
+      throw new Error("Uploaded file not found");
+    }
+
+    const fileStream = fs.createReadStream(resolvedPath);
+
+    fileStream.on("error", (err) => {
+      console.error("File stream error:", err);
+      throw err;
+    });
+    const form = new FormData();
+
+    form.append("file", fileStream);
+    form.append("type", mimeType);
+    form.append("messaging_product", "whatsapp");
+
+    const response = await axios.post(url, form, {
+      headers: {
+        ...headers,
+        ...form.getHeaders(),
+      },
+    });
+
+    return response?.data?.id;
+  } catch (error) {
+    logger.error(
+      "Attachment message error:",
+      error.response?.data || error.message
+    );
+
+    throw new Error(error.response?.data || error.message);
+  } finally {
+    fs.unlink(filePath, (err) => {
+      if (err) logger.error("File cleanup failed:", err.message);
+    });
   }
-
-  const fileStream = fs.createReadStream(resolvedPath);
-
-  fileStream.on("error", (err) => {
-    console.error("File stream error:", err);
-    throw err;
-  });
-  const form = new FormData();
-
-  form.append("file", fileStream);
-  form.append("type", mimeType);
-  form.append("messaging_product", "whatsapp");
-
-  const response = await axios.post(url, form, {
-    headers: {
-      ...headers,
-      ...form.getHeaders(),
-    },
-  });
-
-  return response?.data?.id;
 };
 
 const sendMedia = async (to, mediaId, type, filename = null) => {
@@ -178,6 +257,30 @@ const sendMedia = async (to, mediaId, type, filename = null) => {
   });
 
   return response?.data;
+};
+
+const saveMediaMessage = async ({
+  message_id,
+  userId,
+  type,
+  mediaId,
+  filename,
+}) => {
+  if (message_id) {
+    return await whatsappMessage.create({
+      message_id,
+      user: userId,
+      direction: "outgoing",
+      message_type: type,
+      content: {
+        filename,
+        id: mediaId,
+        caption: "",
+      },
+      timestamp: new Date(),
+      status: "sent",
+    });
+  }
 };
 
 const fetchWhatsappContacts = async () => {
@@ -207,4 +310,6 @@ module.exports = {
   createOrUpdateContact,
   fetchMessagesByUserId,
   getMediaImageById,
+  saveTextMessage,
+  saveMediaMessage,
 };
