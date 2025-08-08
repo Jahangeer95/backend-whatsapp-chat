@@ -312,11 +312,18 @@ const countWhatsappContacts = async () => {
   return await whatsappUser.countDocuments();
 };
 
-const fetchMessagesByUserId = async (userId) => {
+const fetchMessagesByUserId = async (userId, page, limit) => {
+  const skip = (page - 1) * limit || 0;
   return await whatsappMessage
     .find({ user: userId })
+    .skip(skip)
+    .limit(limit)
     .populate("user")
-    .sort({ timestamp: 1 });
+    .sort({ timestamp: -1 });
+};
+
+const countMessagesByUserId = async (userId) => {
+  return await whatsappMessage.countDocuments({ user: userId });
 };
 
 const getMediaImageById = async (mediaId) => {
@@ -348,4 +355,5 @@ module.exports = {
   saveTemplateMessage,
   getPageTemplates,
   countWhatsappContacts,
+  countMessagesByUserId,
 };

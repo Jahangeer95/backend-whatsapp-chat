@@ -120,6 +120,7 @@ const getAllContacts = async (req, res) => {
     const total = await whatsappService.countWhatsappContacts();
 
     const contacts = await whatsappService.fetchWhatsappContacts(page, limit);
+
     res.send({
       success: true,
       data: contacts,
@@ -139,8 +140,27 @@ const getAllContacts = async (req, res) => {
 const getAllMessagesForUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const messages = await whatsappService.fetchMessagesByUserId(userId);
-    res.send({ success: true, data: { messages } });
+    const { page = 1 } = req.query;
+    const limit = 20;
+
+    const total = await whatsappService.countMessagesByUserId(userId);
+
+    const messages = await whatsappService.fetchMessagesByUserId(
+      userId,
+      page,
+      limit
+    );
+
+    res.send({
+      success: true,
+      data: { messages: messages?.reverse() },
+      pagination: {
+        limit,
+        page: Number(page),
+        totalCount: total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error("Error getting messages:", error);
     res.status(500).json({ success: false, error: "Failed to fetch messages" });
