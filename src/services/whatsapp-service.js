@@ -299,8 +299,17 @@ const saveMediaMessage = async ({
   }
 };
 
-const fetchWhatsappContacts = async () => {
-  return await whatsappUser.find().sort({ updatedAt: -1 });
+const fetchWhatsappContacts = async (page, limit) => {
+  const skip = (page - 1) * limit || 0;
+  return await whatsappUser
+    .find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ updatedAt: -1 });
+};
+
+const countWhatsappContacts = async () => {
+  return await whatsappUser.countDocuments();
 };
 
 const fetchMessagesByUserId = async (userId) => {
@@ -338,4 +347,5 @@ module.exports = {
   saveMediaMessage,
   saveTemplateMessage,
   getPageTemplates,
+  countWhatsappContacts,
 };

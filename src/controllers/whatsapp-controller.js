@@ -114,8 +114,22 @@ const sendMessage = async (req, res) => {
 
 const getAllContacts = async (req, res) => {
   try {
-    const contacts = await whatsappService.fetchWhatsappContacts();
-    res.send({ success: true, data: contacts });
+    const { page = 1 } = req.query;
+    const limit = 20;
+
+    const total = await whatsappService.countWhatsappContacts();
+
+    const contacts = await whatsappService.fetchWhatsappContacts(page, limit);
+    res.send({
+      success: true,
+      data: contacts,
+      pagination: {
+        limit,
+        page: Number(page),
+        totalCount: total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error("Error getting contacts:", error);
     res.status(500).json({ success: false, error: "Failed to fetch contacts" });
@@ -161,13 +175,11 @@ const fetchAllPageTemplates = async (req, res) => {
     await whatsappService.getPageTemplates();
   } catch (error) {
     console.error("Error getting templates:", error?.response);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error:
-          error?.response?.data?.error?.message || "Failed to fetch templates",
-      });
+    res.status(500).json({
+      success: false,
+      error:
+        error?.response?.data?.error?.message || "Failed to fetch templates",
+    });
   }
 };
 
