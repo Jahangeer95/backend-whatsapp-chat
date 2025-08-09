@@ -6,6 +6,7 @@ const {
   GRAPH_BASE_URL,
   PHONE_NO_ID,
   WHATSAPP_ACCESS_TOKEN,
+  WHATSAPP_BUSINESS_ID,
 } = require("../config");
 const { whatsappUser } = require("../models/whatsapp-user-modal");
 const { whatsappMessage } = require("../models/whatsapp-message-modal");
@@ -333,7 +334,7 @@ const getMediaImageById = async (mediaId) => {
 };
 
 const getPageTemplates = async () => {
-  const url = `${GRAPH_BASE_URL}/${PHONE_NO_ID}/templates`;
+  const url = `${GRAPH_BASE_URL}/${WHATSAPP_BUSINESS_ID}/message_templates`;
 
   return await axios.get(url, {
     headers,

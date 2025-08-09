@@ -192,7 +192,12 @@ const getMediaByMediaId = async (req, res) => {
 
 const fetchAllPageTemplates = async (req, res) => {
   try {
-    await whatsappService.getPageTemplates();
+    const response = await whatsappService.getPageTemplates();
+
+    res.send({
+      success: true,
+      data: { templates: response.data },
+    });
   } catch (error) {
     console.error("Error getting templates:", error?.response);
     res.status(500).json({
