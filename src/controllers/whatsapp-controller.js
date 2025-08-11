@@ -115,7 +115,7 @@ const sendMessage = async (req, res) => {
 const getAllContacts = async (req, res) => {
   try {
     const { page = 1 } = req.query;
-    const limit = 1;
+    const limit = 50;
 
     const total = await whatsappService.countWhatsappContacts();
 
