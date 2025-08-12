@@ -18,10 +18,20 @@ const headers = {
 };
 
 const createOrUpdateContact = async ({ wa_id, name, profile_pic_url }) => {
+  const nameObj = name
+    ? {
+        name,
+      }
+    : {};
+  const profileObj = profile_pic_url
+    ? {
+        profile_pic_url,
+      }
+    : {};
   return await whatsappUser.findOneAndUpdate(
     { wa_id },
     {
-      $set: { name, profile_pic_url, last_message_time: new Date() },
+      $set: { ...nameObj, ...profileObj, last_message_time: new Date() },
     },
     { new: true, upsert: true }
   );
@@ -119,6 +129,10 @@ const handleStatusEvents = async (value, io) => {
           new: true,
         }
       );
+
+      await createOrUpdateContact({
+        wa_id: status?.recipient_id,
+      });
 
       io.emit("message_status", {
         message_id,
