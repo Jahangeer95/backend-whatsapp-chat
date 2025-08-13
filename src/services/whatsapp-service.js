@@ -17,7 +17,12 @@ const headers = {
   "Content-Type": "application/json",
 };
 
-const createOrUpdateContact = async ({ wa_id, name, profile_pic_url }) => {
+const createOrUpdateContact = async ({
+  wa_id,
+  name,
+  profile_pic_url,
+  last_message_time,
+}) => {
   const nameObj = name
     ? {
         name,
@@ -28,10 +33,17 @@ const createOrUpdateContact = async ({ wa_id, name, profile_pic_url }) => {
         profile_pic_url,
       }
     : {};
+
+  const lastMessageTime = last_message_time
+    ? {
+        last_message_time,
+      }
+    : {};
   return await whatsappUser.findOneAndUpdate(
     { wa_id },
     {
-      $set: { ...nameObj, ...profileObj, last_message_time: new Date() },
+      $set: { ...nameObj, ...profileObj, ...lastMessageTime },
+      $currentDate: { updatedAt: true }, // always updates timestamp
     },
     { new: true, upsert: true }
   );
@@ -65,6 +77,7 @@ const handleMessageEvent = async (value, io) => {
       wa_id,
       name,
       profile_pic_url,
+      last_message_time: new Date(),
     });
 
     // Create Message (only if not exists)
