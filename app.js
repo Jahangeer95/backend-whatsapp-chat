@@ -10,11 +10,18 @@ const errorMiddleware = require("./src/middlewares/error-middleware");
 const { PORT, DATABASE_URI } = require("./src/config");
 const { Server } = require("socket.io");
 const http = require("http");
+const path = require("path");
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app); // Instead of app.listen()
+
+// Serve the uploads folder as static files
+app.use(
+  "/insta-uploads",
+  express.static(path.join(process.cwd(), "insta-uploads"))
+);
 
 const io = new Server(server, {
   cors: {

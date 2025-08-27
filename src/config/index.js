@@ -13,6 +13,7 @@ const PHONE_NO_ID = process.env.PHONE_NO_ID;
 const WHATSAPP_BUSINESS_ID = process.env.WHATSAPP_BUSINESS_ID;
 
 const DATABASE_URI = process.env.DATABASE_URI;
+const BACKEND_URL = process.env.BACKEND_URL;
 
 module.exports = {
   VERIFY_TOKEN,
@@ -24,4 +25,5 @@ module.exports = {
   PHONE_NO_ID,
   DATABASE_URI,
   WHATSAPP_BUSINESS_ID,
+  BACKEND_URL,
 };

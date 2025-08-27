@@ -21,10 +21,22 @@ const whatsappStorage = multer.diskStorage({
   },
 });
 
+const instagramStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "insta-uploads/"); // Ensure this folder exists
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `insta-${Date.now()}${ext}`);
+  },
+});
+
 const upload = multer({ storage });
 const whatsappUploads = multer({ storage: whatsappStorage });
+const instaUploads = multer({ storage: instagramStorage });
 
 module.exports = {
   upload,
   whatsappUploads,
+  instaUploads,
 };

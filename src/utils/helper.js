@@ -1,3 +1,5 @@
+const mime = require("mime-types");
+
 function detectMessageType(item) {
   if (item.message) return "text";
   if (item.attachments) return "attachment";
@@ -6,4 +8,22 @@ function detectMessageType(item) {
   return "unknown";
 }
 
-module.exports = { detectMessageType };
+function getInstagramMediaType(filename) {
+  const mimeType = mime.lookup(filename);
+  if (!mimeType) {
+    throw new Error("Unknown file type");
+  }
+
+  if (mimeType.startsWith("image/")) {
+    return "image";
+  } else if (mimeType.startsWith("video/")) {
+    // Check for supported video types
+    return "video";
+  } else if (mimeType.startsWith("audio/")) {
+    return "audio";
+  }
+
+  throw new Error(`Unsupported media type: ${mimeType}`);
+}
+
+module.exports = { detectMessageType, getInstagramMediaType };
