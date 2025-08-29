@@ -79,7 +79,7 @@ const getConversationParticipants = async (
     platform: "instagram",
     fields: "fields=id,participants,updated_time",
     access_token: accessToken,
-    limit: 1,
+    limit: 25,
   };
 
   if (after) {
