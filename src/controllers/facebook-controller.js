@@ -211,3 +211,20 @@ exports.createTextPost = async (req, res) => {
       .json({ error: error?.response?.data?.error?.message || error?.message });
   }
 };
+
+exports.deletePost = async (req, res) => {
+  const { token, pageId } = req.facebook;
+  const { postId } = req.params;
+
+  try {
+    const response = await facebookService.deletePostByPostId({
+      token,
+      postId,
+    });
+    return res.send({ data: response?.data });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error?.message });
+  }
+};

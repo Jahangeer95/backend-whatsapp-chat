@@ -49,4 +49,8 @@ router
   .get(fbValidator.validateFbHeaders, facebookController.fetchAllPosts)
   .post(fbValidator.validateFbHeaders, facebookController.createTextPost);
 
+router
+  .route("/page-posts/:postId")
+  .delete(fbValidator.validateFbHeaders, facebookController.deletePost);
+
 module.exports = router;

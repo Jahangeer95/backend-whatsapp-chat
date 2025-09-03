@@ -328,6 +328,15 @@ const uploadTextPost = async ({ pageId, token, data }) => {
   });
 };
 
+const deletePostByPostId = async ({ token, postId }) => {
+  const url = `${GRAPH_BASE_URL}/${postId}`;
+  const params = {
+    access_token: token,
+  };
+
+  return await axios.delete(url, { params });
+};
+
 module.exports = {
   handleEntry,
   FacebookService,
@@ -338,4 +347,5 @@ module.exports = {
   markedConversationAsReadBasedOnConversationId,
   fetchPagePostsByPageId,
   uploadTextPost,
+  deletePostByPostId,
 };
