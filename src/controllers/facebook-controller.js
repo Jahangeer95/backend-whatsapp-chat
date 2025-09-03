@@ -1,9 +1,5 @@
 const axios = require("axios");
-const {
-  VERIFY_TOKEN,
-  FB_ACCESS_TOKEN,
-  GRAPH_BASE_URL,
-} = require("../config/index");
+const { VERIFY_TOKEN } = require("../config/index");
 const facebookService = require("../services/facebook-service");
 const logger = require("../utils/logger");
 
@@ -33,10 +29,11 @@ exports.receiveWebhook = (req, res) => {
 };
 
 exports.sendMessage = async (req, res) => {
+  const { token, pageId } = req.facebook;
   const { recipientId, message, type } = req.body;
   const file = req.file || null;
 
-  if (!recipientId || !message || !type) {
+  if (!recipientId || !type) {
     return res
       .status(400)
       .json({ error: "recipientId, type and message are required" });
@@ -46,14 +43,19 @@ exports.sendMessage = async (req, res) => {
     // Send message to Facebook
 
     if (type === "text") {
-      await facebookService.sendTextMessage({ recipientId, message });
+      await facebookService.sendTextMessage({ recipientId, message, token });
     } else {
       if (!file) {
         return res
           .status(400)
           .json({ error: "Attachment file is required for non-text message" });
       }
-      await facebookService.sendAttachmentMessage({ recipientId, file, type });
+      await facebookService.sendAttachmentMessage({
+        recipientId,
+        file,
+        type,
+        token,
+      });
     }
 
     res.status(200).json({ success: true, message: "Message sent" });
@@ -67,9 +69,10 @@ exports.sendMessage = async (req, res) => {
 
 exports.fetchAllConversations = async (req, res) => {
   try {
-    const { pageId } = req.params;
+    const { token, pageId } = req.facebook;
+
     const conversations =
-      await facebookService.FacebookService.getConversations(pageId);
+      await facebookService.FacebookService.getConversations(pageId, token);
     res.json(conversations);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -78,11 +81,14 @@ exports.fetchAllConversations = async (req, res) => {
 
 exports.fetchMessagesByConversationId = async (req, res) => {
   try {
+    const { token, pageId } = req.facebook;
     const { conversationId } = req.params;
     const { after } = req.query;
     const messages = await facebookService.FacebookService.getMessages(
       conversationId,
-      after
+      after,
+      token,
+      pageId
     );
     res.json(messages);
   } catch (error) {
@@ -92,10 +98,11 @@ exports.fetchMessagesByConversationId = async (req, res) => {
 
 exports.fetchParticipants = async (req, res) => {
   try {
-    const { pageId } = req.params;
+    const { token, pageId } = req.facebook;
     const { after } = req.query;
     const data = await facebookService.getConversationParticipants(
       pageId,
+      token,
       after
     );
     res.status(200).json({ success: true, data });
@@ -106,8 +113,13 @@ exports.fetchParticipants = async (req, res) => {
 
 exports.fetchUserProfilePic = async (req, res) => {
   try {
+    const { token, pageId } = req.facebook;
     const { userId } = req.params;
-    const data = await facebookService.getParticipantsProfilePicById(userId);
+    const data = await facebookService.getParticipantsProfilePicById(
+      userId,
+      token,
+      pageId
+    );
 
     if (!data) {
       return res.status(404).send("Profile picture not found");
@@ -130,10 +142,12 @@ exports.fetchUserProfilePic = async (req, res) => {
 
 exports.markedConversationAsRead = async (req, res) => {
   try {
+    const { token, pageId } = req.facebook;
     const { conversationId } = req.body;
 
     await facebookService.markedConversationAsReadBasedOnConversationId(
-      conversationId
+      conversationId,
+      token
     );
 
     res.status(200).json({ message: "Conversation marked as read" });
@@ -145,5 +159,25 @@ exports.markedConversationAsRead = async (req, res) => {
         error?.message ||
         "Something went wrong",
     });
+  }
+};
+
+exports.fetchAllPosts = async (req, res) => {
+  try {
+    const { token, pageId } = req.facebook;
+    const { after } = req.query;
+
+    const response = await facebookService.fetchPagePostsByPageId(
+      pageId,
+      token,
+      after
+    );
+    res.json({
+      success: true,
+      posts: response?.data?.data,
+      paging: response?.data?.paging,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

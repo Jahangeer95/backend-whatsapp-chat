@@ -1,12 +1,12 @@
 const fs = require("fs");
+const path = require("path");
 const axios = require("axios");
 const FormData = require("form-data");
-const { FB_ACCESS_TOKEN, GRAPH_BASE_URL, FB_PAGE_ID } = require("../config");
-const path = require("path");
 const logger = require("../utils/logger");
+const { GRAPH_BASE_URL } = require("../config");
 const { FbUser } = require("../models/user-modal");
 
-sendTextMessage = async ({ recipientId, message }) => {
+sendTextMessage = async ({ recipientId, message, token }) => {
   return axios.post(
     `${GRAPH_BASE_URL}/me/messages`,
     {
@@ -14,12 +14,12 @@ sendTextMessage = async ({ recipientId, message }) => {
       message: { text: message },
     },
     {
-      params: { access_token: FB_ACCESS_TOKEN },
+      params: { access_token: token },
     }
   );
 };
 
-sendAttachmentMessage = async ({ recipientId, file, type }) => {
+sendAttachmentMessage = async ({ recipientId, file, type, token }) => {
   const resolvedPath = path.resolve(file.path);
 
   if (!fs.existsSync(resolvedPath)) {
@@ -44,7 +44,7 @@ sendAttachmentMessage = async ({ recipientId, file, type }) => {
       form,
       {
         headers: form.getHeaders(),
-        params: { access_token: FB_ACCESS_TOKEN },
+        params: { access_token: token },
       }
     );
 
@@ -62,7 +62,7 @@ sendAttachmentMessage = async ({ recipientId, file, type }) => {
         },
       },
       {
-        params: { access_token: FB_ACCESS_TOKEN },
+        params: { access_token: token },
       }
     );
   } catch (error) {
@@ -130,16 +130,16 @@ const handleEntry = async (entry, io) => {
 };
 
 const FacebookService = {
-  async getConversations(pageId) {
-    const url = `${GRAPH_BASE_URL}/${pageId}/conversations?access_token=${FB_ACCESS_TOKEN}`;
+  async getConversations(pageId, token) {
+    const url = `${GRAPH_BASE_URL}/${pageId}/conversations?access_token=${token}`;
     const response = await axios.get(url);
     return response.data;
   },
 
-  async getMessages(conversationId, after = null) {
+  async getMessages(conversationId, after = null, token, pageId) {
     const params = {
       fields: "message,attachments,sticker,quick_reply,from,to,created_time",
-      access_token: FB_ACCESS_TOKEN,
+      access_token: token,
       limit: 100,
     };
     if (after) {
@@ -152,9 +152,9 @@ const FacebookService = {
     const paging = response?.data?.paging || {};
 
     const recipientMessage = messages.find((msg) => {
-      return msg.from.id === FB_PAGE_ID;
+      return msg.from.id === pageId;
     });
-    const userMessage = messages.find((msg) => msg.from.id !== FB_PAGE_ID);
+    const userMessage = messages.find((msg) => msg.from.id !== pageId);
     const recipientId =
       recipientMessage?.to?.data?.[0]?.id || userMessage?.from?.id;
 
@@ -166,7 +166,7 @@ const FacebookService = {
     const messagesArray = messages.map((msg) => {
       let status = "sent";
 
-      if (msg.from.id === FB_PAGE_ID && fbUser) {
+      if (msg.from.id === pageId && fbUser) {
         const messageTimestamp = new Date(msg.created_time).getTime();
         if (messageTimestamp <= Number(fbUser.read_timestamp)) {
           status = "read";
@@ -181,7 +181,7 @@ const FacebookService = {
 
       return {
         ...msg,
-        ...(msg.from.id === FB_PAGE_ID && { status }),
+        ...(msg.from.id === pageId && { status }),
       };
     });
 
@@ -192,12 +192,12 @@ const FacebookService = {
   },
 };
 
-const getConversationParticipants = async (pageId, after = null) => {
+const getConversationParticipants = async (pageId, token, after = null) => {
   const url = `${GRAPH_BASE_URL}/${pageId}/conversations`;
 
   const params = {
     fields: "participants,updated_time,unread_count",
-    access_token: FB_ACCESS_TOKEN,
+    access_token: token,
     limit: 25,
   };
 
@@ -226,12 +226,12 @@ const getConversationParticipants = async (pageId, after = null) => {
   }
 };
 
-const getParticipantsProfilePicById = async (psid) => {
+const getParticipantsProfilePicById = async (psid, token, pageId) => {
   const urlForPagePic = `${GRAPH_BASE_URL}/${psid}/picture`;
-  const url = `${GRAPH_BASE_URL}/${psid}?fields=profile_pic,first_name,last_name&access_token=${FB_ACCESS_TOKEN}`;
+  const url = `${GRAPH_BASE_URL}/${psid}?fields=profile_pic,first_name,last_name&access_token=${token}`;
 
   try {
-    if (psid === FB_PAGE_ID) {
+    if (psid === pageId) {
       // const response = await axios.get(urlForPagePic);
       return urlForPagePic;
     } else {
@@ -249,17 +249,31 @@ const getParticipantsProfilePicById = async (psid) => {
 };
 
 const markedConversationAsReadBasedOnConversationId = async (
-  conversationId
+  conversationId,
+  token
 ) => {
   const url = `${GRAPH_BASE_URL}/${conversationId}`;
 
   const params = {
-    access_token: FB_ACCESS_TOKEN,
+    access_token: token,
   };
 
   const data = { read: true };
 
   return await axios.post(url, data, { params });
+};
+
+const fetchPagePostsByPageId = async (pageId, token, after = null) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/posts`;
+  const params = {
+    access_token: token,
+    fields: "fields=id,message,created_time,permalink_url,attachments",
+    limit: 1,
+  };
+  if (after) {
+    params.after = after;
+  }
+  return await axios.get(url, { params });
 };
 
 module.exports = {
@@ -270,4 +284,5 @@ module.exports = {
   sendAttachmentMessage,
   getParticipantsProfilePicById,
   markedConversationAsReadBasedOnConversationId,
+  fetchPagePostsByPageId,
 };
