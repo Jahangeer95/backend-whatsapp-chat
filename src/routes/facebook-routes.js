@@ -46,6 +46,7 @@ router.post(
 
 router
   .route("/page-posts")
-  .get(fbValidator.validateFbHeaders, facebookController.fetchAllPosts);
+  .get(fbValidator.validateFbHeaders, facebookController.fetchAllPosts)
+  .post(fbValidator.validateFbHeaders, facebookController.createTextPost);
 
 module.exports = router;

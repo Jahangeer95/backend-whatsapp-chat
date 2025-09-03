@@ -268,12 +268,64 @@ const fetchPagePostsByPageId = async (pageId, token, after = null) => {
   const params = {
     access_token: token,
     fields: "fields=id,message,created_time,permalink_url,attachments",
-    limit: 1,
+    limit: 10,
   };
   if (after) {
     params.after = after;
   }
   return await axios.get(url, { params });
+};
+
+const uploadTextPost = async ({ pageId, token, data }) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/feed`;
+
+  // Create URLSearchParams instead of plain object
+  const params = new URLSearchParams();
+  params.append("message", data?.message || "");
+  params.append("access_token", token);
+
+  if (data?.link) {
+    params.append("link", data.link);
+  }
+
+  if (data?.publishTime) {
+    const now = new Date();
+    const minTime = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes from now
+    const maxTime = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+
+    const scheduledTime = new Date(data?.publishTime);
+
+    // Validate the time is in the future
+    if (scheduledTime <= now) {
+      throw new Error("Scheduled time must be in the future");
+    }
+
+    // Validate minimum time buffer (15 minutes)
+    if (scheduledTime < minTime) {
+      throw new Error(
+        "Scheduled time must be at least 15 minutes in the future"
+      );
+    }
+
+    // Validate maximum time limit (30 days)
+    if (scheduledTime > maxTime) {
+      throw new Error(
+        "Scheduled time cannot be more than 30 days in the future"
+      );
+    }
+
+    params.append("published", "false");
+    params.append(
+      "scheduled_publish_time",
+      Math.floor(scheduledTime.getTime() / 1000).toString()
+    );
+    // Unix timestamp conversion
+  }
+  return await axios.post(url, params.toString(), {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
 };
 
 module.exports = {
@@ -285,4 +337,5 @@ module.exports = {
   getParticipantsProfilePicById,
   markedConversationAsReadBasedOnConversationId,
   fetchPagePostsByPageId,
+  uploadTextPost,
 };

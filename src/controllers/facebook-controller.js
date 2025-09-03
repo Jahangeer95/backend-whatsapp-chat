@@ -178,6 +178,36 @@ exports.fetchAllPosts = async (req, res) => {
       paging: response?.data?.paging,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error.message });
+  }
+};
+
+exports.createTextPost = async (req, res) => {
+  const { token, pageId } = req.facebook;
+  const { message } = req.body || {};
+
+  if (!message) {
+    return res.status(400).json({
+      success: false,
+      error: "Message is required",
+    });
+  }
+
+  try {
+    const response = await facebookService.uploadTextPost({
+      pageId,
+      token,
+      data: req.body,
+    });
+    res.send({
+      success: true,
+      data: response.data,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error?.message });
   }
 };
