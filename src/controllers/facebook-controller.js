@@ -187,6 +187,7 @@ exports.fetchAllPosts = async (req, res) => {
 exports.createTextPost = async (req, res) => {
   const { token, pageId } = req.facebook;
   const { message } = req.body || {};
+  const { postId } = req.params;
 
   if (!message) {
     return res.status(400).json({
@@ -200,6 +201,7 @@ exports.createTextPost = async (req, res) => {
       pageId,
       token,
       data: req.body,
+      postId,
     });
     res.send({
       success: true,
@@ -222,6 +224,23 @@ exports.deletePost = async (req, res) => {
       postId,
     });
     return res.send({ data: response?.data });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error?.message });
+  }
+};
+
+exports.getPageDetail = async (req, res) => {
+  const { token, pageId } = req.facebook;
+
+  try {
+    const response = await facebookService.fetchPageDetailByPageId({
+      token,
+      pageId,
+    });
+
+    res.send({ data: response.data });
   } catch (error) {
     res
       .status(500)

@@ -10,6 +10,12 @@ router
   .get(facebookController.verifyWebhook)
   .post(facebookController.receiveWebhook);
 
+router.get(
+  "/page-detail",
+  fbValidator.validateFbHeaders,
+  facebookController.getPageDetail
+);
+
 router.post(
   "/send-message",
   fbValidator.validateFbHeaders,
@@ -49,8 +55,11 @@ router
   .get(fbValidator.validateFbHeaders, facebookController.fetchAllPosts)
   .post(fbValidator.validateFbHeaders, facebookController.createTextPost);
 
+// An app can only update a Page post if the post was made using that app.
+
 router
   .route("/page-posts/:postId")
-  .delete(fbValidator.validateFbHeaders, facebookController.deletePost);
+  .delete(fbValidator.validateFbHeaders, facebookController.deletePost)
+  .post(fbValidator.validateFbHeaders, facebookController.createTextPost);
 
 module.exports = router;

@@ -268,7 +268,7 @@ const fetchPagePostsByPageId = async (pageId, token, after = null) => {
   const params = {
     access_token: token,
     fields: "fields=id,message,created_time,permalink_url,attachments",
-    limit: 10,
+    limit: 3,
   };
   if (after) {
     params.after = after;
@@ -276,8 +276,10 @@ const fetchPagePostsByPageId = async (pageId, token, after = null) => {
   return await axios.get(url, { params });
 };
 
-const uploadTextPost = async ({ pageId, token, data }) => {
-  const url = `${GRAPH_BASE_URL}/${pageId}/feed`;
+const uploadTextPost = async ({ pageId, token, data, postId }) => {
+  const url = postId
+    ? `${GRAPH_BASE_URL}/${postId}`
+    : `${GRAPH_BASE_URL}/${pageId}/feed`;
 
   // Create URLSearchParams instead of plain object
   const params = new URLSearchParams();
@@ -337,6 +339,17 @@ const deletePostByPostId = async ({ token, postId }) => {
   return await axios.delete(url, { params });
 };
 
+const fetchPageDetailByPageId = async ({ token, pageId }) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}`;
+
+  const params = {
+    access_token: token,
+    fields: "id,name,about,fan_count,link",
+  };
+
+  return await axios.get(url, { params });
+};
+
 module.exports = {
   handleEntry,
   FacebookService,
@@ -348,4 +361,5 @@ module.exports = {
   fetchPagePostsByPageId,
   uploadTextPost,
   deletePostByPostId,
+  fetchPageDetailByPageId,
 };
