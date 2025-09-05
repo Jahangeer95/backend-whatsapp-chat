@@ -452,8 +452,11 @@ const fetchCommentsByPostId = async ({ token, postId, after = null }) => {
 };
 
 const addCommentOnPostByPostId = async ({ token, postId, data }) => {
-  const url = `${GRAPH_BASE_URL}/${postId}/comments`;
-  const { message } = data;
+  const { message, commentId } = data;
+
+  const url = commentId
+    ? `${GRAPH_BASE_URL}/${commentId}/comments`
+    : `${GRAPH_BASE_URL}/${postId}/comments`;
 
   const params = {
     access_token: token,
@@ -461,6 +464,7 @@ const addCommentOnPostByPostId = async ({ token, postId, data }) => {
 
   return await axios.post(url, { message }, { params });
 };
+
 module.exports = {
   handleEntry,
   FacebookService,

@@ -317,7 +317,7 @@ exports.getPostComments = async (req, res) => {
 exports.uploadPostComment = async (req, res) => {
   const { token, pageId } = req.facebook;
   const { postId } = req.params;
-  const { message } = req.body;
+  const { message, commentId } = req.body;
 
   if (!message) {
     return res.status(400).json({
@@ -333,6 +333,7 @@ exports.uploadPostComment = async (req, res) => {
       postId,
       data: {
         message,
+        commentId,
       },
     });
 
