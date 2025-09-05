@@ -55,11 +55,31 @@ router
   .get(fbValidator.validateFbHeaders, facebookController.fetchAllPosts)
   .post(fbValidator.validateFbHeaders, facebookController.createTextPost);
 
+router
+  .route("/page-schedule-posts")
+  .get(
+    fbValidator.validateFbHeaders,
+    facebookController.fetchAllUnPublishedPosts
+  );
+
+router
+  .route("/page-media-posts")
+  .post(
+    fbValidator.validateFbHeaders,
+    upload.single("file"),
+    facebookController.createPhotoPost
+  );
+
 // An app can only update a Page post if the post was made using that app.
 
 router
   .route("/page-posts/:postId")
   .delete(fbValidator.validateFbHeaders, facebookController.deletePost)
   .post(fbValidator.validateFbHeaders, facebookController.createTextPost);
+
+router
+  .route("/page-posts/:postId/comments")
+  .get(fbValidator.validateFbHeaders, facebookController.getPostComments)
+  .post(fbValidator.validateFbHeaders, facebookController.uploadPostComment);
 
 module.exports = router;

@@ -276,6 +276,25 @@ const fetchPagePostsByPageId = async (pageId, token, after = null) => {
   return await axios.get(url, { params });
 };
 
+const fetchPageUnpublishedPostsByPageId = async (
+  pageId,
+  token,
+  after = null
+) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/scheduled_posts`;
+  const params = {
+    access_token: token,
+    is_published: false,
+    fields:
+      "fields=id,message,created_time,permalink_url,attachments,is_published",
+    limit: 3,
+  };
+  if (after) {
+    params.after = after;
+  }
+  return await axios.get(url, { params });
+};
+
 const uploadTextPost = async ({ pageId, token, data, postId }) => {
   const url = postId
     ? `${GRAPH_BASE_URL}/${postId}`
@@ -330,6 +349,72 @@ const uploadTextPost = async ({ pageId, token, data, postId }) => {
   });
 };
 
+const uploadPhotoPost = async ({ pageId, token, data }) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/photos`;
+  const { file, message, publishTime } = data || {};
+
+  const resolvedPath = path.resolve(file.path);
+
+  if (!fs.existsSync(resolvedPath)) {
+    console.error("File does not exist:", resolvedPath);
+    throw new Error("Uploaded file not found");
+  }
+
+  const fileStream = fs.createReadStream(resolvedPath);
+
+  fileStream.on("error", (err) => {
+    console.error("File stream error:", err);
+    throw err;
+  });
+
+  const form = new FormData();
+
+  form.append("source", fileStream); // local file
+  form.append("access_token", token);
+
+  if (message) {
+    form.append("message", message);
+  }
+
+  if (publishTime) {
+    const now = new Date();
+    const minTime = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes from now
+    const maxTime = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+
+    const scheduledTime = new Date(publishTime);
+
+    // Validate the time is in the future
+    if (scheduledTime <= now) {
+      throw new Error("Scheduled time must be in the future");
+    }
+
+    // Validate minimum time buffer (15 minutes)
+    if (scheduledTime < minTime) {
+      throw new Error(
+        "Scheduled time must be at least 15 minutes in the future"
+      );
+    }
+
+    // Validate maximum time limit (30 days)
+    if (scheduledTime > maxTime) {
+      throw new Error(
+        "Scheduled time cannot be more than 30 days in the future"
+      );
+    }
+
+    form.append("published", "false");
+    form.append(
+      "scheduled_publish_time",
+      Math.floor(scheduledTime.getTime() / 1000).toString()
+    );
+    // Unix timestamp conversion
+  }
+
+  return await axios.post(url, form, {
+    headers: form.getHeaders(),
+  });
+};
+
 const deletePostByPostId = async ({ token, postId }) => {
   const url = `${GRAPH_BASE_URL}/${postId}`;
   const params = {
@@ -350,6 +435,32 @@ const fetchPageDetailByPageId = async ({ token, pageId }) => {
   return await axios.get(url, { params });
 };
 
+const fetchCommentsByPostId = async ({ token, postId, after = null }) => {
+  const url = `${GRAPH_BASE_URL}/${postId}/comments`;
+
+  const params = {
+    access_token: token,
+    limit: 5,
+    // fields: "from,message",
+  };
+
+  if (after) {
+    params.after = after;
+  }
+
+  return await axios.get(url, { params });
+};
+
+const addCommentOnPostByPostId = async ({ token, postId, data }) => {
+  const url = `${GRAPH_BASE_URL}/${postId}/comments`;
+  const { message } = data;
+
+  const params = {
+    access_token: token,
+  };
+
+  return await axios.post(url, { message }, { params });
+};
 module.exports = {
   handleEntry,
   FacebookService,
@@ -362,4 +473,8 @@ module.exports = {
   uploadTextPost,
   deletePostByPostId,
   fetchPageDetailByPageId,
+  uploadPhotoPost,
+  fetchPageUnpublishedPostsByPageId,
+  fetchCommentsByPostId,
+  addCommentOnPostByPostId,
 };
