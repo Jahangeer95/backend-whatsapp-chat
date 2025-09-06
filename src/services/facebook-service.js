@@ -465,6 +465,36 @@ const addCommentOnPostByPostId = async ({ token, postId, data }) => {
   return await axios.post(url, { message }, { params });
 };
 
+const blockPersonFromPage = async ({ token, pageId, psid }) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/blocked`;
+
+  const params = {
+    access_token: token,
+  };
+
+  return await axios.post(
+    url,
+    { user: psid },
+    {
+      params,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
+
+const getPageInsightsByPageId = async ({ token, pageId }) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/insights`;
+
+  const params = {
+    access_token: token,
+    metric:
+      "post_reactions_like_total,post_reactions_love_total,post_reactions_wow_total",
+  };
+  return await axios.get(url, { params });
+};
+
 module.exports = {
   handleEntry,
   FacebookService,
@@ -481,4 +511,6 @@ module.exports = {
   fetchPageUnpublishedPostsByPageId,
   fetchCommentsByPostId,
   addCommentOnPostByPostId,
+  blockPersonFromPage,
+  getPageInsightsByPageId,
 };

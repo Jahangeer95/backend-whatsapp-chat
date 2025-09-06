@@ -240,9 +240,14 @@ exports.createTextPost = async (req, res) => {
 exports.createPhotoPost = async (req, res) => {
   const { token, pageId } = req.facebook;
   const { message = "", publishTime } = req.body || {};
+  const { postId } = req.params;
   const file = req.file || null;
 
   try {
+    await facebookService.deletePostByPostId({
+      token,
+      postId,
+    });
     const response = await facebookService.uploadPhotoPost({
       token,
       pageId,
@@ -338,6 +343,43 @@ exports.uploadPostComment = async (req, res) => {
     });
 
     res.send({ success: true, data: response.data });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error?.message });
+  }
+};
+
+exports.blockPersonFromPageById = async (req, res) => {
+  const { token, pageId } = req.facebook;
+  const { psid } = req.body;
+  try {
+    const response = await facebookService.blockPersonFromPage({
+      token,
+      pageId,
+      psid,
+    });
+
+    res.send({ success: true, data: response.data });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error?.message });
+  }
+};
+
+exports.fetchPageInsights = async (req, res) => {
+  const { token, pageId } = req.facebook;
+  try {
+    const response = await facebookService.getPageInsightsByPageId({
+      token,
+      pageId,
+    });
+    res.send({
+      success: true,
+      data: response?.data?.data,
+      paging: response?.data?.paging,
+    });
   } catch (error) {
     res
       .status(500)

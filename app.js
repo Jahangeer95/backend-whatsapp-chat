@@ -17,12 +17,6 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app); // Instead of app.listen()
 
-// Serve the uploads folder as static files
-app.use(
-  "/insta-uploads",
-  express.static(path.join(process.cwd(), "insta-uploads"))
-);
-
 const io = new Server(server, {
   cors: {
     origin: "*", // or your frontend domain
@@ -47,10 +41,11 @@ io.on("connection", (socket) => {
 app.set("io", io); // OR export io
 
 const corsOptions = {
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
   // exposedHeaders: [],
   // allowedHeaders: [],
   optionsSuccessStatus: 200,
-  origin: "*",
 };
 
 mongoose
@@ -65,10 +60,9 @@ mongoose
     logger.error("MongoDB connection error:", err || err.message);
   });
 
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "30mb" }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
-
-app.use(cors(corsOptions));
 
 app.use(compression());
 app.use(helmet());
@@ -79,6 +73,11 @@ app.use(helmet());
 //   // }
 //   next();
 // });
+// Serve the uploads folder as static files
+app.use(
+  "/insta-uploads",
+  express.static(path.join(process.cwd(), "insta-uploads"))
+);
 
 app.use("/", routes);
 app.use(errorMiddleware);

@@ -16,6 +16,19 @@ router.get(
   facebookController.getPageDetail
 );
 
+router.get(
+  "/page-insights",
+  fbValidator.validateFbHeaders,
+  facebookController.fetchPageInsights
+);
+
+// block user from page not working
+router.post(
+  "/page-detail/blocked",
+  fbValidator.validateFbHeaders,
+  facebookController.blockPersonFromPageById
+);
+
 router.post(
   "/send-message",
   fbValidator.validateFbHeaders,
@@ -64,6 +77,14 @@ router
 
 router
   .route("/page-media-posts")
+  .post(
+    fbValidator.validateFbHeaders,
+    upload.single("file"),
+    facebookController.createPhotoPost
+  );
+
+router
+  .route("/page-media-posts/:postId")
   .post(
     fbValidator.validateFbHeaders,
     upload.single("file"),
