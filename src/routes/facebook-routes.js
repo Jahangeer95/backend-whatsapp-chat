@@ -103,4 +103,8 @@ router
   .get(fbValidator.validateFbHeaders, facebookController.getPostComments)
   .post(fbValidator.validateFbHeaders, facebookController.uploadPostComment);
 
+router
+  .route("/page-posts/:commentId/replies")
+  .get(fbValidator.validateFbHeaders, facebookController.getCommentReplies);
+
 module.exports = router;

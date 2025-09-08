@@ -451,6 +451,26 @@ const fetchCommentsByPostId = async ({ token, postId, after = null }) => {
   return await axios.get(url, { params });
 };
 
+const fetchCommentRepliesByCommentId = async ({
+  token,
+  commentId,
+  after = null,
+}) => {
+  const url = `${GRAPH_BASE_URL}/${commentId}/comments`;
+
+  const params = {
+    access_token: token,
+    limit: 5,
+    // fields: "from,message",
+  };
+
+  if (after) {
+    params.after = after;
+  }
+
+  return await axios.get(url, { params });
+};
+
 const addCommentOnPostByPostId = async ({ token, postId, data }) => {
   const { message, commentId } = data;
 
@@ -513,4 +533,5 @@ module.exports = {
   addCommentOnPostByPostId,
   blockPersonFromPage,
   getPageInsightsByPageId,
+  fetchCommentRepliesByCommentId,
 };
