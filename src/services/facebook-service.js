@@ -515,6 +515,20 @@ const getPageInsightsByPageId = async ({ token, pageId }) => {
   return await axios.get(url, { params });
 };
 
+const getPageRolesByPageId = async ({ token, pageId, after = null }) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/roles`;
+  const params = {
+    access_token: token,
+    limit: 10,
+  };
+
+  if (after) {
+    params.after = after;
+  }
+
+  return await axios.get(url, { params });
+};
+
 module.exports = {
   handleEntry,
   FacebookService,
@@ -534,4 +548,5 @@ module.exports = {
   blockPersonFromPage,
   getPageInsightsByPageId,
   fetchCommentRepliesByCommentId,
+  getPageRolesByPageId,
 };

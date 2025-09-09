@@ -413,3 +413,25 @@ exports.fetchPageInsights = async (req, res) => {
       .json({ error: error?.response?.data?.error?.message || error?.message });
   }
 };
+
+exports.fetchPageRating = async (req, res) => {
+  const { token, pageId } = req.facebook;
+  const { after } = req.query;
+
+  try {
+    const response = await facebookService.getPageRolesByPageId({
+      token,
+      pageId,
+      after,
+    });
+    res.send({
+      success: true,
+      data: response?.data?.data,
+      paging: response?.data?.paging,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error?.message });
+  }
+};

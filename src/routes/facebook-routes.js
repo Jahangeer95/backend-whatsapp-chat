@@ -22,6 +22,12 @@ router.get(
   facebookController.fetchPageInsights
 );
 
+router.get(
+  "/page-roles",
+  fbValidator.validateFbHeaders,
+  facebookController.fetchPageRating
+);
+
 // block user from page not working
 router.post(
   "/page-detail/blocked",
