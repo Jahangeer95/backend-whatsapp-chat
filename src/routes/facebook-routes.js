@@ -105,6 +105,10 @@ router
   .post(fbValidator.validateFbHeaders, facebookController.createTextPost);
 
 router
+  .route("/page-posts/:postId/insights")
+  .get(fbValidator.validateFbHeaders, facebookController.fetchPostsInsight);
+
+router
   .route("/page-posts/:postId/comments")
   .get(fbValidator.validateFbHeaders, facebookController.getPostComments)
   .post(fbValidator.validateFbHeaders, facebookController.uploadPostComment);

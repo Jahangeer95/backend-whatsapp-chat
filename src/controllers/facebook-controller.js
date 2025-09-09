@@ -435,3 +435,25 @@ exports.fetchPageRating = async (req, res) => {
       .json({ error: error?.response?.data?.error?.message || error?.message });
   }
 };
+
+exports.fetchPostsInsight = async (req, res) => {
+  const { token, pageId } = req.facebook;
+  const { postId } = req.params;
+  const { time_period } = req.query;
+
+  try {
+    const response = await facebookService.getPostInsightsByPostId({
+      token,
+      postId,
+      period: time_period,
+    });
+    res.send({
+      success: true,
+      data: response?.data?.data,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error?.message });
+  }
+};
