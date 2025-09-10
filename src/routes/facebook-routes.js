@@ -22,11 +22,10 @@ router.get(
   facebookController.fetchPageInsights
 );
 
-router.get(
-  "/page-settings",
-  fbValidator.validateFbHeaders,
-  facebookController.fetchPageSettings
-);
+router
+  .route("/page-settings")
+  .get(fbValidator.validateFbHeaders, facebookController.fetchPageSettings)
+  .post(fbValidator.validateFbHeaders, facebookController.updatePageSettings);
 
 router.get(
   "/page-roles",

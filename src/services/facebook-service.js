@@ -550,6 +550,17 @@ const getPageSettingsByPagetId = async ({ token, pageId }) => {
   return await axios.get(url, { params });
 };
 
+const updatePageSettingsByPageId = async ({ token, pageId, data }) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/settings`;
+
+  const params = {
+    access_token: token,
+    option: JSON.stringify({ ...data }),
+  };
+
+  return axios.post(url, null, { params });
+};
+
 module.exports = {
   handleEntry,
   FacebookService,
@@ -572,4 +583,5 @@ module.exports = {
   getPageRolesByPageId,
   getPostInsightsByPostId,
   getPageSettingsByPagetId,
+  updatePageSettingsByPageId,
 };

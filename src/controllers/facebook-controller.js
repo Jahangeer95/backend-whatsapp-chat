@@ -474,3 +474,22 @@ exports.fetchPageSettings = async (req, res) => {
       .json({ error: error?.response?.data?.error?.message || error?.message });
   }
 };
+
+exports.updatePageSettings = async (req, res) => {
+  const { token, pageId } = req.facebook;
+  const data = req.body;
+
+  try {
+    const response = await facebookService.updatePageSettingsByPageId({
+      token,
+      pageId,
+      data,
+    });
+
+    res.send({ success: true, data: response.data });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error?.message });
+  }
+};
