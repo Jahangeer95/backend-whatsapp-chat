@@ -23,6 +23,12 @@ router.get(
 );
 
 router.get(
+  "/page-settings",
+  fbValidator.validateFbHeaders,
+  facebookController.fetchPageSettings
+);
+
+router.get(
   "/page-roles",
   fbValidator.validateFbHeaders,
   facebookController.fetchPageRating

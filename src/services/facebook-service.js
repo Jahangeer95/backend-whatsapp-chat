@@ -541,6 +541,15 @@ const getPostInsightsByPostId = async ({ token, postId, period }) => {
   return await axios.get(url, { params });
 };
 
+const getPageSettingsByPagetId = async ({ token, pageId }) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}/settings`;
+  const params = {
+    access_token: token,
+  };
+
+  return await axios.get(url, { params });
+};
+
 module.exports = {
   handleEntry,
   FacebookService,
@@ -562,4 +571,5 @@ module.exports = {
   fetchCommentRepliesByCommentId,
   getPageRolesByPageId,
   getPostInsightsByPostId,
+  getPageSettingsByPagetId,
 };
