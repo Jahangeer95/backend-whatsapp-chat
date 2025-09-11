@@ -268,7 +268,7 @@ const fetchPagePostsByPageId = async (pageId, token, after = null) => {
   const params = {
     access_token: token,
     fields: "fields=id,message,created_time,permalink_url,attachments",
-    limit: 3,
+    limit: 6,
   };
   if (after) {
     params.after = after;
@@ -519,7 +519,7 @@ const getPageRolesByPageId = async ({ token, pageId, after = null }) => {
   const url = `${GRAPH_BASE_URL}/${pageId}/roles`;
   const params = {
     access_token: token,
-    limit: 10,
+    limit: 1,
   };
 
   if (after) {
