@@ -300,6 +300,24 @@ exports.getPageDetail = async (req, res) => {
   }
 };
 
+exports.updatePageDetail = async (req, res) => {
+  const { token, pageId } = req.facebook;
+
+  try {
+    const response = await facebookService.updatePageDetailByPageId({
+      token,
+      pageId,
+      data: req.body,
+    });
+
+    res.send({ data: response.data });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error?.response?.data?.error?.message || error?.message });
+  }
+};
+
 exports.getPostComments = async (req, res) => {
   const { token, pageId } = req.facebook;
   const { postId } = req.params;

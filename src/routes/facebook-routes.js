@@ -10,11 +10,10 @@ router
   .get(facebookController.verifyWebhook)
   .post(facebookController.receiveWebhook);
 
-router.get(
-  "/page-detail",
-  fbValidator.validateFbHeaders,
-  facebookController.getPageDetail
-);
+router
+  .route("/page-detail")
+  .get(fbValidator.validateFbHeaders, facebookController.getPageDetail)
+  .post(fbValidator.validateFbHeaders, facebookController.updatePageDetail);
 
 router.get(
   "/page-insights",

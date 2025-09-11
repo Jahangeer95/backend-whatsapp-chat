@@ -429,10 +429,21 @@ const fetchPageDetailByPageId = async ({ token, pageId }) => {
 
   const params = {
     access_token: token,
-    fields: "id,name,about,fan_count,link",
+    fields:
+      "id,name,about,fan_count,link,category,bio,followers_count,rating_count,phone,website,description,location",
+    // metadata: 1,
   };
 
   return await axios.get(url, { params });
+};
+
+const updatePageDetailByPageId = async ({ token, pageId, data }) => {
+  const url = `${GRAPH_BASE_URL}/${pageId}`;
+  const params = {
+    access_token: token,
+    ...data,
+  };
+  return await axios.post(url, null, { params });
 };
 
 const fetchCommentsByPostId = async ({ token, postId, after = null }) => {
@@ -584,4 +595,5 @@ module.exports = {
   getPostInsightsByPostId,
   getPageSettingsByPagetId,
   updatePageSettingsByPageId,
+  updatePageDetailByPageId,
 };
