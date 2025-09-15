@@ -244,10 +244,12 @@ exports.createPhotoPost = async (req, res) => {
   const file = req.file || null;
 
   try {
-    await facebookService.deletePostByPostId({
-      token,
-      postId,
-    });
+    if (postId) {
+      await facebookService.deletePostByPostId({
+        token,
+        postId,
+      });
+    }
     const response = await facebookService.uploadPhotoPost({
       token,
       pageId,
