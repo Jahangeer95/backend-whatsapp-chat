@@ -61,4 +61,19 @@ const loginUser = async (req, res) => {
   res.header("user_auth_token", token).send(user);
 };
 
-module.exports = { createUser, loginUser };
+const fetchUsers = async (req, res) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.send({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+module.exports = { createUser, loginUser, fetchUsers };

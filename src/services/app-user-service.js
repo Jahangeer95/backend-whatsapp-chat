@@ -34,9 +34,14 @@ const passwordComparison = async ({ savedPassword, password }) => {
   return await compare(password, savedPassword);
 };
 
+const getAllUsers = async () => {
+  return await AppUser.find().select("username email role").sort("role");
+};
+
 module.exports = {
   findUserByEmail,
   createNewUser,
   passwordComparison,
   findUserByRole,
+  getAllUsers,
 };
