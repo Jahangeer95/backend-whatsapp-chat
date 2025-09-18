@@ -16,6 +16,8 @@ function authMiddleware(req, res, next) {
     const decoded = JWT.verify(token, JWT_SECRET_KEY);
     // it will contain {_id,role} , role will be used for authorization
     req.user = decoded;
+
+    next();
   } catch (error) {
     res.status(400).send("Invalid token.");
   }

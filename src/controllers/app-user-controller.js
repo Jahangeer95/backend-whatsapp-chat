@@ -64,6 +64,7 @@ const loginUser = async (req, res) => {
 const fetchUsers = async (req, res) => {
   try {
     const users = await userService.getAllUsers();
+
     res.send({ success: true, data: users });
   } catch (error) {
     res.status(500).json({
