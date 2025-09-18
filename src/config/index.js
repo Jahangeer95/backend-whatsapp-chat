@@ -14,7 +14,11 @@ const WHATSAPP_BUSINESS_ID = process.env.WHATSAPP_BUSINESS_ID;
 
 const DATABASE_URI = process.env.DATABASE_URI;
 const BACKEND_URL = process.env.BACKEND_URL;
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
+const USER_ROLE_OBJ = {
+  admin: "ADMIN",
+};
 module.exports = {
   VERIFY_TOKEN,
   FB_ACCESS_TOKEN,
@@ -26,4 +30,6 @@ module.exports = {
   DATABASE_URI,
   WHATSAPP_BUSINESS_ID,
   BACKEND_URL,
+  JWT_SECRET_KEY,
+  USER_ROLE_OBJ,
 };

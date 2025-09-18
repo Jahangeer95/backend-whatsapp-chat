@@ -1,0 +1,64 @@
+const bcrypt = require("bcrypt");
+const userService = require("../services/app-user-service");
+const { USER_ROLE_OBJ } = require("../config");
+
+const createUser = async (req, res) => {
+  const { username, email, password, role } = req.body;
+
+  const existingUser = await userService.findUserByEmail(email);
+  if (existingUser) {
+    return res
+      .status(400)
+      .send({ message: "This email is already registered" });
+  }
+
+  if (role === USER_ROLE_OBJ.admin) {
+    const admin = await userService.findUserByRole(USER_ROLE_OBJ.admin);
+    if (admin)
+      // 409 error for rule violation
+      res.status(409).send({
+        message:
+          "An administrator account already exists. Only one is permitted.",
+      });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashPassword = await bcrypt.hash(password, salt);
+
+  let newUser = await userService.createNewUser({
+    username,
+    email,
+    role,
+    password: hashPassword,
+  });
+
+  const token = newUser.generateAuthToken();
+  newUser = newUser.toObject();
+  delete newUser.password;
+
+  res.send({ success: true, message: "User created successfully" });
+};
+
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  let user = await userService.findUserByEmail(email);
+  if (!user) {
+    return res.status(400).send({ message: "Invalid email or password" });
+  }
+
+  const isPasswordValid = await userService.passwordComparison({
+    savedPassword: user.password,
+    password,
+  });
+  if (!isPasswordValid) {
+    return res.status(400).send({ message: "Invalid email or password" });
+  }
+
+  const token = user.generateAuthToken();
+  user = user.toObject();
+  delete user.password;
+  res.header("user_auth_token", token).send(user);
+};
+
+module.exports = { createUser, loginUser };
