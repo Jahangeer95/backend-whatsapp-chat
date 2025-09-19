@@ -43,6 +43,7 @@ app.set("io", io); // OR export io
 const corsOptions = {
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
+  exposedHeaders: ["user_auth_token"],
   // exposedHeaders: [],
   // allowedHeaders: [],
   optionsSuccessStatus: 200,
