@@ -25,6 +25,7 @@ router
 router
   .route("/pages")
   .all(authMiddleware)
+  .get(appPagesController.getAllUserPages)
   .post(checkRoleAdmin, validateNewPage, appPagesController.createNewPage);
 
 module.exports = router;
