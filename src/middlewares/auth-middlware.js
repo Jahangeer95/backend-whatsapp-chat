@@ -14,7 +14,9 @@ function authMiddleware(req, res, next) {
 
   try {
     const decoded = JWT.verify(token, JWT_SECRET_KEY);
+    // token must be saved in database for better securety and for one login allowed
     // it will contain {_id,role} , role will be used for authorization
+
     req.user = decoded;
 
     next();

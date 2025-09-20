@@ -25,6 +25,7 @@ const appUserSchema = new Schema(
       maxLength: 100,
       required: true,
     },
+    pages: [String],
   },
   {
     versionKey: false,
@@ -32,7 +33,9 @@ const appUserSchema = new Schema(
 );
 
 appUserSchema.methods.generateAuthToken = function () {
-  const token = JWT.sign({ _id: this._id }, JWT_SECRET_KEY);
+  console.log({ this: this });
+
+  const token = JWT.sign({ _id: this._id, role: this.role }, JWT_SECRET_KEY);
 
   return token;
 };

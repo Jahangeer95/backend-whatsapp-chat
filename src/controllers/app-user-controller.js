@@ -58,6 +58,7 @@ const loginUser = async (req, res) => {
   const token = user.generateAuthToken();
   user = user.toObject();
   delete user.password;
+  delete user.pages;
   res.header("user_auth_token", token).send(user);
 };
 

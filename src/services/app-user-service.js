@@ -38,10 +38,27 @@ const getAllUsers = async () => {
   return await AppUser.find().select("username email role").sort("role");
 };
 
+const addPageDocIdInUser = async (userId, PageDocId, session = null) => {
+  if (session) {
+    return await AppUser.findByIdAndUpdate(
+      userId,
+      {
+        $push: { pages: PageDocId },
+      },
+      { session }
+    );
+  }
+
+  return await AppUser.findByIdAndUpdate(userId, {
+    $push: { pages: PageDocId },
+  });
+};
+
 module.exports = {
   findUserByEmail,
   createNewUser,
   passwordComparison,
   findUserByRole,
   getAllUsers,
+  addPageDocIdInUser,
 };
