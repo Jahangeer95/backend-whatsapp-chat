@@ -53,6 +53,7 @@ mongoose
   .connect(DATABASE_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    autoIndex: true,
   })
   .then(() => {
     logger.info("MongoDB connected");
