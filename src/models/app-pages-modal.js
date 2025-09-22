@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 
 const appPagesSchema = new Schema(
   {
@@ -19,5 +20,7 @@ const appPagesSchema = new Schema(
   },
   { versionKey: false }
 );
+
+appPagesSchema.plugin(uniqueValidator);
 
 exports.AppPages = model("AppPages", appPagesSchema);
