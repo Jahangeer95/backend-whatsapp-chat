@@ -20,4 +20,14 @@ const appPagesSchema = new Schema(
   { versionKey: false }
 );
 
+appPagesSchema.index(
+  {
+    page_name: 1,
+    page_id: 1,
+  },
+  {
+    unique: true,
+  }
+);
+
 exports.AppPages = model("AppPages", appPagesSchema);
