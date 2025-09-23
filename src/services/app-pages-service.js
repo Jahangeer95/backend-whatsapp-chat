@@ -1,8 +1,8 @@
-const { AppPages } = require("../models/app-pages-modal");
+const { AppFbPages } = require("../models/app-pages-modal");
 const { AppUser } = require("../models/app-user-modal");
 
 const createNewPage = async (data) => {
-  let page = new AppPages({
+  let page = new AppFbPages({
     ...data,
   });
 
