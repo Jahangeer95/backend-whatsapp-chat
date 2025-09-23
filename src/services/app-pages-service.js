@@ -2,14 +2,16 @@ const { AppFbPages } = require("../models/app-pages-modal");
 const { AppUser } = require("../models/app-user-modal");
 
 const createNewPage = async ({ page_name, page_id, access_token }) => {
-  let page = new AppFbPages({
-    page_id,
-    page_name,
-    access_token,
+  let page;
+  AppFbPages.init().then(async () => {
+    page = new AppFbPages({
+      page_id,
+      page_name,
+      access_token,
+    });
+
+    page = await page.save();
   });
-
-  page = await page.save();
-
   return page;
 };
 
