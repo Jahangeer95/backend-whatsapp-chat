@@ -28,7 +28,7 @@ const appUserSchema = new Schema(
     pages: [
       {
         type: Schema.Types.ObjectId,
-        ref: "AppPages",
+        ref: "AppFbPages",
       },
     ],
   },
