@@ -11,7 +11,6 @@ const { PORT, DATABASE_URI } = require("./src/config");
 const { Server } = require("socket.io");
 const http = require("http");
 const path = require("path");
-const { AppFbPages } = require("./src/models/app-pages-modal");
 
 dotenv.config();
 
@@ -58,8 +57,6 @@ mongoose
   })
   .then(() => {
     logger.info("MongoDB connected");
-
-    return AppFbPages.syncIndexes();
   })
   .catch((err) => {
     logger.error("MongoDB connection error:", err || err.message);
