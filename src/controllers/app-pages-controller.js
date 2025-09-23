@@ -9,6 +9,12 @@ exports.createNewPage = async (req, res) => {
   //   const session = await mongoose.startSession();
   //   session.startTransaction();
 
+  const page = pageService.getPageByPageId({ page_id });
+
+  if (page) {
+    return res.status(400).send("Page Id must be unique");
+  }
+
   try {
     const page = await pageService.createNewPage({
       page_id,
@@ -39,6 +45,29 @@ exports.getAllUserPages = async (req, res) => {
   try {
     const pages = await pageService.getAllSavedPagesByUserId(req.user._id);
     res.send({ success: true, data: pages });
+  } catch (error) {
+    res.json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+exports.addUsertoPage = async (req, res) => {
+  const { userId } = req.body;
+  const { pageId } = req.params;
+
+  if (!userId) {
+    res.status(400).send({ success: false, message: "User Id is required" });
+  }
+
+  try {
+    await appUserService.addPageDocIdInUser(userId, pageId);
+
+    res.send({ success: true, message: "User add successfully" });
   } catch (error) {
     res.json({
       success: false,

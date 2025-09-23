@@ -35,7 +35,7 @@ const passwordComparison = async ({ savedPassword, password }) => {
 };
 
 const getAllUsers = async () => {
-  return await AppUser.find().select("username email role").sort("role");
+  return await AppUser.find().select("username email role pages").sort("role");
 };
 
 const addPageDocIdInUser = async (userId, PageDocId, session = null) => {

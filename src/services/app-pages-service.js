@@ -13,6 +13,10 @@ const createNewPage = async ({ page_name, page_id, access_token }) => {
   return page;
 };
 
+const getPageByPageId = async ({ page_id }) => {
+  return await AppFbPages.find({ page_id });
+};
+
 const getAllSavedPagesByUserId = async (userId) => {
   return await AppUser.findById(userId).populate("pages").select("pages");
 };
@@ -20,4 +24,5 @@ const getAllSavedPagesByUserId = async (userId) => {
 module.exports = {
   createNewPage,
   getAllSavedPagesByUserId,
+  getPageByPageId,
 };
