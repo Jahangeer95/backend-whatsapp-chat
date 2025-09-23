@@ -25,7 +25,7 @@ exports.createNewPage = async (req, res) => {
   } catch (error) {
     // await session.abortTransaction();
     // session.endSession();
-    res.json({
+    res.status(400).json({
       success: false,
       message:
         error?.response?.data?.error?.message ||
