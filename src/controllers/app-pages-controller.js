@@ -9,7 +9,7 @@ exports.createNewPage = async (req, res) => {
   //   const session = await mongoose.startSession();
   //   session.startTransaction();
 
-  const page = pageService.getPageByPageId({ page_id });
+  const page = await pageService.getPageByPageId({ page_id });
 
   if (page) {
     return res.status(400).send("Page Id must be unique");

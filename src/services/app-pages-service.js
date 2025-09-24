@@ -14,7 +14,7 @@ const createNewPage = async ({ page_name, page_id, access_token }) => {
 };
 
 const getPageByPageId = async ({ page_id }) => {
-  return await AppFbPages.find({ page_id });
+  return await AppFbPages.findOne({ page_id });
 };
 
 const getAllSavedPagesByUserId = async (userId) => {
