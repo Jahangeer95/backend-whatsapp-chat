@@ -14,4 +14,11 @@ const checkRoleAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { checkRoleAdmin };
+const checkRoleAdminAndManager = (req, res, next) => {
+  if (![USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager].includes(req.user.role)) {
+    return res.status(403).json({ message: `Requires Admin/Manager access` });
+  }
+  next();
+};
+
+module.exports = { checkRoleAdmin, checkRoleAdminAndManager };

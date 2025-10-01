@@ -3,11 +3,16 @@ const userController = require("../controllers/app-user-controller");
 const {
   validateLoginUser,
   validateNewUser,
+  validateUserRole,
 } = require("../validator/user-validator");
 const authMiddleware = require("../middlewares/auth-middlware");
 const appPagesController = require("../controllers/app-pages-controller");
 const { validateNewPage } = require("../validator/app-pages-validator");
-const { checkRoleAdmin } = require("../middlewares/authorize-middleware");
+const {
+  checkRoleAdmin,
+  checkRoleAdminAndManager,
+} = require("../middlewares/authorize-middleware");
+const { validateUserId } = require("../validator");
 
 const router = Router();
 
@@ -19,7 +24,7 @@ router.route("/sign-up").post(validateNewUser, userController.createUser);
 router
   .route("/")
   .all(authMiddleware)
-  .post(validateNewUser, userController.createUser)
+  .post(checkRoleAdmin, validateNewUser, userController.createUser)
   .get(userController.fetchUsers);
 
 router
@@ -32,5 +37,15 @@ router
   .route("/pages/:pageId")
   .all(authMiddleware)
   .post(checkRoleAdmin, appPagesController.addUsertoPage);
+
+router
+  .route("/:userId")
+  .all(authMiddleware)
+  .patch(
+    checkRoleAdminAndManager,
+    validateUserId,
+    validateUserRole,
+    userController.updateUserRole
+  );
 
 module.exports = router;

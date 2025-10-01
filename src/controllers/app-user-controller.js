@@ -78,4 +78,33 @@ const fetchUsers = async (req, res) => {
   }
 };
 
-module.exports = { createUser, loginUser, fetchUsers };
+const updateUserRole = async (req, res) => {
+  const { role } = req.body || {};
+  const { userId } = req.params || {};
+
+  try {
+    if (role === USER_ROLE_OBJ.admin) {
+      const admin = await userService.findUserByRole(USER_ROLE_OBJ.admin);
+      if (admin)
+        // 409 error for rule violation
+        res.status(409).send({
+          message:
+            "An administrator account already exists. Only one is permitted.",
+        });
+    }
+
+    const updatedUser = await userService.updateUserRoleByUserId(userId, role);
+
+    res.send({ success: true, message: "User role  updated successfully" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+module.exports = { createUser, loginUser, fetchUsers, updateUserRole };

@@ -40,4 +40,23 @@ function validateNewUser(req, res, next) {
   next();
 }
 
-module.exports = { validateLoginUser, validateNewUser };
+function validateUserRole(req, res, next) {
+  const joiSchema = JOI.object({
+    role: JOI.string()
+      .valid("ADMIN", "MANAGER", "MODERATOR", "EDITOR")
+      .required(),
+  });
+
+  const { error, value } = joiSchema.validate(req.body);
+
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    validationError.statusCode = 400;
+    return next(validationError);
+  }
+
+  req.body = value;
+  next();
+}
+
+module.exports = { validateLoginUser, validateNewUser, validateUserRole };

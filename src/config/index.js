@@ -18,6 +18,7 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 const USER_ROLE_OBJ = {
   admin: "ADMIN",
+  manager: "MANAGER",
 };
 module.exports = {
   VERIFY_TOKEN,

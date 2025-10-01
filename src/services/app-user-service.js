@@ -57,6 +57,18 @@ const addPageDocIdInUser = async (userId, PageDocId, session = null) => {
   });
 };
 
+const updateUserRoleByUserId = async (userId, role) => {
+  return await AppUser.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        role: role,
+      },
+    },
+    { new: true, upsert: true }
+  );
+};
+
 module.exports = {
   findUserByEmail,
   createNewUser,
@@ -64,4 +76,5 @@ module.exports = {
   findUserByRole,
   getAllUsers,
   addPageDocIdInUser,
+  updateUserRoleByUserId,
 };
