@@ -40,10 +40,10 @@ router
 
 router
   .route("/:userId")
-  .all(authMiddleware)
+  .all(authMiddleware, validateUserId)
+  .delete(checkRoleAdmin, userController.deleteAppUser)
   .patch(
     checkRoleAdminAndManager,
-    validateUserId,
     validateUserRole,
     userController.updateUserRole
   );

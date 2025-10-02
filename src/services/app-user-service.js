@@ -69,6 +69,10 @@ const updateUserRoleByUserId = async (userId, role) => {
   );
 };
 
+const deleteUserById = async (userId) => {
+  return await AppUser.findByIdAndDelete(userId);
+};
+
 module.exports = {
   findUserByEmail,
   createNewUser,
@@ -77,4 +81,5 @@ module.exports = {
   getAllUsers,
   addPageDocIdInUser,
   updateUserRoleByUserId,
+  deleteUserById,
 };

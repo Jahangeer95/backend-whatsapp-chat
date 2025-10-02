@@ -107,4 +107,33 @@ const updateUserRole = async (req, res) => {
   }
 };
 
-module.exports = { createUser, loginUser, fetchUsers, updateUserRole };
+const deleteAppUser = async (req, res) => {
+  try {
+    const { userId } = req.params || {};
+    const doc = await userService.deleteUserById(userId);
+
+    if (!doc) {
+      return res
+        .status(400)
+        .send({ success: false, message: "No user exist with this Id" });
+    }
+
+    res.send({ success: true, message: "User deleted successfully.." });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+module.exports = {
+  createUser,
+  loginUser,
+  fetchUsers,
+  updateUserRole,
+  deleteAppUser,
+};
