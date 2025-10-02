@@ -12,7 +12,7 @@ const {
   checkRoleAdmin,
   checkRoleAdminAndManager,
 } = require("../middlewares/authorize-middleware");
-const { validateUserId } = require("../validator");
+const { validateUserId, validatePageId } = require("../validator");
 
 const router = Router();
 
@@ -35,7 +35,7 @@ router
 
 router
   .route("/pages/:pageId")
-  .all(authMiddleware)
+  .all(authMiddleware, validatePageId)
   .post(checkRoleAdmin, appPagesController.addUsertoPage);
 
 router

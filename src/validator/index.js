@@ -11,4 +11,11 @@ function validateUserId(req, res, next) {
   next();
 }
 
-module.exports = { validateUserId };
+function validatePageId(req, res, next) {
+  if (!validateObjectId(req.params.pageId)) {
+    return res.status(400).json({ error: "Invalid page ID format" });
+  }
+  next();
+}
+
+module.exports = { validateUserId, validatePageId };

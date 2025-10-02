@@ -9,14 +9,25 @@ exports.createNewPage = async (req, res) => {
   //   const session = await mongoose.startSession();
   //   session.startTransaction();
 
-  const page = await pageService.getPageByPageId({ page_id });
-
-  if (page) {
-    return res.status(400).send("Page Id must be unique");
-  }
-
   try {
-    const page = await pageService.createNewPage({
+    const isValidPage = await pageService.isValidFbPageId({
+      page_id,
+      access_token,
+    });
+    if (!isValidPage) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Facebook page id is invalid" });
+    }
+
+    let page = await pageService.getPageByPageId({ page_id });
+
+    if (page) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Page Id must be unique" });
+    }
+    page = await pageService.createNewPage({
       page_id,
       page_name,
       access_token,
@@ -65,11 +76,19 @@ exports.addUsertoPage = async (req, res) => {
   }
 
   try {
+    let page = await pageService.getPageByPage_Id(pageId);
+
+    if (!page) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Page Id is invalid" });
+    }
+
     await appUserService.addPageDocIdInUser(userId, pageId);
 
     res.send({ success: true, message: "User add successfully" });
   } catch (error) {
-    res.json({
+    res.status(400).json({
       success: false,
       message:
         error?.response?.data?.error?.message ||
