@@ -19,7 +19,22 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 const USER_ROLE_OBJ = {
   admin: "ADMIN",
   manager: "MANAGER",
+  editor: "EDITOR",
 };
+
+const CAN_CREATE_USER = [USER_ROLE_OBJ.admin];
+const CAN_UPDATE_USER_ROLE = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
+const CAN_CREATE_PAGE = [USER_ROLE_OBJ.admin];
+const CAN_DELETE_PAGE = [USER_ROLE_OBJ.admin];
+
+const CAN_CREATE_POST = [
+  USER_ROLE_OBJ.admin,
+  USER_ROLE_OBJ.manager,
+  USER_ROLE_OBJ.editor,
+];
+
+const CAN_DELETE_POST = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
+
 module.exports = {
   VERIFY_TOKEN,
   FB_ACCESS_TOKEN,
@@ -33,4 +48,7 @@ module.exports = {
   BACKEND_URL,
   JWT_SECRET_KEY,
   USER_ROLE_OBJ,
+  CAN_CREATE_POST,
+  CAN_DELETE_POST,
+  CAN_UPDATE_USER_ROLE,
 };

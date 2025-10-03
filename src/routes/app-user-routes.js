@@ -10,9 +10,10 @@ const appPagesController = require("../controllers/app-pages-controller");
 const { validateNewPage } = require("../validator/app-pages-validator");
 const {
   checkRoleAdmin,
-  checkRoleAdminAndManager,
+  checkAllowedRoles,
 } = require("../middlewares/authorize-middleware");
 const { validateUserId, validatePageId } = require("../validator");
+const { CAN_UPDATE_USER_ROLE } = require("../config");
 
 const router = Router();
 
@@ -44,7 +45,7 @@ router
   .all(authMiddleware, validateUserId)
   .delete(checkRoleAdmin, userController.deleteAppUser)
   .patch(
-    checkRoleAdminAndManager,
+    checkAllowedRoles(CAN_UPDATE_USER_ROLE),
     validateUserRole,
     userController.updateUserRole
   );
