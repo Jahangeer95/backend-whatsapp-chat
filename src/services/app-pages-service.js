@@ -34,10 +34,15 @@ const isValidFbPageId = async ({ page_id, access_token }) => {
   return response?.data?.id === page_id;
 };
 
+const removePagebyPage_id = async (_id) => {
+  return await AppFbPages.findByIdAndDelete(_id);
+};
+
 module.exports = {
   createNewPage,
   getAllSavedPagesByUserId,
   getPageByPageId,
   isValidFbPageId,
   getPageByPage_Id,
+  removePagebyPage_id,
 };

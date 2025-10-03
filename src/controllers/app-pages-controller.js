@@ -97,3 +97,30 @@ exports.addUsertoPage = async (req, res) => {
     });
   }
 };
+
+exports.deleteFbPage = async (req, res) => {
+  const { pageId } = req.params;
+  try {
+    let page = await pageService.getPageByPage_Id(pageId);
+
+    if (!page) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Page Id is invalid" });
+    }
+
+    await appUserService.removePage_idFromUser(pageId);
+
+    await pageService.removePagebyPage_id(pageId);
+
+    res.send({ success: true, message: "Page deleted successfully" });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};

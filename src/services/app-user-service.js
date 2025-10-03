@@ -73,6 +73,19 @@ const deleteUserById = async (userId) => {
   return await AppUser.findByIdAndDelete(userId);
 };
 
+const removePage_idFromUser = async (_id) => {
+  return await AppUser.updateMany(
+    {
+      pages: _id,
+    },
+    {
+      $pull: {
+        pages: _id,
+      },
+    }
+  );
+};
+
 module.exports = {
   findUserByEmail,
   createNewUser,
@@ -82,4 +95,5 @@ module.exports = {
   addPageDocIdInUser,
   updateUserRoleByUserId,
   deleteUserById,
+  removePage_idFromUser,
 };
