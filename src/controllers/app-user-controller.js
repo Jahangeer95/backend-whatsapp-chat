@@ -82,6 +82,15 @@ const updateUserRole = async (req, res) => {
   const { role } = req.body || {};
   const { userId } = req.params || {};
 
+  const user = await userService.findUserById(userId);
+
+  if (user?.role === USER_ROLE_OBJ.admin) {
+    return res.status(409).send({
+      success: false,
+      message: "Admin user role can not be changed",
+    });
+  }
+
   try {
     if (role === USER_ROLE_OBJ.admin) {
       const admin = await userService.findUserByRole(USER_ROLE_OBJ.admin);
@@ -94,6 +103,13 @@ const updateUserRole = async (req, res) => {
     }
 
     const updatedUser = await userService.updateUserRoleByUserId(userId, role);
+
+    if (!updatedUser) {
+      return res.status(400).send({
+        success: false,
+        message: "No user exists with Id",
+      });
+    }
 
     res.send({ success: true, message: "User role  updated successfully" });
   } catch (error) {

@@ -17,6 +17,14 @@ const findUserByRole = async (role) => {
   return user;
 };
 
+const findUserById = async (user_id) => {
+  const user = await AppUser.findOne({
+    _id: user_id,
+  });
+
+  return user;
+};
+
 const createNewUser = async ({ username, email, password, role }) => {
   let user = new AppUser({
     username,
@@ -65,8 +73,9 @@ const updateUserRoleByUserId = async (userId, role) => {
         role: role,
       },
     },
-    { new: true, upsert: true }
+    { new: true, upsert: false }
   );
+  // upsert false so that it doesn't create new doc
 };
 
 const deleteUserById = async (userId) => {
@@ -96,4 +105,5 @@ module.exports = {
   updateUserRoleByUserId,
   deleteUserById,
   removePage_idFromUser,
+  findUserById,
 };
