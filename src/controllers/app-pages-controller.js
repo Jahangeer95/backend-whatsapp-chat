@@ -72,7 +72,9 @@ exports.addUsertoPage = async (req, res) => {
   const { pageId } = req.params;
 
   if (!userId) {
-    res.status(400).send({ success: false, message: "User Id is required" });
+    return res
+      .status(400)
+      .send({ success: false, message: "User Id is required" });
   }
 
   try {
