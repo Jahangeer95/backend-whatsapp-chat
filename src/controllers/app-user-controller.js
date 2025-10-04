@@ -126,6 +126,15 @@ const updateUserRole = async (req, res) => {
 const deleteAppUser = async (req, res) => {
   try {
     const { userId } = req.params || {};
+    const user = await userService.findUserById(userId);
+
+    if (user?.role === USER_ROLE_OBJ.admin) {
+      return res.status(409).send({
+        success: false,
+        message: "User having role admin cannot be deleted",
+      });
+    }
+
     const doc = await userService.deleteUserById(userId);
 
     if (!doc) {
