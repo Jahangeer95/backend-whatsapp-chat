@@ -46,14 +46,14 @@ const addPageDocIdInUser = async (userId, PageDocId, session = null) => {
     return await AppUser.findByIdAndUpdate(
       userId,
       {
-        $push: { pages: PageDocId },
+        $addToSet: { pages: PageDocId },
       },
       { session }
     );
   }
-
+  // alternative of push but will save unique elements
   return await AppUser.findByIdAndUpdate(userId, {
-    $push: { pages: PageDocId },
+    $addToSet: { pages: PageDocId },
   });
 };
 

@@ -20,6 +20,7 @@ const USER_ROLE_OBJ = {
   admin: "ADMIN",
   manager: "MANAGER",
   editor: "EDITOR",
+  moderator: "MODERATOR",
 };
 
 const CAN_CREATE_USER = [USER_ROLE_OBJ.admin];
