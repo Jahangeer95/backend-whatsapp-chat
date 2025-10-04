@@ -16,7 +16,7 @@ const createUser = async (req, res) => {
     const admin = await userService.findUserByRole(USER_ROLE_OBJ.admin);
     if (admin)
       // 409 error for rule violation
-      res.status(409).send({
+      return res.status(409).send({
         message:
           "An administrator account already exists. Only one is permitted.",
       });
