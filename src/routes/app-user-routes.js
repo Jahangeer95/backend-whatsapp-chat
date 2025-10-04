@@ -43,6 +43,7 @@ router
 router
   .route("/:userId")
   .all(authMiddleware, validateUserId)
+  .get(userController.getUserDetail)
   .delete(checkRoleAdmin, userController.deleteAppUser)
   .patch(
     checkAllowedRoles(CAN_UPDATE_USER_ROLE),

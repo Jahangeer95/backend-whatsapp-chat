@@ -155,10 +155,39 @@ const deleteAppUser = async (req, res) => {
   }
 };
 
+const getUserDetail = async (req, res) => {
+  const { userId } = req.params || {};
+
+  try {
+    let user = await userService.findUserById(userId);
+
+    if (!user) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Invalid user Id" });
+    }
+
+    user = user.toObject();
+    delete user.password;
+    delete user.pages;
+
+    res.send({ success: true, data: user });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
   fetchUsers,
   updateUserRole,
   deleteAppUser,
+  getUserDetail,
 };
