@@ -25,6 +25,17 @@ function validateNewCampaign(req, res, next) {
     objective: JOI.string()
       .valid("LINK_CLICKS", "CONVERSIONS", "BRAND_AWARENESS", "VIDEO_VIEWS")
       .required(),
+    ad_category: JOI.string()
+      .valid(
+        "NONE",
+        "EMPLOYMENT",
+        "HOUSING",
+        "CREDIT",
+        "ISSUES_ELECTIONS_POLITICS",
+        "ONLINE_GAMBLING_AND_GAMING",
+        "FINANCIAL_PRODUCTS_SERVICES"
+      )
+      .required(),
   });
 
   const { error, value } = joiSchema.validate(req.body);
