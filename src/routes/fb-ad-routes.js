@@ -11,6 +11,7 @@ const router = Router();
 router
   .route("/campaigns")
   .all(authMiddleware, validateFbAdHeaders)
-  .post(validateNewCampaign, fbAdController.createfbAdCompaign);
+  .post(validateNewCampaign, fbAdController.createfbAdCompaign)
+  .get(fbAdController.fetchAllCampaign);
 
 module.exports = router;
