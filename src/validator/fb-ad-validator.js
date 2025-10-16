@@ -23,7 +23,14 @@ function validateNewCampaign(req, res, next) {
   const joiSchema = JOI.object({
     name: JOI.string().required(),
     objective: JOI.string()
-      .valid("LINK_CLICKS", "CONVERSIONS", "BRAND_AWARENESS", "VIDEO_VIEWS")
+      .valid(
+        "OUTCOME_LEADS",
+        "OUTCOME_SALES",
+        "OUTCOME_ENGAGEMENT",
+        "OUTCOME_AWARENESS",
+        "OUTCOME_TRAFFIC",
+        "OUTCOME_APP_PROMOTION"
+      )
       .required(),
     ad_category: JOI.string()
       .valid(
