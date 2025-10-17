@@ -43,6 +43,9 @@ function validateNewCampaign(req, res, next) {
         "FINANCIAL_PRODUCTS_SERVICES"
       )
       .required(),
+    status: JOI.string()
+      .valid("ACTIVE", "PAUSED", "DELETED", "ARCHIVED")
+      .required(),
   });
 
   const { error, value } = joiSchema.validate(req.body);

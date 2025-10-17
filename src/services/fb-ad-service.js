@@ -4,12 +4,12 @@ const { GRAPH_BASE_URL } = require("../config");
 const createAddCompaign = async (data, token, adAccountId) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/campaigns`;
 
-  const { name, objective, ad_category } = data || {};
+  const { name, objective, ad_category, status } = data || {};
 
   const payload = {
     name,
     objective,
-    status: "PAUSED",
+    status: status,
     special_ad_categories: [ad_category],
     access_token: token,
   };
