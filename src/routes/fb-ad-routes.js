@@ -14,4 +14,9 @@ router
   .post(validateNewCampaign, fbAdController.createfbAdCompaign)
   .get(fbAdController.fetchAllCampaign);
 
+router
+  .route("/adsets")
+  .all(authMiddleware, validateFbAdHeaders)
+  .post(fbAdController.createAnAdset);
+
 module.exports = router;

@@ -32,7 +32,24 @@ const getAllCampaign = async (token, adAccountId) => {
   });
 };
 
+const createAdSet = async (data, token, adAccountId) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/adsets`;
+
+  const { countries, ...remaining_data } = data || {};
+
+  const payload = {
+    ...remaining_data,
+    targetting: { geo_locations: { countries: countries } },
+    access_token: token,
+  };
+
+  return await axios.get(url, null, {
+    params: payload,
+  });
+};
+
 module.exports = {
   createAddCompaign,
   getAllCampaign,
+  createAdSet,
 };
