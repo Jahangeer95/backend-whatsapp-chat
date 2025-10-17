@@ -18,6 +18,11 @@ const appPagesSchema = new Schema(
       type: String,
       required: true,
     },
+    ad_token_id: {
+      type: String,
+      unique: true,
+      sparse: true, //  this helps ignore `null`/missing values
+    },
   },
   { versionKey: false }
 );

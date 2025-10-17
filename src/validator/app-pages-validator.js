@@ -3,7 +3,7 @@ const JOI = require("joi");
 function validateNewPage(req, res, next) {
   const joiSchema = JOI.object({
     page_id: JOI.string().required(),
-    page_name: JOI.string().required(),
+    ad_token_id: JOI.string().allow(null).optional(),
     access_token: JOI.string().required(),
   });
 

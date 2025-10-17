@@ -2,11 +2,18 @@ const { AppFbPages } = require("../models/app-pages-modal");
 const { AppUser } = require("../models/app-user-modal");
 const axios = require("axios");
 
-const createNewPage = async ({ page_name, page_id, access_token }) => {
+const createNewPage = async ({
+  page_name,
+  page_id,
+  access_token,
+  ad_token_id,
+}) => {
+  const adTokenId = ad_token_id ? { ad_token_id } : {};
   let page = new AppFbPages({
     page_id,
     page_name,
     access_token,
+    ...adTokenId,
   });
 
   page = await page.save();
@@ -31,7 +38,10 @@ const isValidFbPageId = async ({ page_id, access_token }) => {
     `https://graph.facebook.com/${page_id}?access_token=${access_token}`
   );
 
-  return response?.data?.id === page_id;
+  return {
+    isValid: response?.data?.id === page_id,
+    name: response?.data?.name,
+  };
 };
 
 const removePagebyPage_id = async (_id) => {

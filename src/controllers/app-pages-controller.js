@@ -3,18 +3,18 @@ const pageService = require("../services/app-pages-service");
 const appUserService = require("../services/app-user-service");
 
 exports.createNewPage = async (req, res) => {
-  const { page_name, page_id, access_token } = req.body;
+  const { page_id, access_token, ad_token_id } = req.body;
   //   need to check whether user is admin
   const userId = req.user?._id;
   //   const session = await mongoose.startSession();
   //   session.startTransaction();
 
   try {
-    const isValidPage = await pageService.isValidFbPageId({
+    const { isValid, name } = await pageService.isValidFbPageId({
       page_id,
       access_token,
     });
-    if (!isValidPage) {
+    if (!isValid) {
       return res
         .status(400)
         .send({ success: false, message: "Facebook page id is invalid" });
@@ -29,7 +29,8 @@ exports.createNewPage = async (req, res) => {
     }
     page = await pageService.createNewPage({
       page_id,
-      page_name,
+      page_name: name,
+      ad_token_id,
       access_token,
     });
 
