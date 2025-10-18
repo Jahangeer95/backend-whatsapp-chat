@@ -17,13 +17,8 @@ const createAddCompaign = async (data, token, adAccountId) => {
   return await axios.post(url, null, { params: payload });
 };
 
-const updateAdCampaignbyCampaignId = async (
-  data,
-  campaign_id,
-  token,
-  adAccountId
-) => {
-  const url = `${GRAPH_BASE_URL}/${adAccountId}/campaigns/${campaign_id}`;
+const updateAdCampaignbyCampaignId = async (data, campaign_id, token) => {
+  const url = `${GRAPH_BASE_URL}/${campaign_id}`;
 
   const { ad_category, ...remainingData } = data || {};
 

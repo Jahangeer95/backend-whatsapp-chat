@@ -31,16 +31,10 @@ exports.updateAdCampaign = async (req, res) => {
   const { campaignId } = req.params || {};
 
   try {
-    const response = await fbAdService.updateAdCampaignbyCampaignId(
-      req.body,
-      campaignId,
-      token,
-      adAccountId
-    );
+    await fbAdService.updateAdCampaignbyCampaignId(req.body, campaignId, token);
 
     res.send({
       success: true,
-      campaign_id: response.data.id,
       message: "Campaign updated successfully",
     });
   } catch (error) {
@@ -57,6 +51,7 @@ exports.updateAdCampaign = async (req, res) => {
 exports.fetchAllCampaign = async (req, res) => {
   const { token, adAccountId } = req.facebook || {};
   const { after } = req.query;
+
   try {
     const response = await fbAdService.getAllCampaign(
       token,
