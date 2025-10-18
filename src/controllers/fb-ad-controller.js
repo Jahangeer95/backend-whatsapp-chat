@@ -48,6 +48,27 @@ exports.updateAdCampaign = async (req, res) => {
   }
 };
 
+exports.deleteCampaign = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { campaignId } = req.params || {};
+  try {
+    const response = await fbAdService.deleteCampaignByCampaignId(
+      campaignId,
+      token
+    );
+    console.log(response.data);
+    res.send({ success: true, message: "Campaign deleted sucessfully" });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 exports.fetchAllCampaign = async (req, res) => {
   const { token, adAccountId } = req.facebook || {};
   const { after } = req.query;

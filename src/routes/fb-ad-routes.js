@@ -17,7 +17,8 @@ router
 router
   .route("/campaigns/:campaignId")
   .all(authMiddleware, validateFbAdHeaders)
-  .post(fbAdController.updateAdCampaign);
+  .post(fbAdController.updateAdCampaign)
+  .delete(fbAdController.deleteCampaign);
 
 router
   .route("/adsets")

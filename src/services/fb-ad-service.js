@@ -37,6 +37,16 @@ const updateAdCampaignbyCampaignId = async (data, campaign_id, token) => {
   return await axios.post(url, null, { params: payload });
 };
 
+const deleteCampaignByCampaignId = async (campaign_id, token) => {
+  const url = `${GRAPH_BASE_URL}/${campaign_id}`;
+
+  const params = {
+    access_token: token,
+  };
+
+  return await axios.delete(url, { params });
+};
+
 const getAllCampaign = async (token, adAccountId, after) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/campaigns`;
 
@@ -77,4 +87,5 @@ module.exports = {
   getAllCampaign,
   createAdSet,
   updateAdCampaignbyCampaignId,
+  deleteCampaignByCampaignId,
 };
