@@ -15,6 +15,11 @@ router
   .get(fbAdController.fetchAllCampaign);
 
 router
+  .route("/campaigns/:campaignId")
+  .all(authMiddleware, validateFbAdHeaders)
+  .post(fbAdController.updateAdCampaign);
+
+router
   .route("/adsets")
   .all(authMiddleware, validateFbAdHeaders)
   .post(fbAdController.createAnAdset);

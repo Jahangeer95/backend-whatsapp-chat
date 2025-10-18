@@ -17,13 +17,42 @@ const createAddCompaign = async (data, token, adAccountId) => {
   return await axios.post(url, null, { params: payload });
 };
 
-const getAllCampaign = async (token, adAccountId) => {
+const updateAdCampaignbyCampaignId = async (
+  data,
+  campaign_id,
+  token,
+  adAccountId
+) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/campaigns/${campaign_id}`;
+
+  const { ad_category, ...remainingData } = data || {};
+
+  const specialAdCategory = ad_category
+    ? {
+        special_ad_categories: [ad_category],
+      }
+    : {};
+
+  const payload = {
+    ...remainingData,
+    ...specialAdCategory,
+    access_token: token,
+  };
+
+  return await axios.post(url, null, { params: payload });
+};
+
+const getAllCampaign = async (token, adAccountId, after) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/campaigns`;
 
   const payload = {
     fields: "name,status,objective,created_time,daily_budget,insights",
     access_token: token,
   };
+
+  if (after) {
+    payload.after = after;
+  }
 
   return await axios.get(url, {
     params: {
@@ -52,4 +81,5 @@ module.exports = {
   createAddCompaign,
   getAllCampaign,
   createAdSet,
+  updateAdCampaignbyCampaignId,
 };

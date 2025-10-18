@@ -26,12 +26,49 @@ exports.createfbAdCompaign = async (req, res) => {
   }
 };
 
+exports.updateAdCampaign = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { campaignId } = req.params || {};
+
+  try {
+    const response = await fbAdService.updateAdCampaignbyCampaignId(
+      req.body,
+      campaignId,
+      token,
+      adAccountId
+    );
+
+    res.send({
+      success: true,
+      campaign_id: response.data.id,
+      message: "Campaign updated successfully",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 exports.fetchAllCampaign = async (req, res) => {
   const { token, adAccountId } = req.facebook || {};
+  const { after } = req.query;
   try {
-    const response = await fbAdService.getAllCampaign(token, adAccountId);
+    const response = await fbAdService.getAllCampaign(
+      token,
+      adAccountId,
+      after
+    );
 
-    res.send({ success: true, data: response.data });
+    res.send({
+      success: true,
+      data: response?.data?.data,
+      paging: response?.data?.paging,
+    });
   } catch (error) {
     res.status(400).json({
       success: false,
