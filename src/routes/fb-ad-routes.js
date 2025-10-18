@@ -25,4 +25,9 @@ router
   .all(authMiddleware, validateFbAdHeaders)
   .post(fbAdController.createAnAdset);
 
+router
+  .route("/adsets/:campaignId")
+  .all(authMiddleware, validateFbAdHeaders)
+  .get(fbAdController.getAdsetsByUsingCampaignId);
+
 module.exports = router;

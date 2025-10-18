@@ -82,10 +82,22 @@ const createAdSet = async (data, token, adAccountId) => {
   });
 };
 
+const getAdsetsByUsingCampaignId = async (campaign_id, token) => {
+  const url = `${GRAPH_BASE_URL}/${campaign_id}/adsets`;
+
+  const params = {
+    access_token: token,
+    fields: "id,name,status,daily_budget,start_time,end_time",
+  };
+
+  return await axios.get(url, { params });
+};
+
 module.exports = {
   createAddCompaign,
   getAllCampaign,
   createAdSet,
   updateAdCampaignbyCampaignId,
   deleteCampaignByCampaignId,
+  getAdsetsByUsingCampaignId,
 };
