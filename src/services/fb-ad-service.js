@@ -79,7 +79,7 @@ const createAdSet = async (data, token, adAccountId) => {
   };
   // test
 
-  return await axios.get(url, null, {
+  return await axios.post(url, null, {
     params: payload,
   });
 };
