@@ -70,11 +70,8 @@ const getAllCampaign = async (token, adAccountId, after) => {
 const createAdSet = async (data, token, adAccountId) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/adsets`;
 
-  const { countries, ...remaining_data } = data || {};
-
   const payload = {
-    ...remaining_data,
-    targeting: { geo_locations: { countries: countries } },
+    ...data,
     access_token: token,
   };
   // test
