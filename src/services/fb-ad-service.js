@@ -76,6 +76,7 @@ const createAdSet = async (data, token, adAccountId) => {
     targetting: { geo_locations: { countries: countries } },
     access_token: token,
   };
+  // test
 
   return await axios.get(url, null, {
     params: payload,
