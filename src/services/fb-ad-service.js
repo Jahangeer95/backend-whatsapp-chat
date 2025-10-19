@@ -52,6 +52,7 @@ const getAllCampaign = async (token, adAccountId, after) => {
 
   const payload = {
     fields: "name,status,objective,created_time,daily_budget,insights",
+    limit: 3,
     access_token: token,
   };
 
