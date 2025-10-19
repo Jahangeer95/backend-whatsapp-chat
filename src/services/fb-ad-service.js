@@ -74,7 +74,7 @@ const createAdSet = async (data, token, adAccountId) => {
 
   const payload = {
     ...remaining_data,
-    targetting: { geo_locations: { countries: countries } },
+    targeting: { geo_locations: { countries: countries } },
     access_token: token,
   };
   // test
