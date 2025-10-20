@@ -71,7 +71,7 @@ const getAllCampaign = async (token, adAccountId, after) => {
 
 const createAdSet = async (data, token, adAccountId) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/adsets`;
-
+  // test
   const params = new URLSearchParams();
 
   params.append("name", data.name);
