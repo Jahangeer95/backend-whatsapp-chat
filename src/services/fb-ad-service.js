@@ -1,4 +1,6 @@
+const fs = require("fs");
 const axios = require("axios");
+const FormData = require("form-data");
 const { GRAPH_BASE_URL } = require("../config");
 const { dateConversionISOFormat } = require("../utils/helper");
 
@@ -137,7 +139,21 @@ const updateAdsetByAdsetId = async (adset_id, data, token) => {
 const createAdCreative = async (data, adAccountId, token) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/adcreatives`;
   // test
-  const { name, page_id, message, link, headline, call_to_action_type } = data;
+  const {
+    name,
+    page_id,
+    message,
+    link,
+    headline,
+    call_to_action_type,
+    image_hash,
+  } = data;
+
+  const imageHash = image_hash
+    ? {
+        image_hash,
+      }
+    : {};
 
   return await axios.post(url, {
     name,
@@ -147,6 +163,7 @@ const createAdCreative = async (data, adAccountId, token) => {
         message,
         link,
         name: headline,
+        ...imageHash,
         call_to_action: {
           type: call_to_action_type,
           value: { link },
@@ -155,6 +172,29 @@ const createAdCreative = async (data, adAccountId, token) => {
     },
     access_token: token,
   });
+};
+
+const uploadImage = async (file, adAccountId, token) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/adimages`;
+
+  const form = new FormData();
+  form.append("access_token", token);
+  form.append("filename", fs.createReadStream(file.path));
+
+  const response = await axios.post(url, form, {
+    headers: form.getHeaders(),
+  });
+
+  // Clean up uploaded file
+  fs.unlinkSync(file.path);
+
+  const images = response.data.images;
+  const uploaded = Object.values(images)[0];
+
+  return {
+    image_hash: uploaded.hash,
+    url: uploaded.url,
+  };
 };
 
 module.exports = {
@@ -167,4 +207,5 @@ module.exports = {
   deleteAdsetByAdsetId,
   updateAdsetByAdsetId,
   createAdCreative,
+  uploadImage,
 };

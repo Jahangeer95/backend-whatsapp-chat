@@ -218,3 +218,28 @@ exports.createAdcreative = async (req, res) => {
     });
   }
 };
+
+exports.uploadImageForAdcreative = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+
+  const file = req.file || null;
+
+  if (!file) {
+    return res.status(400).json({ error: "File is required" });
+  }
+
+  try {
+    const response = await fbAdService.uploadImage(file, adAccountId, token);
+
+    res.send({ success: true, data: response });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.error_user_msg ||
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};

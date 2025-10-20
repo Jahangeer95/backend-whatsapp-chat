@@ -5,6 +5,7 @@ const {
   validateFbAdHeaders,
 } = require("../validator/fb-ad-validator");
 const authMiddleware = require("../middlewares/auth-middlware");
+const { upload } = require("../middlewares/multer");
 
 const router = Router();
 
@@ -40,5 +41,10 @@ router
   .route("/adcreatives")
   .all(authMiddleware, validateFbAdHeaders)
   .post(fbAdController.createAdcreative);
+
+router
+  .route("/ad-images")
+  .all(authMiddleware, validateFbAdHeaders)
+  .post(upload.single("file"), fbAdController.uploadImageForAdcreative);
 
 module.exports = router;
