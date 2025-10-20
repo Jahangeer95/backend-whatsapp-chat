@@ -30,4 +30,9 @@ router
   .all(authMiddleware, validateFbAdHeaders)
   .get(fbAdController.getAdsetsByUsingCampaignId);
 
+router
+  .route("/adsets/:adsetId")
+  .all(authMiddleware, validateFbAdHeaders)
+  .delete(fbAdController.deleteAdset);
+
 module.exports = router;

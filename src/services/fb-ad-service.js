@@ -112,6 +112,16 @@ const getAdsetsByUsingCampaignId = async (campaign_id, token) => {
   return await axios.get(url, { params });
 };
 
+const deleteAdsetByAdsetId = async (adset_id, token) => {
+  const url = `${GRAPH_BASE_URL}/${adset_id}`;
+
+  const params = {
+    access_token: token,
+  };
+
+  return await axios.delete(url, { params });
+};
+
 module.exports = {
   createAddCompaign,
   getAllCampaign,
@@ -119,4 +129,5 @@ module.exports = {
   updateAdCampaignbyCampaignId,
   deleteCampaignByCampaignId,
   getAdsetsByUsingCampaignId,
+  deleteAdsetByAdsetId,
 };

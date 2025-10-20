@@ -62,6 +62,7 @@ exports.deleteCampaign = async (req, res) => {
     res.status(400).json({
       success: false,
       message:
+        error?.response?.data?.error?.error_user_msg ||
         error?.response?.data?.error?.message ||
         error?.message ||
         "Something went wrong",
@@ -140,6 +141,25 @@ exports.getAdsetsByUsingCampaignId = async (req, res) => {
     res.status(400).json({
       success: false,
       message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+exports.deleteAdset = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { adsetId } = req.params || {};
+  try {
+    const response = await fbAdService.deleteAdsetByAdsetId(adsetId, token);
+    console.log(response.data);
+    res.send({ success: true, message: "Adset deleted sucessfully" });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.error_user_msg ||
         error?.response?.data?.error?.message ||
         error?.message ||
         "Something went wrong",
