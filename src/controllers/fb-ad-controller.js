@@ -166,3 +166,29 @@ exports.deleteAdset = async (req, res) => {
     });
   }
 };
+
+exports.updateAdsetByAdsetId = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { adsetId } = req.params || {};
+
+  try {
+    const response = await fbAdService.updateAdsetByAdsetId(
+      adsetId,
+      req.body,
+      token
+    );
+
+    console.log(response.data);
+
+    res.send({ success: true, message: "Adset updated successfully" });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.error_user_msg ||
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};

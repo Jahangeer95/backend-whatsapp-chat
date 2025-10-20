@@ -106,7 +106,8 @@ const getAdsetsByUsingCampaignId = async (campaign_id, token) => {
 
   const params = {
     access_token: token,
-    fields: "id,name,status,daily_budget,start_time,end_time",
+    fields:
+      "id,name,status,daily_budget,start_time,end_time,bid_amount,targeting,campaign_id",
   };
 
   return await axios.get(url, { params });
@@ -122,6 +123,17 @@ const deleteAdsetByAdsetId = async (adset_id, token) => {
   return await axios.delete(url, { params });
 };
 
+const updateAdsetByAdsetId = async (adset_id, data, token) => {
+  const url = `${GRAPH_BASE_URL}/${adset_id}`;
+
+  const params = {
+    access_token: token,
+    ...data,
+  };
+
+  return await axios.post(url, null, { params });
+};
+
 module.exports = {
   createAddCompaign,
   getAllCampaign,
@@ -130,4 +142,5 @@ module.exports = {
   deleteCampaignByCampaignId,
   getAdsetsByUsingCampaignId,
   deleteAdsetByAdsetId,
+  updateAdsetByAdsetId,
 };

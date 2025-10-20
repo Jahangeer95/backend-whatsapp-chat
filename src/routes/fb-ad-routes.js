@@ -33,6 +33,7 @@ router
 router
   .route("/adsets/:adsetId")
   .all(authMiddleware, validateFbAdHeaders)
-  .delete(fbAdController.deleteAdset);
+  .delete(fbAdController.deleteAdset)
+  .post(fbAdController.updateAdsetByAdsetId);
 
 module.exports = router;
