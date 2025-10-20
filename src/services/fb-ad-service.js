@@ -1,5 +1,6 @@
 const axios = require("axios");
 const { GRAPH_BASE_URL } = require("../config");
+const { dateConversionISOFormat } = require("../utils/helper");
 
 const createAddCompaign = async (data, token, adAccountId) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/campaigns`;
@@ -51,7 +52,8 @@ const getAllCampaign = async (token, adAccountId, after) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/campaigns`;
 
   const payload = {
-    fields: "name,status,objective,created_time,daily_budget,insights",
+    fields:
+      "id,name,status,objective,effective_status,created_time,start_time,stop_time,daily_budget,lifetime_budget,spend_cap,buying_type,special_ad_categories,updated_time,insights",
     limit: 3,
     access_token: token,
   };
@@ -70,14 +72,32 @@ const getAllCampaign = async (token, adAccountId, after) => {
 const createAdSet = async (data, token, adAccountId) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/adsets`;
 
-  const payload = {
-    ...data,
-    access_token: token,
-  };
-  // test
+  const params = new URLSearchParams();
 
-  return await axios.post(url, null, {
-    params: payload,
+  params.append("name", data.name);
+  params.append("campaign_id", data.campaign_id);
+  params.append("daily_budget", data.daily_budget);
+  params.append("status", data.status);
+  params.append("bid_strategy", data.bid_strategy);
+  params.append("optimization_goal", data.optimization_goal);
+  params.append("billing_event", data.billing_event);
+  params.append("access_token", token);
+
+  // Serialize targeting as a JSON string
+  params.append("targeting", JSON.stringify(data.targeting));
+
+  // Optional: start_time and end_time if needed
+  if (data.start_time) {
+    params.append("start_time", dateConversionISOFormat(data.start_time)); // ISO 8601 format
+  }
+  if (data.end_time) {
+    params.append("end_time", dateConversionISOFormat(data.end_time)); // ISO 8601 format
+  } // test
+
+  return await axios.post(url, params?.toString(), {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
   });
 };
 

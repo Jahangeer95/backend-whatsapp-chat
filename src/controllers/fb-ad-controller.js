@@ -114,6 +114,7 @@ exports.createAnAdset = async (req, res) => {
     res.status(400).json({
       success: false,
       message:
+        error?.response?.data?.error?.error_user_msg ||
         error?.response?.data?.error?.message ||
         error?.message ||
         "Something went wrong",

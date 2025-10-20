@@ -26,4 +26,13 @@ function getInstagramMediaType(filename) {
   throw new Error(`Unsupported media type: ${mimeType}`);
 }
 
-module.exports = { detectMessageType, getInstagramMediaType };
+function dateConversionISOFormat(date) {
+  const dateValue = new Date(date);
+  return dateValue?.toISOString();
+}
+
+module.exports = {
+  detectMessageType,
+  getInstagramMediaType,
+  dateConversionISOFormat,
+};
