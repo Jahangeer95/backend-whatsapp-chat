@@ -36,4 +36,9 @@ router
   .delete(fbAdController.deleteAdset)
   .post(fbAdController.updateAdsetByAdsetId);
 
+router
+  .route("/adcreatives")
+  .all(authMiddleware, validateFbAdHeaders)
+  .post(fbAdController.createAdcreative);
+
 module.exports = router;

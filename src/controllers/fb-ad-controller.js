@@ -192,3 +192,29 @@ exports.updateAdsetByAdsetId = async (req, res) => {
     });
   }
 };
+
+exports.createAdcreative = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  try {
+    const response = await fbAdService.createAdCreative(
+      req.body,
+      adAccountId,
+      token
+    );
+
+    res.send({
+      success: true,
+      adcreative_id: response.data.id,
+      message: "Adcreative created successfully",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.error_user_msg ||
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};

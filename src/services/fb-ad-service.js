@@ -134,6 +134,29 @@ const updateAdsetByAdsetId = async (adset_id, data, token) => {
   return await axios.post(url, null, { params });
 };
 
+const createAdCreative = async (data, adAccountId, token) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/adcreatives`;
+
+  const { name, page_id, message, link, headline, call_to_action_type } = data;
+
+  return await axios.post(url, {
+    name,
+    object_story_spec: {
+      page_id,
+      link_data: {
+        message,
+        link,
+        name: headline,
+        call_to_action: {
+          type: call_to_action_type,
+          value: { link },
+        },
+      },
+    },
+    access_token: token,
+  });
+};
+
 module.exports = {
   createAddCompaign,
   getAllCampaign,
@@ -143,4 +166,5 @@ module.exports = {
   getAdsetsByUsingCampaignId,
   deleteAdsetByAdsetId,
   updateAdsetByAdsetId,
+  createAdCreative,
 };
