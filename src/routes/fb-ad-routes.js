@@ -40,7 +40,13 @@ router
 router
   .route("/adcreatives")
   .all(authMiddleware, validateFbAdHeaders)
-  .post(fbAdController.createAdcreative);
+  .post(fbAdController.createAdcreative)
+  .get(fbAdController.fetchAllAdcreative);
+
+router
+  .route("/adcreatives/:adcreativeId")
+  .all(authMiddleware, validateFbAdHeaders)
+  .delete(fbAdController.deleteAdcreative);
 
 router
   .route("/ad-images")

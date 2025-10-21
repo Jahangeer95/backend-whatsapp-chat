@@ -104,7 +104,7 @@ const createAdSet = async (data, token, adAccountId) => {
   });
 };
 
-const getAdsetsByUsingCampaignId = async (campaign_id, token) => {
+const getAdsetsByUsingCampaignId = async (campaign_id, token, after) => {
   const url = `${GRAPH_BASE_URL}/${campaign_id}/adsets`;
 
   const params = {
@@ -112,6 +112,10 @@ const getAdsetsByUsingCampaignId = async (campaign_id, token) => {
     fields:
       "id,name,status,daily_budget,start_time,end_time,bid_amount,targeting,campaign_id",
   };
+
+  if (after) {
+    payload.after = after;
+  }
 
   return await axios.get(url, { params });
 };
@@ -175,6 +179,37 @@ const createAdCreative = async (data, adAccountId, token) => {
   });
 };
 
+const deleteAdcreativeByAdcreativeId = async (adcreative_id, token) => {
+  const url = `${GRAPH_BASE_URL}/${adcreative_id}`;
+
+  const params = {
+    access_token: token,
+  };
+
+  return await axios.delete(url, { params });
+};
+
+const getAllAdcreative = async (token, adAccountId, after) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/adcreatives`;
+
+  const payload = {
+    fields:
+      "id,name,object_story_spec,object_type,actor_id,image_url,image_hash,thumbnail_url,video_id,call_to_action_type,title,body,status,preview_url",
+    limit: 3,
+    access_token: token,
+  };
+
+  if (after) {
+    payload.after = after;
+  }
+
+  return await axios.get(url, {
+    params: {
+      ...payload,
+    },
+  });
+};
+
 const uploadImage = async (file, adAccountId, token) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/adimages`;
 
@@ -209,4 +244,6 @@ module.exports = {
   updateAdsetByAdsetId,
   createAdCreative,
   uploadImage,
+  deleteAdcreativeByAdcreativeId,
+  getAllAdcreative,
 };
