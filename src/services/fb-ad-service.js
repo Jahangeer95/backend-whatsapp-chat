@@ -7,12 +7,13 @@ const { dateConversionISOFormat } = require("../utils/helper");
 const createAddCompaign = async (data, token, adAccountId) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/campaigns`;
 
-  const { name, objective, ad_category, status } = data || {};
+  const { name, objective, ad_category, status, buying_type } = data || {};
 
   const payload = {
     name,
     objective,
-    status: status,
+    status,
+    buying_type,
     special_ad_categories: [ad_category],
     access_token: token,
   };

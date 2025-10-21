@@ -46,6 +46,9 @@ function validateNewCampaign(req, res, next) {
     status: JOI.string()
       .valid("ACTIVE", "PAUSED", "DELETED", "ARCHIVED")
       .required(),
+    buying_type: JOI.string()
+      .valid("AUCTION", "RESERVED", "REACH_AND_FREQUENCY")
+      .required(),
   });
 
   const { error, value } = joiSchema.validate(req.body);
