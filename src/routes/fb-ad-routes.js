@@ -3,6 +3,7 @@ const fbAdController = require("../controllers/fb-ad-controller");
 const {
   validateNewCampaign,
   validateFbAdHeaders,
+  validateAdUpdate,
 } = require("../validator/fb-ad-validator");
 const authMiddleware = require("../middlewares/auth-middlware");
 const { upload } = require("../middlewares/multer");
@@ -47,6 +48,18 @@ router
   .route("/adcreatives/:adcreativeId")
   .all(authMiddleware, validateFbAdHeaders)
   .delete(fbAdController.deleteAdcreative);
+
+router
+  .route("/ads")
+  .all(authMiddleware, validateFbAdHeaders)
+  .get(fbAdController.fetchAllAds)
+  .post(fbAdController.createAd);
+
+router
+  .route("/ads/:adId")
+  .all(authMiddleware, validateFbAdHeaders)
+  .delete(fbAdController.deleteAd)
+  .post(validateAdUpdate, fbAdController.updateAd);
 
 router
   .route("/ad-images")

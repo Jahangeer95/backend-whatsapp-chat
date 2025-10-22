@@ -272,6 +272,96 @@ exports.fetchAllAdcreative = async (req, res) => {
   }
 };
 
+exports.createAd = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  try {
+    const response = await fbAdService.createAdByUsingAdsetIdAndCreativeId(
+      req.body,
+      adAccountId,
+      token
+    );
+
+    res.send({
+      success: true,
+      ad_id: response?.data?.id,
+      message: "Ad created sucessfullys",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+exports.fetchAllAds = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { after } = req.query;
+
+  try {
+    const response = await fbAdService.getAllAds(token, adAccountId, after);
+
+    res.send({
+      success: true,
+      data: response?.data?.data,
+      paging: response?.data?.paging,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+exports.updateAd = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { adId } = req.params || {};
+
+  try {
+    const response = await fbAdService.updateAdByAdId(adId, req.body, token);
+    res.send({
+      success: true,
+      ad_id: response?.data?.id,
+      message: "Ad updated successfully",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+exports.deleteAd = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { adId } = req.params || {};
+
+  try {
+    const response = await fbAdService.deleteAdByAdId(adId, token);
+    console.log(response.data);
+    res.send({ success: true, message: "Ad deleted sucessfully" });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.error_user_msg ||
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 exports.uploadImageForAdcreative = async (req, res) => {
   const { token, adAccountId } = req.facebook || {};
 

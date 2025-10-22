@@ -210,6 +210,83 @@ const getAllAdcreative = async (token, adAccountId, after) => {
   });
 };
 
+const createAdByUsingAdsetIdAndCreativeId = async (
+  data,
+  adAccountId,
+  token
+) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/ads`;
+  const {
+    name,
+    adset_id,
+    status,
+    creative_id,
+    bid_amount,
+    tracking_specs,
+    conversion_domain,
+    execution_options,
+  } = data;
+
+  const params = {
+    name,
+    adset_id,
+    status,
+    creative: JSON.stringify({ creative_id }),
+    access_token: token,
+  };
+
+  if (bid_amount) params.bid_amount = bid_amount;
+  if (tracking_specs) params.tracking_specs = JSON.stringify(tracking_specs);
+  if (conversion_domain) params.conversion_domain = conversion_domain;
+  if (execution_options)
+    params.execution_options = JSON.stringify(execution_options);
+
+  return await axios.post(url, null, {
+    params,
+  });
+};
+
+const getAllAds = async (token, adAccountId, after) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/ads`;
+
+  const payload = {
+    fields: "id,name,status,adset_id,campaign_id,creative",
+    limit: 3,
+    access_token: token,
+  };
+
+  if (after) {
+    payload.after = after;
+  }
+
+  return await axios.get(url, {
+    params: {
+      ...payload,
+    },
+  });
+};
+
+const updateAdByAdId = async (ad_id, data, token) => {
+  const url = `${GRAPH_BASE_URL}/${ad_id}`;
+
+  const params = {
+    access_token: token,
+    ...data,
+  };
+
+  return await axios.post(url, null, { params });
+};
+
+const deleteAdByAdId = async (ad_id, token) => {
+  const url = `${GRAPH_BASE_URL}/${ad_id}`;
+
+  const params = {
+    access_token: token,
+  };
+
+  return await axios.delete(url, { params });
+};
+
 const uploadImage = async (file, adAccountId, token) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/adimages`;
 
@@ -246,4 +323,8 @@ module.exports = {
   uploadImage,
   deleteAdcreativeByAdcreativeId,
   getAllAdcreative,
+  createAdByUsingAdsetIdAndCreativeId,
+  getAllAds,
+  updateAdByAdId,
+  deleteAdByAdId,
 };

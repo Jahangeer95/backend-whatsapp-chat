@@ -63,4 +63,24 @@ function validateNewCampaign(req, res, next) {
   next();
 }
 
-module.exports = { validateNewCampaign, validateFbAdHeaders };
+function validateAdUpdate(req, res, next) {
+  const joiSchema = JOI.object({
+    name: JOI.string().required(),
+    status: JOI.string()
+      .valid("ACTIVE", "PAUSED", "DELETED", "ARCHIVED")
+      .required(),
+  });
+
+  const { error, value } = joiSchema.validate(req.body);
+
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    validationError.statusCode = 400;
+    return next(validationError);
+  }
+
+  req.body = value;
+  next();
+}
+
+module.exports = { validateNewCampaign, validateFbAdHeaders, validateAdUpdate };
