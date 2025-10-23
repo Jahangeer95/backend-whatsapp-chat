@@ -89,6 +89,10 @@ const createAdSet = async (data, token, adAccountId) => {
   // Serialize targeting as a JSON string
   params.append("targeting", JSON.stringify(data.targeting));
 
+  if (data.bid_amount) {
+    params.append("bid_amount", data.bid_amount); // usually in smallest currency unit (like cents)
+  }
+
   // Optional: start_time and end_time if needed
   if (data.start_time) {
     params.append("start_time", dateConversionISOFormat(data.start_time)); // ISO 8601 format
