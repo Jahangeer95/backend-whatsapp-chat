@@ -172,7 +172,7 @@ const createAdCreative = async (data, adAccountId, token) => {
     headline,
     call_to_action_type,
     image_hash,
-  } = data;
+  } = data || {};
 
   const imageHash = image_hash
     ? {
@@ -330,6 +330,19 @@ const uploadImage = async (file, adAccountId, token) => {
   };
 };
 
+const getImageByUsingImageHash = async (image_hash, adAccountId, token) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/adimages`;
+
+  const params = {
+    fields:
+      "id,hash,url,permalink_url,creatives,original_width,original_height",
+    hashes: [image_hash],
+    access_token: token,
+  };
+
+  return await axios.get(url, { params });
+};
+
 module.exports = {
   createAddCompaign,
   getAllCampaign,
@@ -348,4 +361,5 @@ module.exports = {
   getAllAds,
   updateAdByAdId,
   deleteAdByAdId,
+  getImageByUsingImageHash,
 };

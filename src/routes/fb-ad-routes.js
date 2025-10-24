@@ -67,4 +67,9 @@ router
   .all(authMiddleware, validateFbAdHeaders)
   .post(upload.single("file"), fbAdController.uploadImageForAdcreative);
 
+router
+  .route("/ad-images/:hashId")
+  .all(authMiddleware, validateFbAdHeaders)
+  .get(fbAdController.getMediaByUsingHashId);
+
 module.exports = router;

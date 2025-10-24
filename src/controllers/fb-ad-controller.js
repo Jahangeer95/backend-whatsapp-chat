@@ -409,3 +409,27 @@ exports.uploadImageForAdcreative = async (req, res) => {
     });
   }
 };
+
+exports.getMediaByUsingHashId = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { hashId } = req.params;
+
+  try {
+    const response = await fbAdService.getImageByUsingImageHash(
+      hashId,
+      adAccountId,
+      token
+    );
+
+    res.send(response.data);
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.error_user_msg ||
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
