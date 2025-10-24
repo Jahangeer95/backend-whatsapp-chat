@@ -151,6 +151,29 @@ exports.getAdsetsByUsingCampaignId = async (req, res) => {
   }
 };
 
+exports.getAdsets = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { after } = req.query;
+
+  try {
+    const response = await fbAdService.getAllAdsets(token, adAccountId, after);
+
+    res.send({
+      success: true,
+      data: response?.data?.data,
+      paging: response?.data?.paging,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 exports.deleteAdset = async (req, res) => {
   const { token, adAccountId } = req.facebook || {};
   const { adsetId } = req.params || {};

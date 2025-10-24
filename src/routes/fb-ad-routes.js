@@ -25,6 +25,7 @@ router
 router
   .route("/adsets")
   .all(authMiddleware, validateFbAdHeaders)
+  .get(fbAdController.getAdsets)
   .post(fbAdController.createAnAdset);
 
 router

@@ -124,6 +124,22 @@ const getAdsetsByUsingCampaignId = async (campaign_id, token, after) => {
   return await axios.get(url, { params });
 };
 
+const getAllAdsets = async (token, adAccountId, after) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/adsets`;
+
+  const params = {
+    access_token: token,
+    fields:
+      "id,name,status,daily_budget,start_time,end_time,bid_amount,targeting,campaign_id",
+  };
+
+  if (after) {
+    payload.after = after;
+  }
+
+  return await axios.get(url, { params });
+};
+
 const deleteAdsetByAdsetId = async (adset_id, token) => {
   const url = `${GRAPH_BASE_URL}/${adset_id}`;
 
@@ -321,6 +337,7 @@ module.exports = {
   updateAdCampaignbyCampaignId,
   deleteCampaignByCampaignId,
   getAdsetsByUsingCampaignId,
+  getAllAdsets,
   deleteAdsetByAdsetId,
   updateAdsetByAdsetId,
   createAdCreative,
