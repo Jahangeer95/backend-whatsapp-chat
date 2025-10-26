@@ -4,6 +4,7 @@ const {
   validateNewCampaign,
   validateFbAdHeaders,
   validateAdUpdate,
+  validateAdInsightQueryParams,
 } = require("../validator/fb-ad-validator");
 const authMiddleware = require("../middlewares/auth-middlware");
 const { upload } = require("../middlewares/multer");
@@ -61,6 +62,11 @@ router
   .all(authMiddleware, validateFbAdHeaders)
   .delete(fbAdController.deleteAd)
   .post(validateAdUpdate, fbAdController.updateAd);
+
+router
+  .route("/insight")
+  .all(authMiddleware, validateFbAdHeaders)
+  .get(validateAdInsightQueryParams, fbAdController.fetchAdInsight);
 
 router
   .route("/ad-images")

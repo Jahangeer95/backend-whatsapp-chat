@@ -385,6 +385,31 @@ exports.deleteAd = async (req, res) => {
   }
 };
 
+exports.fetchAdInsight = async (req, res) => {
+  const { token, adAccountId } = req.facebook || {};
+  const { level = "ad", data_preset = "today" } = req.query;
+
+  try {
+    const response = await fbAdService.getAdInsight(
+      level,
+      data_preset,
+      adAccountId,
+      token
+    );
+
+    res.send({ success: true, data: response?.data?.data });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.error_user_msg ||
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 exports.uploadImageForAdcreative = async (req, res) => {
   const { token, adAccountId } = req.facebook || {};
 

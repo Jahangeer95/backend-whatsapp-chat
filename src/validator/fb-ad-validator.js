@@ -83,4 +83,46 @@ function validateAdUpdate(req, res, next) {
   next();
 }
 
-module.exports = { validateNewCampaign, validateFbAdHeaders, validateAdUpdate };
+function validateAdInsightQueryParams(req, res, next) {
+  const joiSchema = JOI.object({
+    level: JOI.string()
+      .valid("ad", "adset", "campaign", "account")
+      .default("ad"),
+    data_preset: JOI.string()
+      .valid(
+        "today",
+        "yesterday",
+        "last_3d",
+        "last_7d",
+        "last_14d",
+        "last_28d",
+        "last_30d",
+        "this_week_sun_today",
+        "this_week_mon_today",
+        "last_week_sun_sat",
+        "last_week_mon_sun",
+        "this_month",
+        "last_month",
+        "this_quarter"
+      )
+      .optional(),
+  });
+
+  const { error, value } = joiSchema.validate(req.query);
+
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    validationError.statusCode = 400;
+    return next(validationError);
+  }
+
+  req.query = value;
+  next();
+}
+
+module.exports = {
+  validateNewCampaign,
+  validateFbAdHeaders,
+  validateAdUpdate,
+  validateAdInsightQueryParams,
+};

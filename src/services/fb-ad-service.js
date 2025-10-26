@@ -307,6 +307,19 @@ const deleteAdByAdId = async (ad_id, token) => {
   return await axios.delete(url, { params });
 };
 
+const getAdInsight = async (level, data_preset, adAccountId, token) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/insights`;
+
+  const params = {
+    access_token: token,
+    fields: "campaign_name,adset_name,ad_name,impressions,clicks,spend,ctr,cpm",
+    level: level,
+    date_preset: data_preset, // or 'today', 'this_month', etc.
+  };
+
+  return await axios.get(url, { params });
+};
+
 const uploadImage = async (file, adAccountId, token) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/adimages`;
 
@@ -362,4 +375,5 @@ module.exports = {
   updateAdByAdId,
   deleteAdByAdId,
   getImageByUsingImageHash,
+  getAdInsight,
 };
