@@ -320,6 +320,19 @@ const deleteAdByAdId = async (ad_id, token) => {
   return await axios.delete(url, { params });
 };
 
+const getAdPreview = async (ad_id, ad_format, token) => {
+  const url = `${GRAPH_BASE_URL}/${ad_id}/previews`;
+
+  const params = {
+    ad_format,
+    access_token: token,
+  };
+
+  return await axios.get(url, {
+    params,
+  });
+};
+
 const getAdInsight = async (level, data_preset, adAccountId, token) => {
   const url = `${GRAPH_BASE_URL}/${adAccountId}/insights`;
 

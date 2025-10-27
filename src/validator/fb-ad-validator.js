@@ -137,8 +137,6 @@ function validateAdCreativeQueryParams(req, res, next) {
       .default("MOBILE_FEED_STANDARD"),
   });
 
-  console.log(req.query);
-
   const { error, value } = joiSchema.validate(req.query);
 
   if (error) {

@@ -70,6 +70,11 @@ router
   .post(validateAdUpdate, fbAdController.updateAd);
 
 router
+  .route("/ads/:adId/preview")
+  .all(authMiddleware, validateFbAdHeaders)
+  .get(validateAdCreativeQueryParams, fbAdController.fetchAdPreview);
+
+router
   .route("/insight")
   .all(authMiddleware, validateFbAdHeaders)
   .get(validateAdInsightQueryParams, fbAdController.fetchAdInsight);
