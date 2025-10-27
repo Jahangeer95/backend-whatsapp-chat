@@ -120,9 +120,41 @@ function validateAdInsightQueryParams(req, res, next) {
   next();
 }
 
+function validateAdCreativeQueryParams(req, res, next) {
+  const joiSchema = JOI.object({
+    ad_format: JOI.string()
+      .valid(
+        "MOBILE_FEED_STANDARD",
+        "DESKTOP_FEED_STANDARD",
+        "FACEBOOK_STORY_MOBILE",
+        "INSTAGRAM_STANDARD",
+        "INSTAGRAM_STORY",
+        "INSTAGRAM_REELS",
+        "MESSENGER_MOBILE_INBOX_MEDIA",
+        "AUDIENCE_NETWORK_OUTSTREAM_VIDEO",
+        "RIGHT_COLUMN_STANDARD"
+      )
+      .default("MOBILE_FEED_STANDARD"),
+  });
+
+  console.log(req.query);
+
+  const { error, value } = joiSchema.validate(req.query);
+
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    validationError.statusCode = 400;
+    return next(validationError);
+  }
+
+  req.query = value;
+  next();
+}
+
 module.exports = {
   validateNewCampaign,
   validateFbAdHeaders,
   validateAdUpdate,
   validateAdInsightQueryParams,
+  validateAdCreativeQueryParams,
 };

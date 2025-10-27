@@ -230,6 +230,19 @@ const getAllAdcreative = async (token, adAccountId, after) => {
   });
 };
 
+const getAdcreativePreview = async (creative_id, ad_format, token) => {
+  const url = `${GRAPH_BASE_URL}/${creative_id}/previews`;
+
+  const params = {
+    ad_format,
+    access_token: token,
+  };
+
+  return await axios.get(url, {
+    params,
+  });
+};
+
 const createAdByUsingAdsetIdAndCreativeId = async (
   data,
   adAccountId,
@@ -376,4 +389,5 @@ module.exports = {
   deleteAdByAdId,
   getImageByUsingImageHash,
   getAdInsight,
+  getAdcreativePreview,
 };

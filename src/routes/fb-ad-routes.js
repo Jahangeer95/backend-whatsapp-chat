@@ -5,6 +5,7 @@ const {
   validateFbAdHeaders,
   validateAdUpdate,
   validateAdInsightQueryParams,
+  validateAdCreativeQueryParams,
 } = require("../validator/fb-ad-validator");
 const authMiddleware = require("../middlewares/auth-middlware");
 const { upload } = require("../middlewares/multer");
@@ -50,6 +51,11 @@ router
   .route("/adcreatives/:adcreativeId")
   .all(authMiddleware, validateFbAdHeaders)
   .delete(fbAdController.deleteAdcreative);
+
+router
+  .route("/adcreatives/:adcreativeId/preview")
+  .all(authMiddleware, validateFbAdHeaders)
+  .get(validateAdCreativeQueryParams, fbAdController.fetchAdCreativePreview);
 
 router
   .route("/ads")
