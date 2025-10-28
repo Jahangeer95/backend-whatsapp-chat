@@ -357,9 +357,12 @@ exports.createAd = async (req, res) => {
       message: "Ad created sucessfullys",
     });
   } catch (error) {
+    console.log(error.response);
+
     res.status(400).json({
       success: false,
       message:
+        error?.response?.data?.error?.error_user_msg ||
         error?.response?.data?.error?.message ||
         error?.message ||
         "Something went wrong",
