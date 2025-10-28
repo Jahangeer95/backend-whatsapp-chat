@@ -48,6 +48,11 @@ router
   .get(fbAdController.fetchAllAdcreative);
 
 router
+  .route("/adcreatives/preview")
+  .all(authMiddleware, validateFbAdHeaders)
+  .get(fbAdController.createAdCreativePreview);
+
+router
   .route("/adcreatives/:adcreativeId")
   .all(authMiddleware, validateFbAdHeaders)
   .delete(fbAdController.deleteAdcreative);

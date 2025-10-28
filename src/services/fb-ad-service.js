@@ -199,6 +199,48 @@ const createAdCreative = async (data, adAccountId, token) => {
   });
 };
 
+const generateAdCreativePreview = async (data, adAccountId, token) => {
+  const url = `${GRAPH_BASE_URL}/${adAccountId}/generatepreviews`;
+
+  const {
+    name,
+    page_id,
+    message,
+    link,
+    headline,
+    call_to_action_type,
+    image_hash,
+  } = data || {};
+
+  const imageHash = image_hash
+    ? {
+        image_hash,
+      }
+    : {};
+
+  return await axios.get(url, {
+    params: {
+      creative: JSON.stringify({
+        object_story_spec: {
+          page_id,
+          link_data: {
+            message,
+            link,
+            name: headline,
+            ...imageHash,
+            call_to_action: {
+              type: call_to_action_type,
+              value: { link },
+            },
+          },
+        },
+      }),
+      ad_format: "MOBILE_FEED_STANDARD",
+      access_token: token,
+    },
+  });
+};
+
 const deleteAdcreativeByAdcreativeId = async (adcreative_id, token) => {
   const url = `${GRAPH_BASE_URL}/${adcreative_id}`;
 
@@ -403,4 +445,6 @@ module.exports = {
   getImageByUsingImageHash,
   getAdInsight,
   getAdcreativePreview,
+  getAdPreview,
+  generateAdCreativePreview,
 };
