@@ -50,7 +50,7 @@ router
 router
   .route("/adcreatives/preview")
   .all(authMiddleware, validateFbAdHeaders)
-  .get(fbAdController.createAdCreativePreview);
+  .post(fbAdController.createAdCreativePreview);
 
 router
   .route("/adcreatives/:adcreativeId")

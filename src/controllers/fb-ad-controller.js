@@ -247,6 +247,7 @@ exports.createAdcreative = async (req, res) => {
 
 exports.createAdCreativePreview = async (req, res) => {
   const { token, adAccountId } = req.facebook || {};
+
   try {
     const response = await fbAdService.generateAdCreativePreview(
       req.body,
