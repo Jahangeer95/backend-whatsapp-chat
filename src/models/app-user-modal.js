@@ -16,7 +16,7 @@ const appUserSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["ADMIN", "MODERATOR", "EDITOR", "MANAGER"],
+      enum: ["OWNER", "ADMIN", "MODERATOR", "EDITOR", "MANAGER"],
       required: true,
     },
     password: {
