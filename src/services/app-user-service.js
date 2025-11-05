@@ -9,6 +9,14 @@ const findUserByEmail = async (email) => {
   return user;
 };
 
+const findUserByUsername = async (username) => {
+  const user = await AppUser.findOne({
+    username: username,
+  });
+
+  return user;
+};
+
 const findUserByRole = async (role) => {
   const user = await AppUser.findOne({
     role: role,
@@ -106,4 +114,5 @@ module.exports = {
   deleteUserById,
   removePage_idFromUser,
   findUserById,
+  findUserByUsername,
 };

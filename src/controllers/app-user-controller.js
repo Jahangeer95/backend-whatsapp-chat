@@ -40,11 +40,11 @@ const createUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { email, password } = req.body || {};
+  const { username, password } = req.body || {};
 
-  let user = await userService.findUserByEmail(email);
+  let user = await userService.findUserByUsername(username);
   if (!user) {
-    return res.status(400).send({ message: "Invalid email or password" });
+    return res.status(400).send({ message: "Invalid username or password" });
   }
 
   const isPasswordValid = await userService.passwordComparison({
@@ -52,7 +52,7 @@ const loginUser = async (req, res) => {
     password,
   });
   if (!isPasswordValid) {
-    return res.status(400).send({ message: "Invalid email or password" });
+    return res.status(400).send({ message: "Invalid username or password" });
   }
 
   const token = user.generateAuthToken();
