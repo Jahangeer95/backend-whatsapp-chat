@@ -138,7 +138,7 @@ const FacebookService = {
 
   async getMessages(conversationId, after = null, token, pageId) {
     const params = {
-      fields: "message,attachments,sticker,quick_reply,from,to,created_time",
+      fields: "message,attachments,reactions,quick_reply,from,to,created_time",
       access_token: token,
       limit: 100,
     };
