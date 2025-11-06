@@ -53,6 +53,49 @@ exports.createNewPage = async (req, res) => {
   }
 };
 
+exports.updateNewPage = async (req, res) => {
+  const { pageId } = req.params;
+  try {
+    let page = await pageService.getPageByPage_Id(pageId);
+
+    if (!page) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Page Id is invalid" });
+    }
+
+    const { isValid, name } = await pageService.isValidFbPageId({
+      page_id: req.body.page_id,
+      access_token: req.body?.access_token,
+    });
+    if (!isValid) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Facebook page id is invalid" });
+    }
+
+    const response = await pageService.updatePageByPage_id(pageId, {
+      ...req.body,
+      page_name: name,
+    });
+
+    console.log(response);
+
+    res.json({
+      success: true,
+      message: "Page data updated successfully.",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 exports.getAllUserPages = async (req, res) => {
   try {
     const pages = await pageService.getAllSavedPagesByUserId(req.user._id);

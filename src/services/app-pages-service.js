@@ -21,6 +21,16 @@ const createNewPage = async ({
   return page;
 };
 
+const updatePageByPage_id = async (_id, updatedData) => {
+  return await AppFbPages.findByIdAndUpdate(
+    _id,
+    {
+      ...updatedData,
+    },
+    { upsert: true, new: true }
+  );
+};
+
 const getPageByPageId = async ({ page_id }) => {
   return await AppFbPages.findOne({ page_id });
 };
@@ -55,4 +65,5 @@ module.exports = {
   isValidFbPageId,
   getPageByPage_Id,
   removePagebyPage_id,
+  updatePageByPage_id,
 };

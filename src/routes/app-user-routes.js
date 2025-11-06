@@ -38,7 +38,8 @@ router
   .route("/pages/:pageId")
   .all(authMiddleware, validatePageId)
   .delete(checkRoleAdmin, appPagesController.deleteFbPage)
-  .post(checkRoleAdmin, appPagesController.addUsertoPage);
+  .post(checkRoleAdmin, appPagesController.addUsertoPage)
+  .put(checkRoleAdmin, validateNewPage, appPagesController.updateNewPage);
 
 router
   .route("/:userId")
