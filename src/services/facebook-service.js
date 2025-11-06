@@ -165,7 +165,7 @@ const FacebookService = {
 
     const messagesArray = messages.map((msg) => {
       let status = "sent";
-      console.log(msg);
+      console.log(msg, msg?.attachments, msg?.attachments?.data);
 
       if (msg.from.id === pageId && fbUser) {
         const messageTimestamp = new Date(msg.created_time).getTime();
