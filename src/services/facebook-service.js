@@ -139,7 +139,7 @@ const FacebookService = {
   async getMessages(conversationId, after = null, token, pageId) {
     const params = {
       fields:
-        "id,message,attachments,reactions,quick_reply,from,to,created_time",
+        "id,message,attachments,reactions,quick_reply,shares,reply_to,from,to,created_time",
       access_token: token,
       limit: 100,
     };
@@ -166,11 +166,6 @@ const FacebookService = {
 
     const messagesArray = messages.map((msg) => {
       let status = "sent";
-      console.log({
-        msg,
-        att_: msg?.attachments,
-        dat_: msg?.attachments?.data,
-      });
 
       if (msg.from.id === pageId && fbUser) {
         const messageTimestamp = new Date(msg.created_time).getTime();
