@@ -19,7 +19,7 @@ const router = Router();
 
 router.post("/login", validateLoginUser, userController.loginUser);
 
-router.route("/sign-up").post(validateNewUser, userController.createUser);
+router.route("/sign-up").post(validateNewUser, userController.createOwner);
 
 // it needs to be protected
 router

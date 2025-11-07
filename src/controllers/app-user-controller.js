@@ -2,6 +2,34 @@ const bcrypt = require("bcrypt");
 const userService = require("../services/app-user-service");
 const { USER_ROLE_OBJ } = require("../config");
 
+const createOwner = async (req, res) => {
+  const { username, email, password } = req.body;
+
+  const owner = await userService.findUserByRole(USER_ROLE_OBJ.owner);
+
+  if (owner)
+    // 409 error for rule violation
+    return res.status(409).send({
+      message: "Owner already exists. Only one is permitted.",
+    });
+
+  const salt = await bcrypt.genSalt(10);
+  const hashPassword = await bcrypt.hash(password, salt);
+
+  let newUser = await userService.createNewUser({
+    username,
+    email,
+    role: USER_ROLE_OBJ.owner,
+    password: hashPassword,
+  });
+
+  const token = newUser.generateAuthToken();
+  newUser = newUser.toObject();
+  delete newUser.password;
+
+  res.send({ success: true, message: "Owner created successfully" });
+};
+
 const createUser = async (req, res) => {
   const { username, email, password, role } = req.body;
 
@@ -10,16 +38,6 @@ const createUser = async (req, res) => {
     return res
       .status(400)
       .send({ message: "This email is already registered" });
-  }
-
-  if (role === USER_ROLE_OBJ.admin) {
-    const admin = await userService.findUserByRole(USER_ROLE_OBJ.admin);
-    if (admin)
-      // 409 error for rule violation
-      return res.status(409).send({
-        message:
-          "An administrator account already exists. Only one is permitted.",
-      });
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -84,24 +102,14 @@ const updateUserRole = async (req, res) => {
 
   const user = await userService.findUserById(userId);
 
-  if (user?.role === USER_ROLE_OBJ.admin) {
+  if (user?.role === USER_ROLE_OBJ.owner) {
     return res.status(409).send({
       success: false,
-      message: "Admin user role can not be changed",
+      message: "Owner user role can not be changed",
     });
   }
 
   try {
-    if (role === USER_ROLE_OBJ.admin) {
-      const admin = await userService.findUserByRole(USER_ROLE_OBJ.admin);
-      if (admin)
-        // 409 error for rule violation
-        return res.status(409).send({
-          message:
-            "An administrator account already exists. Only one is permitted.",
-        });
-    }
-
     const updatedUser = await userService.updateUserRoleByUserId(userId, role);
 
     if (!updatedUser) {
@@ -128,10 +136,10 @@ const deleteAppUser = async (req, res) => {
     const { userId } = req.params || {};
     const user = await userService.findUserById(userId);
 
-    if (user?.role === USER_ROLE_OBJ.admin) {
+    if (user?.role === USER_ROLE_OBJ.owner) {
       return res.status(409).send({
         success: false,
-        message: "User having role admin cannot be deleted",
+        message: "User having role owner cannot be deleted",
       });
     }
 
@@ -190,4 +198,5 @@ module.exports = {
   updateUserRole,
   deleteAppUser,
   getUserDetail,
+  createOwner,
 };

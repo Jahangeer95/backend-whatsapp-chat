@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const pageService = require("../services/app-pages-service");
 const appUserService = require("../services/app-user-service");
+const { USER_ROLE_OBJ } = require("../config");
 
 exports.createNewPage = async (req, res) => {
   const { page_id, access_token, ad_token_id } = req.body;
@@ -34,7 +35,11 @@ exports.createNewPage = async (req, res) => {
       access_token,
     });
 
+    const owner = await appUserService.findUserByRole(USER_ROLE_OBJ.owner);
+
     await appUserService.addPageDocIdInUser(userId, page?._id);
+
+    await appUserService.addPageDocIdInUser(owner?._id, page?._id);
 
     // await session.commitTransaction();
     // session.endSession();
