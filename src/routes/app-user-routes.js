@@ -4,6 +4,7 @@ const {
   validateLoginUser,
   validateNewUser,
   validateUserRole,
+  validateOwner,
 } = require("../validator/user-validator");
 const authMiddleware = require("../middlewares/auth-middlware");
 const appPagesController = require("../controllers/app-pages-controller");
@@ -19,7 +20,7 @@ const router = Router();
 
 router.post("/login", validateLoginUser, userController.loginUser);
 
-router.route("/sign-up").post(validateNewUser, userController.createOwner);
+router.route("/sign-up").post(validateOwner, userController.createOwner);
 
 // it needs to be protected
 router
