@@ -24,6 +24,15 @@ const USER_ROLE_OBJ = {
   owner: "OWNER",
 };
 
+// permissions
+const ALL_PERMISSIONS = Object.freeze({
+  ADS: ["create", "update", "delete", "view", "publish"],
+  POSTS: ["create", "update", "delete", "view", "schedule"],
+  MESSENGER: ["read_messages", "send_messages", "reply", "tag"],
+  PAGES: ["create", "update", "delete"],
+  USERS: ["create", "update", "delete"],
+});
+
 const CAN_CREATE_USER = [USER_ROLE_OBJ.admin];
 const CAN_UPDATE_USER_ROLE = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
 const CAN_CREATE_PAGE = [USER_ROLE_OBJ.admin];
@@ -53,4 +62,5 @@ module.exports = {
   CAN_CREATE_POST,
   CAN_DELETE_POST,
   CAN_UPDATE_USER_ROLE,
+  ALL_PERMISSIONS,
 };
