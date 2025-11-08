@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const userService = require("../services/app-user-service");
-const { USER_ROLE_OBJ } = require("../config");
+const { USER_ROLE_OBJ, ROLE_BASED_PERMISSIONS } = require("../config");
 
 const createOwner = async (req, res) => {
   const { username, email, password } = req.body;
@@ -179,7 +179,10 @@ const getUserDetail = async (req, res) => {
     delete user.password;
     delete user.pages;
 
-    res.send({ success: true, data: user });
+    res.send({
+      success: true,
+      data: { ...user, permissions: ROLE_BASED_PERMISSIONS[user?.role] },
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
