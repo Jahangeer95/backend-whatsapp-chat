@@ -33,11 +33,18 @@ const createOwner = async (req, res) => {
 const createUser = async (req, res) => {
   const { username, email, password, role } = req.body;
 
-  const existingUser = await userService.findUserByEmail(email);
+  let existingUser = await userService.findUserByEmail(email);
   if (existingUser) {
     return res
       .status(400)
       .send({ message: "This email is already registered" });
+  }
+
+  existingUser = await userService.findUserByUsername(username);
+  if (existingUser) {
+    return res
+      .status(400)
+      .send({ message: "This username is already registered" });
   }
 
   const salt = await bcrypt.genSalt(10);
