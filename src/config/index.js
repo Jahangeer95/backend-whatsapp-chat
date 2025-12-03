@@ -180,7 +180,7 @@ const ROLE_BASED_PERMISSIONS = Object.freeze({
   },
 });
 
-const CAN_CREATE_USER = [USER_ROLE_OBJ.admin];
+const CAN_CREATE_USER = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
 const CAN_UPDATE_USER_ROLE = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
 const CAN_CREATE_PAGE = [USER_ROLE_OBJ.admin];
 const CAN_DELETE_PAGE = [USER_ROLE_OBJ.admin];
@@ -211,4 +211,5 @@ module.exports = {
   CAN_UPDATE_USER_ROLE,
   ALL_PERMISSIONS,
   ROLE_BASED_PERMISSIONS,
+  CAN_CREATE_USER,
 };

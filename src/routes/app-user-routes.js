@@ -14,7 +14,7 @@ const {
   checkAllowedRoles,
 } = require("../middlewares/authorize-middleware");
 const { validateUserId, validatePageId } = require("../validator");
-const { CAN_UPDATE_USER_ROLE } = require("../config");
+const { CAN_UPDATE_USER_ROLE, CAN_CREATE_USER } = require("../config");
 
 const router = Router();
 // test
@@ -27,7 +27,11 @@ router.route("/sign-up").post(validateOwner, userController.createOwner);
 router
   .route("/")
   .all(authMiddleware)
-  .post(checkRoleAdmin, validateNewUser, userController.createUser)
+  .post(
+    checkAllowedRoles(CAN_CREATE_USER),
+    validateNewUser,
+    userController.createUser
+  )
   .get(userController.fetchUsers);
 
 router
