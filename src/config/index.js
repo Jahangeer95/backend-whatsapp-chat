@@ -67,6 +67,7 @@ const ALL_PERMISSIONS = Object.freeze({
     "delete_editor",
   ],
 });
+// test
 
 const ROLE_BASED_PERMISSIONS = Object.freeze({
   [USER_ROLE_OBJ.owner]: {
