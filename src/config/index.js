@@ -59,8 +59,12 @@ const ALL_PERMISSIONS = Object.freeze({
   MESSENGER: ["read_messages", "send_messages"],
   PAGES: ["link_page", "update_page", "delete_page", "add_user_to_page"],
   USERS: [
+    "get_users",
     "create_user",
-    "update_user",
+    "update_admin",
+    "update_manager",
+    "update_moderator",
+    "update_editor",
     "delete_admin",
     "delete_manager",
     "delete_moderator",
@@ -107,8 +111,11 @@ const ROLE_BASED_PERMISSIONS = Object.freeze({
     MESSENGER: ["read_messages", "send_messages"],
     PAGES: ["link_page", "update_page", "delete_page", "add_user_to_page"],
     USERS: [
+      "get_users",
       "create_user",
-      "update_user",
+      "update_manager",
+      "update_moderator",
+      "update_editor",
       "delete_manager",
       "delete_moderator",
       "delete_editor",
@@ -147,7 +154,13 @@ const ROLE_BASED_PERMISSIONS = Object.freeze({
     ],
     MESSENGER: ["read_messages", "send_messages"],
     PAGES: ["link_page", "update_page", "add_user_to_page"],
-    USERS: ["create_user", "update_user"],
+    USERS: [
+      "create_user",
+      "get_users",
+      "create_user",
+      "update_moderator",
+      "update_editor",
+    ],
   },
 
   [USER_ROLE_OBJ.editor]: {

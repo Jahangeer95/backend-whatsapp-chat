@@ -32,6 +32,22 @@ const checkRoleAdminAndManager = (req, res, next) => {
   next();
 };
 
+const checkAuthorizationForUserPaths = (req, res, next) => {
+  const loginUserRole = req?.user?.role;
+
+  if (!loginUserRole) {
+    return res.status(401).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "Unauthorized",
+    });
+  }
+
+  if (req.user?.role === USER_ROLE_OBJ.owner) {
+    return next();
+  }
+};
+
 module.exports = {
   checkRoleAdmin,
   checkRoleAdminAndManager,

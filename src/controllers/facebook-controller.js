@@ -93,7 +93,14 @@ exports.fetchMessagesByConversationId = async (req, res) => {
     );
     res.json(messages);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.error_user_msg ||
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
   }
 };
 

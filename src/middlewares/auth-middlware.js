@@ -21,7 +21,11 @@ function authMiddleware(req, res, next) {
 
     next();
   } catch (error) {
-    res.status(400).send("Invalid token.");
+    res.status(401).send({
+      success: false,
+      error: "INVALID_TOKEN",
+      message: "Invalid or expired token",
+    });
   }
 }
 
