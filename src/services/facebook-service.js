@@ -454,6 +454,7 @@ const fetchCommentsByPostId = async ({ token, postId, after = null }) => {
     access_token: token,
     limit: 5,
     // fields: "from,message",
+    summary: true,
   };
 
   if (after) {

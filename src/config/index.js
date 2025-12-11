@@ -24,6 +24,10 @@ const USER_ROLE_OBJ = {
   owner: "OWNER",
 };
 
+const API_CATEGORY_OBJ = {
+  user: "USER",
+};
+
 // permissions
 const ALL_PERMISSIONS = Object.freeze({
   ADS: [
@@ -226,4 +230,5 @@ module.exports = {
   ALL_PERMISSIONS,
   ROLE_BASED_PERMISSIONS,
   CAN_CREATE_USER,
+  API_CATEGORY_OBJ,
 };

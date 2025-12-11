@@ -1,4 +1,8 @@
-const { USER_ROLE_OBJ } = require("../config");
+const {
+  USER_ROLE_OBJ,
+  ROLE_BASED_PERMISSIONS,
+  API_CATEGORY_OBJ,
+} = require("../config");
 
 const checkAllowedRoles = (roleArray) => (req, res, next) => {
   if (req.user?.role === USER_ROLE_OBJ.owner) {
@@ -43,9 +47,22 @@ const checkAuthorizationForUserPaths = (req, res, next) => {
     });
   }
 
-  if (req.user?.role === USER_ROLE_OBJ.owner) {
+  if (loginUserRole === USER_ROLE_OBJ.owner) {
     return next();
   }
+
+  const loginUserPermissions =
+    ROLE_BASED_PERMISSIONS[loginUserRole]?.[API_CATEGORY_OBJ.user];
+
+  if (!loginUserPermissions) {
+    return res.status(401).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "Unauthorized",
+    });
+  }
+
+  next();
 };
 
 module.exports = {
