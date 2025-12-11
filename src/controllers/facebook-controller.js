@@ -342,6 +342,7 @@ exports.getPostComments = async (req, res) => {
       success: true,
       data: response?.data?.data,
       paging: response?.data?.paging,
+      summary: response?.data?.summary,
     });
   } catch (error) {
     res
