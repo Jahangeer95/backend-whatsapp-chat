@@ -7,7 +7,10 @@ const {
   CAN_CREATE_USER,
   ADMIN_CAN_CREATE_USER_WITH_ROLE,
   MANAGER_CAN_CREATE_USER_WITH_ROLE,
+  CAN_DELETE_USER,
+  ADMIN_CAN_DELETE_USER_WITH_ROLE,
 } = require("../config");
+const userService = require("../services/app-user-service");
 
 const checkAllowedRoles = (roleArray) => (req, res, next) => {
   if (req.user?.role === USER_ROLE_OBJ.owner) {
@@ -41,7 +44,7 @@ const checkRoleAdminAndManager = (req, res, next) => {
   next();
 };
 
-const checkAuthorizationForUserPaths = (req, res, next) => {
+const checkAuthorizationForUserPaths = async (req, res, next) => {
   const loginUserRole = req?.user?.role;
   const httpMethod = req.method;
 
@@ -83,6 +86,7 @@ const checkAuthorizationForUserPaths = (req, res, next) => {
   if (httpMethod === HTTP_METHODS_OBJ.post) {
     if (CAN_CREATE_USER?.includes(loginUserRole)) {
       const { role } = req.body;
+
       if (loginUserRole === USER_ROLE_OBJ?.admin) {
         if (ADMIN_CAN_CREATE_USER_WITH_ROLE?.includes(role)) {
           return next();
@@ -112,6 +116,30 @@ const checkAuthorizationForUserPaths = (req, res, next) => {
       return res.status(401).json({
         success: false,
         error: "Only Owner, Admin and Manager can able to create user",
+        message: "Unauthorized",
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.delete) {
+    if (CAN_DELETE_USER?.includes(loginUserRole)) {
+      const { userId } = req.params || {};
+      const userToBeDeleted = await userService.findUserById(userId);
+
+      if (ADMIN_CAN_DELETE_USER_WITH_ROLE?.includes(userToBeDeleted?.role)) {
+        return next();
+      } else {
+        return res.status(401).json({
+          success: false,
+          error:
+            "Admin can able to delete user with role Manager, Moderator and Editor.",
+          message: "Unauthorized",
+        });
+      }
+    } else {
+      return res.status(401).json({
+        success: false,
+        error: "Only Owner and Admin can able to delete user.",
         message: "Unauthorized",
       });
     }

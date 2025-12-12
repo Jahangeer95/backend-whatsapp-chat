@@ -52,7 +52,7 @@ router
   .route("/:userId")
   .all(authMiddleware, validateUserId)
   .get(userController.getUserDetail)
-  .delete(checkRoleAdmin, userController.deleteAppUser)
+  .delete(checkAuthorizationForUserPaths, userController.deleteAppUser)
   .patch(
     checkAllowedRoles(CAN_UPDATE_USER_ROLE),
     validateUserRole,
