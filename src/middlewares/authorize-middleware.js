@@ -2,6 +2,11 @@ const {
   USER_ROLE_OBJ,
   ROLE_BASED_PERMISSIONS,
   API_CATEGORY_OBJ,
+  HTTP_METHODS_OBJ,
+  CAN_GET_USERS,
+  CAN_CREATE_USER,
+  ADMIN_CAN_CREATE_USER_WITH_ROLE,
+  MANAGER_CAN_CREATE_USER_WITH_ROLE,
 } = require("../config");
 
 const checkAllowedRoles = (roleArray) => (req, res, next) => {
@@ -38,6 +43,7 @@ const checkRoleAdminAndManager = (req, res, next) => {
 
 const checkAuthorizationForUserPaths = (req, res, next) => {
   const loginUserRole = req?.user?.role;
+  const httpMethod = req.method;
 
   if (!loginUserRole) {
     return res.status(401).json({
@@ -62,6 +68,55 @@ const checkAuthorizationForUserPaths = (req, res, next) => {
     });
   }
 
+  if (httpMethod === HTTP_METHODS_OBJ.get) {
+    if (CAN_GET_USERS?.includes(loginUserRole)) {
+      return next();
+    } else {
+      return res.status(401).json({
+        success: false,
+        error: "Only Owner, Admin and Manager can able to view users",
+        message: "Unauthorized",
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.post) {
+    if (CAN_CREATE_USER?.includes(loginUserRole)) {
+      const { role } = req.body;
+      if (loginUserRole === USER_ROLE_OBJ?.admin) {
+        if (ADMIN_CAN_CREATE_USER_WITH_ROLE?.includes(role)) {
+          return next();
+        } else {
+          return res.status(401).json({
+            success: false,
+            error:
+              "Admin can able to create user with role Manager, Editor and Moderator.",
+            message: "Unauthorized",
+          });
+        }
+      }
+
+      if (loginUserRole === USER_ROLE_OBJ?.manager) {
+        if (MANAGER_CAN_CREATE_USER_WITH_ROLE?.includes(role)) {
+          return next();
+        } else {
+          return res.status(401).json({
+            success: false,
+            error:
+              "Manager can able to create user with role Editor and Moderator.",
+            message: "Unauthorized",
+          });
+        }
+      }
+    } else {
+      return res.status(401).json({
+        success: false,
+        error: "Only Owner, Admin and Manager can able to create user",
+        message: "Unauthorized",
+      });
+    }
+  }
+
   next();
 };
 
@@ -69,4 +124,5 @@ module.exports = {
   checkRoleAdmin,
   checkRoleAdminAndManager,
   checkAllowedRoles,
+  checkAuthorizationForUserPaths,
 };

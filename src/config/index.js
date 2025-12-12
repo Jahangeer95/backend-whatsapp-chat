@@ -25,8 +25,18 @@ const USER_ROLE_OBJ = {
 };
 
 const API_CATEGORY_OBJ = {
-  user: "USER",
+  user: "USERS",
 };
+
+const HTTP_METHODS_OBJ = {
+  get: "GET",
+  post: "POST",
+  patch: "PATCH",
+  delete: "DELETE",
+  put: "PUT",
+};
+
+// create admin, create manager,create editor,create moderator
 
 // permissions
 const ALL_PERMISSIONS = Object.freeze({
@@ -63,8 +73,11 @@ const ALL_PERMISSIONS = Object.freeze({
   MESSENGER: ["read_messages", "send_messages"],
   PAGES: ["link_page", "update_page", "delete_page", "add_user_to_page"],
   USERS: [
-    "get_users",
-    "create_user",
+    "view_users",
+    "create_admin",
+    "create_manager",
+    "create_moderator",
+    "create_editor",
     "update_admin",
     "update_manager",
     "update_moderator",
@@ -115,8 +128,10 @@ const ROLE_BASED_PERMISSIONS = Object.freeze({
     MESSENGER: ["read_messages", "send_messages"],
     PAGES: ["link_page", "update_page", "delete_page", "add_user_to_page"],
     USERS: [
-      "get_users",
-      "create_user",
+      "view_users",
+      "create_manager",
+      "create_moderator",
+      "create_editor",
       "update_manager",
       "update_moderator",
       "update_editor",
@@ -159,9 +174,9 @@ const ROLE_BASED_PERMISSIONS = Object.freeze({
     MESSENGER: ["read_messages", "send_messages"],
     PAGES: ["link_page", "update_page", "add_user_to_page"],
     USERS: [
-      "create_user",
-      "get_users",
-      "create_user",
+      "view_users",
+      "create_moderator",
+      "create_editor",
       "update_moderator",
       "update_editor",
     ],
@@ -198,7 +213,21 @@ const ROLE_BASED_PERMISSIONS = Object.freeze({
   },
 });
 
+//
+
+const CAN_GET_USERS = [USER_ROLE_OBJ?.admin, USER_ROLE_OBJ.manager];
 const CAN_CREATE_USER = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
+const ADMIN_CAN_CREATE_USER_WITH_ROLE = [
+  USER_ROLE_OBJ.manager,
+  USER_ROLE_OBJ.moderator,
+  USER_ROLE_OBJ.editor,
+];
+const MANAGER_CAN_CREATE_USER_WITH_ROLE = [
+  USER_ROLE_OBJ.moderator,
+  USER_ROLE_OBJ.editor,
+];
+
+//
 const CAN_UPDATE_USER_ROLE = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
 const CAN_CREATE_PAGE = [USER_ROLE_OBJ.admin];
 const CAN_DELETE_PAGE = [USER_ROLE_OBJ.admin];
@@ -231,4 +260,8 @@ module.exports = {
   ROLE_BASED_PERMISSIONS,
   CAN_CREATE_USER,
   API_CATEGORY_OBJ,
+  HTTP_METHODS_OBJ,
+  CAN_GET_USERS,
+  ADMIN_CAN_CREATE_USER_WITH_ROLE,
+  MANAGER_CAN_CREATE_USER_WITH_ROLE,
 };

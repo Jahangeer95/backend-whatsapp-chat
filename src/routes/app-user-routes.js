@@ -12,6 +12,7 @@ const { validateNewPage } = require("../validator/app-pages-validator");
 const {
   checkRoleAdmin,
   checkAllowedRoles,
+  checkAuthorizationForUserPaths,
 } = require("../middlewares/authorize-middleware");
 const { validateUserId, validatePageId } = require("../validator");
 const { CAN_UPDATE_USER_ROLE, CAN_CREATE_USER } = require("../config");
@@ -28,11 +29,11 @@ router
   .route("/")
   .all(authMiddleware)
   .post(
-    checkAllowedRoles(CAN_CREATE_USER),
     validateNewUser,
+    checkAuthorizationForUserPaths,
     userController.createUser
   )
-  .get(userController.fetchUsers);
+  .get(checkAuthorizationForUserPaths, userController.fetchUsers);
 
 router
   .route("/pages")
