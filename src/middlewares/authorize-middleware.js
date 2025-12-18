@@ -9,6 +9,9 @@ const {
   MANAGER_CAN_CREATE_USER_WITH_ROLE,
   CAN_DELETE_USER,
   ADMIN_CAN_DELETE_USER_WITH_ROLE,
+  CAN_UPDATE_USER,
+  ADMIN_CAN_UPDATE_USER_WITH_ROLE,
+  MANAGER_CAN_UPDATE_USER_WITH_ROLE,
 } = require("../config");
 const userService = require("../services/app-user-service");
 
@@ -116,6 +119,52 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
       return res.status(401).json({
         success: false,
         error: "Only Owner, Admin and Manager can able to create user",
+        message: "Unauthorized",
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.patch) {
+    if (CAN_UPDATE_USER?.includes(loginUserRole)) {
+      const { userId } = req.params || {};
+      const { role } = req.body;
+      const userToBeUpdated = await userService.findUserById(userId);
+
+      if (loginUserRole === USER_ROLE_OBJ?.admin) {
+        if (
+          ADMIN_CAN_UPDATE_USER_WITH_ROLE?.includes(role) &&
+          ADMIN_CAN_UPDATE_USER_WITH_ROLE?.includes(userToBeUpdated?.role)
+        ) {
+          return next();
+        } else {
+          return res.status(401).json({
+            success: false,
+            error:
+              "Admin can update users with the roles Manager, Editor, or Moderator to any of these roles.",
+            message: "Unauthorized",
+          });
+        }
+      }
+
+      if (loginUserRole === USER_ROLE_OBJ.manager) {
+        if (
+          MANAGER_CAN_UPDATE_USER_WITH_ROLE?.includes(role) &&
+          MANAGER_CAN_UPDATE_USER_WITH_ROLE?.includes(userToBeUpdated?.role)
+        ) {
+          return next();
+        } else {
+          return res.status(401).json({
+            success: false,
+            error:
+              "Manager can update users with the roles Editor, or Moderator to any of these roles.",
+            message: "Unauthorized",
+          });
+        }
+      }
+    } else {
+      return res.status(401).json({
+        success: false,
+        error: "Only Owner, Admin and Manager can able to update user role.",
         message: "Unauthorized",
       });
     }
