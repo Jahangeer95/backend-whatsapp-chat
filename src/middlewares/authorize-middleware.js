@@ -55,7 +55,7 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
     return res.status(401).json({
       success: false,
       error: "ACCESS_DENIED",
-      message: "Unauthorized",
+      message: "Authentication required",
     });
   }
 
@@ -78,10 +78,10 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
     if (CAN_GET_USERS?.includes(loginUserRole)) {
       return next();
     } else {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
-        error: "Only Owner, Admin and Manager can able to view users",
-        message: "Unauthorized",
+        error: "FORBIDDEN",
+        message: "Only Owner, Admin and Manager can able to view users",
       });
     }
   }
@@ -94,11 +94,11 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
         if (ADMIN_CAN_CREATE_USER_WITH_ROLE?.includes(role)) {
           return next();
         } else {
-          return res.status(401).json({
+          return res.status(403).json({
             success: false,
-            error:
+            error: "FORBIDDEN",
+            message:
               "Admin can able to create user with role Manager, Editor and Moderator.",
-            message: "Unauthorized",
           });
         }
       }
@@ -107,19 +107,19 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
         if (MANAGER_CAN_CREATE_USER_WITH_ROLE?.includes(role)) {
           return next();
         } else {
-          return res.status(401).json({
+          return res.status(403).json({
             success: false,
-            error:
+            error: "FORBIDDEN",
+            message:
               "Manager can able to create user with role Editor and Moderator.",
-            message: "Unauthorized",
           });
         }
       }
     } else {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
-        error: "Only Owner, Admin and Manager can able to create user",
-        message: "Unauthorized",
+        error: "FORBIDDEN",
+        message: "Only Owner, Admin and Manager can able to create user",
       });
     }
   }
@@ -137,11 +137,11 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
         ) {
           return next();
         } else {
-          return res.status(401).json({
+          return res.status(403).json({
             success: false,
-            error:
+            error: "FORBIDDEN",
+            message:
               "Admin can update users with the roles Manager, Editor, or Moderator to any of these roles.",
-            message: "Unauthorized",
           });
         }
       }
@@ -153,19 +153,19 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
         ) {
           return next();
         } else {
-          return res.status(401).json({
+          return res.status(403).json({
             success: false,
-            error:
+            error: "FORBIDDEN",
+            message:
               "Manager can update users with the roles Editor, or Moderator to any of these roles.",
-            message: "Unauthorized",
           });
         }
       }
     } else {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
-        error: "Only Owner, Admin and Manager can able to update user role.",
-        message: "Unauthorized",
+        error: "FORBIDDEN",
+        message: "Only Owner, Admin and Manager can able to update user role.",
       });
     }
   }
@@ -178,18 +178,18 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
       if (ADMIN_CAN_DELETE_USER_WITH_ROLE?.includes(userToBeDeleted?.role)) {
         return next();
       } else {
-        return res.status(401).json({
+        return res.status(403).json({
           success: false,
-          error:
+          error: "FORBIDDEN",
+          message:
             "Admin can able to delete user with role Manager, Moderator and Editor.",
-          message: "Unauthorized",
         });
       }
     } else {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
-        error: "Only Owner and Admin can able to delete user.",
-        message: "Unauthorized",
+        error: "FORBIDDEN",
+        message: "Only Owner and Admin can able to delete user.",
       });
     }
   }
