@@ -66,6 +66,12 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
   const loginUserPermissions =
     ROLE_BASED_PERMISSIONS[loginUserRole]?.[API_CATEGORY_OBJ.user];
 
+  console.log(
+    loginUserPermissions,
+    ROLE_BASED_PERMISSIONS[loginUserRole],
+    ROLE_BASED_PERMISSIONS[loginUserRole]?.[API_CATEGORY_OBJ.user]
+  );
+
   if (!loginUserPermissions) {
     return res.status(401).json({
       success: false,
