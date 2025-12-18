@@ -269,7 +269,7 @@ const fetchPagePostsByPageId = async (pageId, token, after = null) => {
   const params = {
     access_token: token,
     fields:
-      "fields=id,message,created_time,permalink_url,attachments,comments.summary(true),reactions.summary(true)",
+      "fields=id,message,created_time,permalink_url,attachments,comments.limit(0).summary(true)",
     limit: 6,
   };
   if (after) {
