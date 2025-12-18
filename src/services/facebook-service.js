@@ -268,7 +268,8 @@ const fetchPagePostsByPageId = async (pageId, token, after = null) => {
   const url = `${GRAPH_BASE_URL}/${pageId}/posts`;
   const params = {
     access_token: token,
-    fields: "fields=id,message,created_time,permalink_url,attachments",
+    fields:
+      "fields=id,message,created_time,permalink_url,attachments,comments.summary(true),reactions.summary(true)",
     limit: 6,
   };
   if (after) {
