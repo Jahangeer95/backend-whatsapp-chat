@@ -11,11 +11,9 @@ const appPagesController = require("../controllers/app-pages-controller");
 const { validateNewPage } = require("../validator/app-pages-validator");
 const {
   checkRoleAdmin,
-  checkAllowedRoles,
   checkAuthorizationForUserPaths,
 } = require("../middlewares/authorize-middleware");
 const { validateUserId, validatePageId } = require("../validator");
-const { CAN_UPDATE_USER_ROLE, CAN_CREATE_USER } = require("../config");
 
 const router = Router();
 // test
@@ -54,7 +52,7 @@ router
   .get(userController.getUserDetail)
   .delete(checkAuthorizationForUserPaths, userController.deleteAppUser)
   .patch(
-    checkAllowedRoles(CAN_UPDATE_USER_ROLE),
+    checkAuthorizationForUserPaths,
     validateUserRole,
     userController.updateUserRole
   );
