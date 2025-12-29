@@ -2,20 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 const FormData = require("form-data");
-const {
-  GRAPH_BASE_URL,
-  PHONE_NO_ID,
-  WHATSAPP_ACCESS_TOKEN,
-  WHATSAPP_BUSINESS_ID,
-} = require("../config");
+const logger = require("../utils/logger");
+const { GRAPH_BASE_URL } = require("../config");
 const { whatsappUser } = require("../models/whatsapp-user-modal");
 const { whatsappMessage } = require("../models/whatsapp-message-modal");
-const logger = require("../utils/logger");
-
-const headers = {
-  Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-  "Content-Type": "application/json",
-};
+const { getWhatsAppHeaders } = require("../utils/helper");
 
 const createOrUpdateContact = async ({
   wa_id,
@@ -183,8 +174,8 @@ const handleEntry = async (entry, io) => {
   }
 };
 
-const sendTextMessage = async (to, message) => {
-  const url = `${GRAPH_BASE_URL}/${PHONE_NO_ID}/messages`;
+const sendTextMessage = async ({ to, message, phoneId, token }) => {
+  const url = `${GRAPH_BASE_URL}/${phoneId}/messages`;
 
   const payload = {
     messaging_product: "whatsapp",
@@ -196,7 +187,7 @@ const sendTextMessage = async (to, message) => {
   };
 
   return axios.post(url, payload, {
-    headers,
+    headers: getWhatsAppHeaders(token),
   });
 };
 
@@ -214,14 +205,14 @@ const saveTextMessage = async ({ message_id, userId, message }) => {
   }
 };
 
-const sendTemplateMessage = async (message) => {
-  const url = `${GRAPH_BASE_URL}/${PHONE_NO_ID}/messages`;
+const sendTemplateMessage = async ({ message, phoneId, token }) => {
+  const url = `${GRAPH_BASE_URL}/${phoneId}/messages`;
   const payload = {
     ...message,
   };
 
   return await axios.post(url, payload, {
-    headers,
+    headers: getWhatsAppHeaders(token),
   });
 };
 
@@ -239,10 +230,10 @@ const saveTemplateMessage = async ({ message_id, userId, template }) => {
   }
 };
 
-const uploadMediaFromFile = async (filePath, mimeType) => {
+const uploadMediaFromFile = async ({ filePath, mimeType, phoneId, token }) => {
   try {
     const resolvedPath = path.resolve(filePath);
-    const url = `${GRAPH_BASE_URL}/${PHONE_NO_ID}/media`;
+    const url = `${GRAPH_BASE_URL}/${phoneId}/media`;
 
     if (!fs.existsSync(resolvedPath)) {
       console.error("File does not exist:", resolvedPath);
@@ -263,7 +254,7 @@ const uploadMediaFromFile = async (filePath, mimeType) => {
 
     const response = await axios.post(url, form, {
       headers: {
-        ...headers,
+        ...(getWhatsAppHeaders(token) || {}),
         ...form.getHeaders(),
       },
     });
@@ -283,8 +274,15 @@ const uploadMediaFromFile = async (filePath, mimeType) => {
   }
 };
 
-const sendMedia = async (to, mediaId, type, filename = null) => {
-  const url = `${GRAPH_BASE_URL}/${PHONE_NO_ID}/messages`;
+const sendMedia = async ({
+  to,
+  mediaId,
+  type,
+  filename = null,
+  phoneId,
+  token,
+}) => {
+  const url = `${GRAPH_BASE_URL}/${phoneId}/messages`;
   const payload = {
     messaging_product: "whatsapp",
     to,
@@ -297,7 +295,7 @@ const sendMedia = async (to, mediaId, type, filename = null) => {
   }
 
   const response = await axios.post(url, payload, {
-    headers,
+    headers: getWhatsAppHeaders(token),
   });
 
   return response?.data;
@@ -354,17 +352,17 @@ const countMessagesByUserId = async (userId) => {
   return await whatsappMessage.countDocuments({ user: userId });
 };
 
-const getMediaImageById = async (mediaId) => {
+const getMediaImageById = async ({ mediaId, token }) => {
   return await axios.get(`${GRAPH_BASE_URL}/${mediaId}`, {
-    headers,
+    headers: getWhatsAppHeaders(token),
   });
 };
 
-const getPageTemplates = async () => {
-  const url = `${GRAPH_BASE_URL}/${WHATSAPP_BUSINESS_ID}/message_templates`;
+const getPageTemplates = async ({ businessId, token }) => {
+  const url = `${GRAPH_BASE_URL}/${businessId}/message_templates`;
 
   return await axios.get(url, {
-    headers,
+    headers: getWhatsAppHeaders(token),
   });
 };
 

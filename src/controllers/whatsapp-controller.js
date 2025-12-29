@@ -1,6 +1,6 @@
 const axios = require("axios");
 const mime = require("mime-types");
-const { VERIFY_TOKEN, WHATSAPP_ACCESS_TOKEN } = require("../config");
+const { VERIFY_TOKEN } = require("../config");
 const whatsappService = require("../services/whatsapp-service");
 
 const verifyWebhook = (req, res) => {
@@ -34,6 +34,7 @@ const receiveWebHook = (req, res) => {
 const sendMessage = async (req, res) => {
   const { to, message, type, userId, template } = req.body;
   const file = req?.file || null;
+  const { phoneId, token } = req.whatsapp;
 
   if (!to || !type || !userId) {
     return res.status(400).json({
@@ -43,7 +44,12 @@ const sendMessage = async (req, res) => {
 
   try {
     if (type === "text") {
-      const response = await whatsappService.sendTextMessage(to, message);
+      const response = await whatsappService.sendTextMessage({
+        to,
+        message,
+        phoneId,
+        token,
+      });
 
       const message_id = response?.data?.messages?.[0]?.id;
 
@@ -57,7 +63,11 @@ const sendMessage = async (req, res) => {
     }
 
     if (type === "template") {
-      const response = await whatsappService.sendTemplateMessage(req.body);
+      const response = await whatsappService.sendTemplateMessage({
+        message: req.body,
+        phoneId,
+        token,
+      });
 
       const message_id = response?.data?.messages?.[0]?.id;
 
@@ -81,10 +91,12 @@ const sendMessage = async (req, res) => {
 
       const type = mimeType.startsWith("image") ? "image" : "document";
 
-      const mediaId = await whatsappService.uploadMediaFromFile(
-        file?.path,
-        mimeType
-      );
+      const mediaId = await whatsappService.uploadMediaFromFile({
+        filePath: file?.path,
+        mimeType,
+        phoneId,
+        token,
+      });
       const response = await whatsappService.sendMedia(
         to,
         mediaId,
@@ -170,14 +182,18 @@ const getAllMessagesForUser = async (req, res) => {
 const getMediaByMediaId = async (req, res) => {
   try {
     const mediaId = req.params.id;
+    const { token } = req.whatsapp;
 
-    const metadataRes = await whatsappService.getMediaImageById(mediaId);
+    const metadataRes = await whatsappService.getMediaImageById({
+      mediaId,
+      token,
+    });
 
     const mediaUrl = metadataRes.data.url;
 
     const mediaRes = await axios.get(mediaUrl, {
       headers: {
-        Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${token}`,
       },
       responseType: "stream",
     });
@@ -192,7 +208,11 @@ const getMediaByMediaId = async (req, res) => {
 
 const fetchAllPageTemplates = async (req, res) => {
   try {
-    const response = await whatsappService.getPageTemplates();
+    const { token, businessId } = req.whatsapp;
+    const response = await whatsappService.getPageTemplates({
+      token,
+      businessId,
+    });
 
     res.send({
       success: true,

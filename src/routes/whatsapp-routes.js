@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const whatsappController = require("../controllers/whatsapp-controller");
 const { whatsappUploads } = require("../middlewares/multer");
+const whatsAppValidator = require("../validator/whatsapp-validator");
 const { validateUserId } = require("../validator");
 
 const router = Router();
@@ -12,18 +13,37 @@ router
 
 router.post(
   "/send-message",
+  whatsAppValidator.validateWhatsappHeaders,
   whatsappUploads.single("file"),
   whatsappController.sendMessage
 );
 
-router.route("/contacts").get(whatsappController?.getAllContacts);
+router
+  .route("/contacts")
+  .get(
+    whatsAppValidator.validateWhatsappHeaders,
+    whatsappController?.getAllContacts
+  );
 
 router
   .route("/messages/:userId")
-  .get(validateUserId, whatsappController.getAllMessagesForUser);
+  .get(
+    whatsAppValidator.validateWhatsappHeaders,
+    validateUserId,
+    whatsappController.getAllMessagesForUser
+  );
 
-router.route("/media/:id").get(whatsappController.getMediaByMediaId);
+router
+  .route("/media/:id")
+  .get(
+    whatsAppValidator.validateWhatsappHeaders,
+    whatsappController.getMediaByMediaId
+  );
 
-router.get("/templates", whatsappController.fetchAllPageTemplates);
+router.get(
+  "/templates",
+  whatsAppValidator.validateWhatsappHeaders,
+  whatsappController.fetchAllPageTemplates
+);
 
 module.exports = router;

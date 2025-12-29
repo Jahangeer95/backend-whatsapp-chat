@@ -31,8 +31,16 @@ function dateConversionISOFormat(date) {
   return dateValue?.toISOString();
 }
 
+function getWhatsAppHeaders(token) {
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+}
+
 module.exports = {
   detectMessageType,
   getInstagramMediaType,
   dateConversionISOFormat,
+  getWhatsAppHeaders,
 };
