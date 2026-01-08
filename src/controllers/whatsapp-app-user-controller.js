@@ -1,17 +1,20 @@
 const bcrypt = require("bcrypt");
-const { USER_ROLE_OBJ } = require("../config");
+const { WHATSAPP_USER_ROLE_OBJ } = require("../config");
 const whatsAppUserService = require("../services/whatsapp-app-user-service");
 
 const createOwner = async (req, res) => {
   const { name, email, password } = req.body;
 
-  const owner = await whatsAppUserService.findUserByRole(USER_ROLE_OBJ.owner);
+  const owner = await whatsAppUserService.findUserByRole(
+    WHATSAPP_USER_ROLE_OBJ.owner
+  );
 
-  if (owner)
+  if (owner) {
     // 409 error for rule violation
     return res.status(409).send({
       message: "Owner already exists. Only one is permitted.",
     });
+  }
 
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(password, salt);
@@ -19,7 +22,7 @@ const createOwner = async (req, res) => {
   let newUser = await whatsAppUserService.createNewWhatsappUser({
     name,
     email,
-    role: USER_ROLE_OBJ.owner,
+    role: WHATSAPP_USER_ROLE_OBJ.owner,
     password: hashPassword,
   });
 

@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { WHATSAPP_USER_ROLE_OBJ, JWT_SECRET_KEY } = require("../config");
 
 const whatsappAppRegisteredUserSchema = new Schema(
   {
@@ -19,7 +20,7 @@ const whatsappAppRegisteredUserSchema = new Schema(
     password: {
       type: String,
       minLength: 7,
-      maxLength: 100,
+      maxLength: 30,
       required: true,
     },
     can_send_text: {
@@ -71,7 +72,7 @@ whatsappAppRegisteredUserSchema.pre("save", function (next) {
   // Only set defaults on new documents
   if (!this.isNew && !this.isModified("role")) return next();
 
-  if (this.role === "OWNER") {
+  if (this.role === WHATSAPP_USER_ROLE_OBJ.owner) {
     this.can_send_text = true;
     this.can_send_template = true;
     this.can_send_file = true;
@@ -80,7 +81,7 @@ whatsappAppRegisteredUserSchema.pre("save", function (next) {
     this.can_delete_user = true;
     this.can_link_whatsapp_account = true;
     this.can_assign_whatsapp_account = true;
-  } else if (this.role === "ADMIN") {
+  } else if (this.role === WHATSAPP_USER_ROLE_OBJ.admin) {
     this.can_send_text = true;
     this.can_send_template = true;
     this.can_send_file = true;

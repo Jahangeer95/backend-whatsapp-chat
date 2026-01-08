@@ -20,6 +20,12 @@ const USER_ROLE_OBJ = {
   owner: "OWNER",
 };
 
+const WHATSAPP_USER_ROLE_OBJ = {
+  admin: "ADMIN",
+  user: "USER",
+  owner: "OWNER",
+};
+
 const API_CATEGORY_OBJ = {
   user: "USERS",
 };
@@ -283,4 +289,5 @@ module.exports = {
   CAN_UPDATE_USER,
   ADMIN_CAN_UPDATE_USER_WITH_ROLE,
   MANAGER_CAN_UPDATE_USER_WITH_ROLE,
+  WHATSAPP_USER_ROLE_OBJ,
 };
