@@ -61,7 +61,7 @@ const whatsappAppRegisteredUserSchema = new Schema(
   }
 );
 
-appUserSchema.methods.generateAuthToken = function () {
+whatsappAppRegisteredUserSchema.methods.generateAuthToken = function () {
   const token = JWT.sign({ _id: this._id, role: this.role }, JWT_SECRET_KEY);
 
   return token;

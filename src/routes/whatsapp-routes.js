@@ -1,8 +1,14 @@
 const { Router } = require("express");
 const whatsappController = require("../controllers/whatsapp-controller");
+const whatsappuserController = require("../controllers/whatsapp-app-user-controller");
 const { whatsappUploads } = require("../middlewares/multer");
 const whatsAppValidator = require("../validator/whatsapp-validator");
 const { validateUserId } = require("../validator");
+const {
+  validateOwner,
+  validateLoginUser,
+  validateNewUser,
+} = require("../validator/whatsapp-user-validator");
 
 const router = Router();
 
@@ -45,5 +51,14 @@ router.get(
   whatsAppValidator.validateWhatsappHeaders,
   whatsappController.fetchAllPageTemplates
 );
+
+router
+  .route("/user/sign-up")
+  .post(validateOwner, whatsappuserController.createOwner);
+router
+  .route("/user/login")
+  .post(validateLoginUser, whatsappuserController.loginUser);
+
+router.route("/user").post(validateNewUser, whatsappuserController.createUser);
 
 module.exports = router;
