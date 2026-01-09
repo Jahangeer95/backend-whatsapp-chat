@@ -89,6 +89,23 @@ const isValidWhatsappBusinessId = async ({
   };
 };
 
+const updateWhatsappAccountbyId = async (_id, updatedData) => {
+  return await WhatsappAccount.findByIdAndUpdate(
+    _id,
+    {
+      ...updatedData,
+    },
+    {
+      upsert: false,
+      new: true,
+    }
+  );
+};
+
+const getWhatsappAccountById = async (_id) => {
+  return await WhatsappAccount.findOne({ _id });
+};
+
 module.exports = {
   findUserByRole,
   createNewWhatsappUser,
@@ -98,4 +115,6 @@ module.exports = {
   fetchAllUsers,
   createNewWhatsappAccount,
   isValidWhatsappBusinessId,
+  updateWhatsappAccountbyId,
+  getWhatsappAccountById,
 };

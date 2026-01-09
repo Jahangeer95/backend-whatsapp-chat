@@ -56,6 +56,10 @@ const whatsappAppRegisteredUserSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    can_delete_whatsapp_account: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     versionKey: false,
@@ -82,6 +86,7 @@ whatsappAppRegisteredUserSchema.pre("save", function (next) {
     this.can_delete_user = true;
     this.can_link_whatsapp_account = true;
     this.can_assign_whatsapp_account = true;
+    this.can_delete_whatsapp_account = true;
   } else if (this.role === WHATSAPP_USER_ROLE_OBJ.admin) {
     this.can_send_text = true;
     this.can_send_template = true;
@@ -89,8 +94,9 @@ whatsappAppRegisteredUserSchema.pre("save", function (next) {
     this.can_create_user = true;
     this.can_update_user = true;
     this.can_delete_user = false;
-    this.can_link_whatsapp_account = true;
+    this.can_link_whatsapp_account = false;
     this.can_assign_whatsapp_account = true;
+    this.can_delete_whatsapp_account = false;
   } else {
     this.can_send_text = true;
     this.can_send_template = true;
@@ -100,6 +106,7 @@ whatsappAppRegisteredUserSchema.pre("save", function (next) {
     this.can_delete_user = false;
     this.can_link_whatsapp_account = false;
     this.can_assign_whatsapp_account = false;
+    this.can_delete_whatsapp_account = false;
   }
 
   next();

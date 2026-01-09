@@ -160,11 +160,61 @@ const createNewWhatsappAccount = async (req, res) => {
       whatsapp_business_id,
       user_id: owner?._id,
     });
+    // if(admin create new account then that user id needs to be added)
 
     res.send({
       success: true,
       data: whatsapp,
       message: "Whatsapp account linked successfully.",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+const updateWhatsappAccount = async (req, res) => {
+  const { whatsappDocId } = req.params;
+
+  try {
+    let account = await whatsAppUserService.getWhatsappAccountById(
+      whatsappDocId
+    );
+
+    if (!account) {
+      return res.status(400).send({
+        success: false,
+        message: "whatsapp account Id is invalid",
+      });
+    }
+
+    const { isValid, name } =
+      await whatsAppUserService.isValidWhatsappBusinessId({
+        whatsapp_business_id: req.body.whatsapp_business_id,
+        whatsapp_access_token: req.body.whatsapp_access_token,
+      });
+
+    if (!isValid) {
+      return res
+        .status(400)
+        .send({ success: false, message: "whatsapp_business_id is invalid" });
+    }
+
+    const response = await whatsAppUserService.updateWhatsappAccountbyId(
+      _id,
+      req.body
+    );
+
+    console.log(response.data, "update wp");
+
+    res.json({
+      success: true,
+      message: "Whatsapp account data updated successfully.",
     });
   } catch (error) {
     res.status(400).json({
@@ -183,4 +233,5 @@ module.exports = {
   loginUser,
   fetchAllRegisteredUsers,
   createNewWhatsappAccount,
+  updateWhatsappAccount,
 };

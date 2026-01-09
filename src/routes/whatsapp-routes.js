@@ -72,4 +72,11 @@ router
     whatsappuserController.createNewWhatsappAccount
   );
 
+router
+  .route("/accounts/:whatsappDocId")
+  .put(
+    validateNewWhatsappAccount,
+    whatsappuserController.updateWhatsappAccount
+  );
+
 module.exports = router;
