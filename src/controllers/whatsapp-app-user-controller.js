@@ -134,9 +134,53 @@ const fetchAllRegisteredUsers = async (req, res) => {
   }
 };
 
+const createNewWhatsappAccount = async (req, res) => {
+  const { whatsapp_access_token, phone_no_id, whatsapp_business_id } = req.body;
+
+  try {
+    const { isValid, name } =
+      await whatsAppUserService.isValidWhatsappBusinessId({
+        whatsapp_business_id,
+        whatsapp_access_token,
+      });
+
+    if (!isValid) {
+      return res
+        .status(400)
+        .send({ success: false, message: "whatsapp_business_id is invalid" });
+    }
+
+    const owner = await whatsAppUserService.findUserByRole(
+      WHATSAPP_USER_ROLE_OBJ.owner
+    );
+
+    let whatsapp = await whatsAppUserService.createNewWhatsappAccount({
+      whatsapp_access_token,
+      phone_no_id,
+      whatsapp_business_id,
+      user_id: owner?._id,
+    });
+
+    res.send({
+      success: true,
+      data: whatsapp,
+      message: "Whatsapp account linked successfully.",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createOwner,
   createUser,
   loginUser,
   fetchAllRegisteredUsers,
+  createNewWhatsappAccount,
 };

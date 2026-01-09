@@ -8,6 +8,7 @@ const {
   validateOwner,
   validateLoginUser,
   validateNewUser,
+  validateNewWhatsappAccount,
 } = require("../validator/whatsapp-user-validator");
 
 const router = Router();
@@ -63,5 +64,12 @@ router
   .route("/user")
   .post(validateNewUser, whatsappuserController.createUser)
   .get(whatsappuserController.fetchAllRegisteredUsers);
+
+router
+  .route("/accounts")
+  .post(
+    validateNewWhatsappAccount,
+    whatsappuserController.createNewWhatsappAccount
+  );
 
 module.exports = router;
