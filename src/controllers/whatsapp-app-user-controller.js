@@ -227,6 +227,19 @@ const updateWhatsappAccount = async (req, res) => {
   }
 };
 
+const getAllUserWhatsappAccounts = async (req, res) => {
+  try {
+  } catch (error) {
+    res.json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createOwner,
   createUser,

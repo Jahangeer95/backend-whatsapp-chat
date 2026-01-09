@@ -106,6 +106,8 @@ const getWhatsappAccountById = async (_id) => {
   return await WhatsappAccount.findOne({ _id });
 };
 
+//
+
 module.exports = {
   findUserByRole,
   createNewWhatsappUser,
