@@ -59,6 +59,9 @@ router
   .route("/user/login")
   .post(validateLoginUser, whatsappuserController.loginUser);
 
-router.route("/user").post(validateNewUser, whatsappuserController.createUser);
+router
+  .route("/user")
+  .post(validateNewUser, whatsappuserController.createUser)
+  .get(whatsappuserController.fetchAllRegisteredUsers);
 
 module.exports = router;

@@ -44,10 +44,15 @@ const comparePassword = async ({ savedPassword, password }) => {
   return await compare(password, savedPassword);
 };
 
+const fetchAllUsers = async () => {
+  return await WhatsappAppRegisteredUser.find().sort("role");
+};
+
 module.exports = {
   findUserByRole,
   createNewWhatsappUser,
   findUserByEmail,
   findUserByUsername,
   comparePassword,
+  fetchAllUsers,
 };

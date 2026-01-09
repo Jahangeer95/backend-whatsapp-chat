@@ -118,8 +118,25 @@ const loginUser = async (req, res) => {
   res.header("user_auth_token", token).send(user);
 };
 
+const fetchAllRegisteredUsers = async (req, res) => {
+  try {
+    const users = await whatsAppUserService.fetchAllUsers();
+
+    res.send({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createOwner,
   createUser,
   loginUser,
+  fetchAllRegisteredUsers,
 };
