@@ -4,7 +4,7 @@ function validateOwner(req, res, next) {
   const joiSchema = JOI.object({
     name: JOI.string().min(5).max(50).required(),
     email: JOI.string().email().required(),
-    password: JOI.string().min(7).max(30).required(),
+    password: JOI.string().min(7).max(100).required(),
   });
 
   const { error, value } = joiSchema.validate(req.body);
@@ -23,7 +23,7 @@ function validateOwner(req, res, next) {
 function validateLoginUser(req, res, next) {
   const joiSchema = JOI.object({
     name: JOI.string().required(),
-    password: JOI.string().min(7).max(30).required(),
+    password: JOI.string().min(7).max(100).required(),
   });
 
   const { error, value } = joiSchema.validate(req.body);
@@ -43,7 +43,7 @@ function validateNewUser(req, res, next) {
     name: JOI.string().min(5).max(50).required(),
     email: JOI.string().email().required(),
     role: JOI.string().valid("ADMIN", "USER").required(),
-    password: JOI.string().min(7).max(30).required(),
+    password: JOI.string().min(7).max(100).required(),
   });
 
   const { error, value } = joiSchema.validate(req.body);
