@@ -57,8 +57,7 @@ const comparePassword = async ({ savedPassword, password }) => {
 const fetchAllUsers = async () => {
   return await WhatsappAppRegisteredUser.find()
     .sort("role")
-    .select("-password")
-    .lean();
+    .select("-password");
 };
 
 const createNewWhatsappAccount = async ({

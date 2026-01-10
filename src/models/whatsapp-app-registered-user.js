@@ -128,6 +128,35 @@ whatsappAppRegisteredUserSchema.post("save", function (error, doc, next) {
   }
 });
 
+whatsappAppRegisteredUserSchema.virtual("permissions").get(function () {
+  const permissions = {};
+
+  // Loop through all fields of the document
+  Object.keys(this._doc).forEach((key) => {
+    if (key.startsWith("can_")) {
+      permissions[key] = this[key];
+    }
+  });
+
+  return permissions;
+});
+
+whatsappAppRegisteredUserSchema.methods.toJSON = function () {
+  const obj = this.toObject({ virtuals: true });
+
+  // Remove all can_* fields from root
+  Object.keys(obj).forEach((key) => {
+    if (key.startsWith("can_")) {
+      delete obj[key];
+    }
+  });
+
+  return obj;
+};
+
+whatsappAppRegisteredUserSchema.set("toJSON", { virtuals: true });
+whatsappAppRegisteredUserSchema.set("toObject", { virtuals: true });
+// virtuals not work with lean menthods
 exports.WhatsappAppRegisteredUser = model(
   "WhatsappAppRegisteredUser",
   whatsappAppRegisteredUserSchema

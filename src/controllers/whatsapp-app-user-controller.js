@@ -122,7 +122,7 @@ const fetchAllRegisteredUsers = async (req, res) => {
   try {
     const users = await whatsAppUserService.fetchAllUsers();
 
-    res.send({ success: true, data: users });
+    res.json({ success: true, data: users });
   } catch (error) {
     res.status(500).json({
       success: false,
