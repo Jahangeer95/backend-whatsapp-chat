@@ -144,6 +144,8 @@ const createNewWhatsappAccount = async (req, res) => {
         whatsapp_access_token,
       });
 
+    console.log(isValid, name);
+
     if (!isValid) {
       return res
         .status(400)
