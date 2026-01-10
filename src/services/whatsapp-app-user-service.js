@@ -120,6 +120,10 @@ const getAllSavedWhatsappAccountsByUserId = async (user_id) => {
   );
 };
 
+const removeWhatsappAccount = async (_id) => {
+  return await WhatsappAppRegisteredUser.findByIdAndDelete(_id);
+};
+
 module.exports = {
   findUserByRole,
   createNewWhatsappUser,
@@ -133,4 +137,5 @@ module.exports = {
   getWhatsappAccountById,
   getAllSavedWhatsappAccountsByUserId,
   findUserByUserId,
+  removeWhatsappAccount,
 };

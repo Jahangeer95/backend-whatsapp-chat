@@ -78,9 +78,7 @@ router
 
 router
   .route("/accounts/:whatsappDocId")
-  .put(
-    validateNewWhatsappAccount,
-    whatsappuserController.updateWhatsappAccount
-  );
+  .put(validateNewWhatsappAccount, whatsappuserController.updateWhatsappAccount)
+  .delete(whatsappuserController.deleteWhatsappAccount);
 
 module.exports = router;

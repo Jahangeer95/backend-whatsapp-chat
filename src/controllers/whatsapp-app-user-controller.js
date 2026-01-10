@@ -255,6 +255,37 @@ const getAllUserWhatsappAccounts = async (req, res) => {
   }
 };
 
+const deleteWhatsappAccount = async (req, res) => {
+  const { whatsappDocId } = req.params;
+
+  try {
+    let account = await whatsAppUserService.getWhatsappAccountById(
+      whatsappDocId
+    );
+
+    if (!account) {
+      return res.status(400).send({
+        success: false,
+        message: "whatsapp account Id is invalid",
+      });
+    }
+
+    await whatsAppUserService.removeWhatsappAccount(whatsappDocId);
+    res.send({
+      success: true,
+      message: "Whatsapp account unlinked successfully",
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createOwner,
   createUser,
@@ -263,4 +294,5 @@ module.exports = {
   createNewWhatsappAccount,
   updateWhatsappAccount,
   getAllUserWhatsappAccounts,
+  deleteWhatsappAccount,
 };
