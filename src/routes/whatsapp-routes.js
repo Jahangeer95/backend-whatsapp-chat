@@ -69,6 +69,8 @@ router
   .route("/user/:userId/accounts")
   .get(whatsappuserController.getAllUserWhatsappAccounts);
 
+router.route("/user/:userId").delete(whatsappuserController.deleteUserAccount);
+
 router
   .route("/accounts")
   .post(

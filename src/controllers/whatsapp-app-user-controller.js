@@ -286,6 +286,44 @@ const deleteWhatsappAccount = async (req, res) => {
   }
 };
 
+const deleteUserAccount = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    let user = await whatsAppUserService.findUserByUserId(userId);
+
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "user Id is invalid",
+      });
+    }
+
+    if (user?.role === WHATSAPP_USER_ROLE_OBJ.owner) {
+      return res.status(409).send({
+        success: false,
+        message: "User having role owner cannot be deleted",
+      });
+    }
+
+    await whatsAppUserService.deleteUserByUserId(userId);
+    await whatsAppUserService.removeUserIdFromWhatsappAccount(userId);
+
+    res.send({
+      success: true,
+      message: "Whatsapp account deleted successfully",
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createOwner,
   createUser,
@@ -295,4 +333,5 @@ module.exports = {
   updateWhatsappAccount,
   getAllUserWhatsappAccounts,
   deleteWhatsappAccount,
+  deleteUserAccount,
 };
