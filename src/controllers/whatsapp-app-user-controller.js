@@ -324,6 +324,49 @@ const deleteUserAccount = async (req, res) => {
   }
 };
 
+const assignWhatsappAccountToUser = async (req, res) => {
+  const { userId, type } = req.body;
+  const { whatsappDocId } = req.params;
+
+  if (!userId) {
+    return res
+      .status(400)
+      .send({ success: false, message: "User Id is required" });
+  }
+
+  try {
+    let account = await whatsAppUserService.getWhatsappAccountById(
+      whatsappDocId
+    );
+
+    if (!account) {
+      return res.status(400).send({
+        success: false,
+        message: "whatsapp account Id is invalid",
+      });
+    }
+
+    await whatsAppUserService.assignWhatsappAccountToUser(
+      userId,
+      whatsappDocId,
+      type
+    );
+
+    res.send({
+      success: true,
+      message: "Assigned user updated for whatsapp account",
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createOwner,
   createUser,
@@ -334,4 +377,5 @@ module.exports = {
   getAllUserWhatsappAccounts,
   deleteWhatsappAccount,
   deleteUserAccount,
+  assignWhatsappAccountToUser,
 };

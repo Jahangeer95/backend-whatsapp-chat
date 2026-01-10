@@ -143,6 +143,21 @@ const removeUserIdFromWhatsappAccount = async (_id) => {
   );
 };
 
+const assignWhatsappAccountToUser = async (userId, whatsappDocId, type) => {
+  if (type === "remove") {
+    return await WhatsappAccount.findByIdAndUpdate(whatsappDocId, {
+      $pull: {
+        users: userId,
+      },
+    });
+  }
+  return await WhatsappAccount.findByIdAndUpdate(whatsappDocId, {
+    $addToSet: {
+      users: userId,
+    },
+  });
+};
+
 module.exports = {
   findUserByRole,
   createNewWhatsappUser,
@@ -159,4 +174,5 @@ module.exports = {
   removeWhatsappAccount,
   deleteUserByUserId,
   removeUserIdFromWhatsappAccount,
+  assignWhatsappAccountToUser,
 };

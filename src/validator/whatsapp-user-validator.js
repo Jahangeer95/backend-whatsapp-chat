@@ -77,9 +77,28 @@ function validateNewWhatsappAccount(req, res, next) {
   next();
 }
 
+function validateAssignWhatsappAccount(req, res, next) {
+  const joiSchema = JOI.object({
+    userId: JOI.string().required(),
+    type: JOI.string().valid("add", "remove").required(),
+  });
+
+  const { error, value } = joiSchema.validate(req.body);
+
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    validationError.statusCode = 400;
+    return next(validationError);
+  }
+
+  req.body = value;
+  next();
+}
+
 module.exports = {
   validateOwner,
   validateLoginUser,
   validateNewUser,
   validateNewWhatsappAccount,
+  validateAssignWhatsappAccount,
 };

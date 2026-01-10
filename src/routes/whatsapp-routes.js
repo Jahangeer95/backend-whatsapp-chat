@@ -9,6 +9,7 @@ const {
   validateLoginUser,
   validateNewUser,
   validateNewWhatsappAccount,
+  validateAssignWhatsappAccount,
 } = require("../validator/whatsapp-user-validator");
 
 const router = Router();
@@ -81,6 +82,10 @@ router
 router
   .route("/accounts/:whatsappDocId")
   .put(validateNewWhatsappAccount, whatsappuserController.updateWhatsappAccount)
-  .delete(whatsappuserController.deleteWhatsappAccount);
+  .delete(whatsappuserController.deleteWhatsappAccount)
+  .post(
+    validateAssignWhatsappAccount,
+    whatsappuserController.assignWhatsappAccountToUser
+  );
 
 module.exports = router;
