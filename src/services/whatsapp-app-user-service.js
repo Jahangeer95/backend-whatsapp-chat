@@ -117,15 +117,15 @@ const getWhatsappAccountById = async (_id) => {
 };
 
 const getAllSavedWhatsappAccountsByUserId = async (user_id) => {
-  return await WhatsappAppRegisteredUser.find({ users: user_id }).populate(
-    "users"
-  );
+  return await WhatsappAccount.find({ users: user_id }).populate("users");
 };
 
+// for user account
 const removeWhatsappAccount = async (_id) => {
-  return await WhatsappAppRegisteredUser.findByIdAndDelete(_id);
+  return await WhatsappApp.findByIdAndDelete(_id);
 };
 
+// for users
 const deleteUserByUserId = async (_id) => {
   return await WhatsappAppRegisteredUser.findByIdAndDelete(_id);
 };
