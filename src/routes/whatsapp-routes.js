@@ -66,6 +66,10 @@ router
   .get(whatsappuserController.fetchAllRegisteredUsers);
 
 router
+  .route("/user/:userId/accounts")
+  .get(whatsappuserController.getAllUserWhatsappAccounts);
+
+router
   .route("/accounts")
   .post(
     validateNewWhatsappAccount,

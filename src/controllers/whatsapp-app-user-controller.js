@@ -229,6 +229,21 @@ const updateWhatsappAccount = async (req, res) => {
 
 const getAllUserWhatsappAccounts = async (req, res) => {
   try {
+    const { userId } = req.params;
+
+    let user = await whatsAppUserService.findUserByUserId(userId);
+
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "user Id is invalid",
+      });
+    }
+
+    const whatsappAccounts =
+      await whatsAppUserService.getAllSavedWhatsappAccountsByUserId(userId);
+
+    res.send({ success: true, data: whatsappAccounts });
   } catch (error) {
     res.json({
       success: false,
@@ -247,4 +262,5 @@ module.exports = {
   fetchAllRegisteredUsers,
   createNewWhatsappAccount,
   updateWhatsappAccount,
+  getAllUserWhatsappAccounts,
 };

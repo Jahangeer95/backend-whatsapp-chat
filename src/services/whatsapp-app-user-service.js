@@ -42,6 +42,14 @@ const findUserByUsername = async (name) => {
   return user;
 };
 
+const findUserByUserId = async (_id) => {
+  const user = await WhatsappAppRegisteredUser.findOne({
+    _id,
+  });
+
+  return user;
+};
+
 const comparePassword = async ({ savedPassword, password }) => {
   return await compare(password, savedPassword);
 };
@@ -106,7 +114,11 @@ const getWhatsappAccountById = async (_id) => {
   return await WhatsappAccount.findOne({ _id });
 };
 
-//
+const getAllSavedWhatsappAccountsByUserId = async (user_id) => {
+  return await WhatsappAppRegisteredUser.find({ users: user_id }).populate(
+    "users"
+  );
+};
 
 module.exports = {
   findUserByRole,
@@ -119,4 +131,6 @@ module.exports = {
   isValidWhatsappBusinessId,
   updateWhatsappAccountbyId,
   getWhatsappAccountById,
+  getAllSavedWhatsappAccountsByUserId,
+  findUserByUserId,
 };
