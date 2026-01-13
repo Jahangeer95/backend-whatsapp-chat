@@ -197,9 +197,88 @@ const checkAuthorizationForUserPaths = async (req, res, next) => {
   next();
 };
 
+const checkAuthorizationForPagesPaths = async (req, res, next) => {
+  const loginUserRole = req?.user?.role;
+  const httpMethod = req.method;
+
+  if (!loginUserRole) {
+    return res.status(401).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "Authentication required",
+    });
+  }
+
+  if (loginUserRole === USER_ROLE_OBJ.owner) {
+    return next();
+  }
+
+  const loginUserPermissions =
+    ROLE_BASED_PERMISSIONS[loginUserRole]?.[API_CATEGORY_OBJ.pages];
+
+  if (!loginUserPermissions) {
+    return res.status(403).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "You are not Unauthorized to perform this action!!!",
+    });
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.post) {
+    const { pageId } = req.params || {};
+
+    if (pageId) {
+      if (loginUserPermissions.includes("add_user_to_page")) {
+        return next();
+      } else {
+        return res.status(403).json({
+          success: false,
+          error: "FORBIDDEN",
+          message: "Only Owner, Admin and Manager can assign a page to user.",
+        });
+      }
+    }
+
+    if (loginUserPermissions.includes("link_page")) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "Only Owner, Admin and Manager can able to link a page.",
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.put) {
+    if (loginUserPermissions.includes("update_page")) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "Only Owner, Admin and Manager can able to update page.",
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.delete) {
+    if (loginUserRole === USER_ROLE_OBJ.admin) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "Only admin and Owner can able to delete page.",
+      });
+    }
+  }
+};
+
 module.exports = {
   checkRoleAdmin,
   checkRoleAdminAndManager,
   checkAllowedRoles,
   checkAuthorizationForUserPaths,
+  checkAuthorizationForPagesPaths,
 };

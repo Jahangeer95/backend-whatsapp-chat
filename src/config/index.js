@@ -28,6 +28,7 @@ const WHATSAPP_USER_ROLE_OBJ = {
 
 const API_CATEGORY_OBJ = {
   user: "USERS",
+  pages: "PAGES",
 };
 
 const HTTP_METHODS_OBJ = {

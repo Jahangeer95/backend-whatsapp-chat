@@ -10,8 +10,8 @@ const authMiddleware = require("../middlewares/auth-middlware");
 const appPagesController = require("../controllers/app-pages-controller");
 const { validateNewPage } = require("../validator/app-pages-validator");
 const {
-  checkRoleAdmin,
   checkAuthorizationForUserPaths,
+  checkAuthorizationForPagesPaths,
 } = require("../middlewares/authorize-middleware");
 const { validateUserId, validatePageId } = require("../validator");
 
@@ -25,26 +25,26 @@ router.route("/sign-up").post(validateOwner, userController.createOwner);
 // it needs to be protected
 router
   .route("/")
-  .all(authMiddleware)
-  .post(
-    validateNewUser,
-    checkAuthorizationForUserPaths,
-    userController.createUser
-  )
-  .get(checkAuthorizationForUserPaths, userController.fetchUsers);
+  .all(authMiddleware, checkAuthorizationForUserPaths)
+  .post(validateNewUser, userController.createUser)
+  .get(userController.fetchUsers);
 
 router
   .route("/pages")
   .all(authMiddleware)
   .get(appPagesController.getAllUserPages)
-  .post(checkRoleAdmin, validateNewPage, appPagesController.createNewPage);
+  .post(
+    checkAuthorizationForPagesPaths,
+    validateNewPage,
+    appPagesController.createNewPage
+  );
 
 router
   .route("/pages/:pageId")
-  .all(authMiddleware, validatePageId)
-  .delete(checkRoleAdmin, appPagesController.deleteFbPage)
-  .post(checkRoleAdmin, appPagesController.addUsertoPage)
-  .put(checkRoleAdmin, validateNewPage, appPagesController.updateNewPage);
+  .all(authMiddleware, checkAuthorizationForPagesPaths, validatePageId)
+  .delete(appPagesController.deleteFbPage)
+  .post(appPagesController.addUsertoPage)
+  .put(validateNewPage, appPagesController.updateNewPage);
 
 router
   .route("/:userId")
