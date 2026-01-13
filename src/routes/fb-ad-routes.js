@@ -11,6 +11,7 @@ const authMiddleware = require("../middlewares/auth-middlware");
 const { upload } = require("../middlewares/multer");
 const {
   checkAuthorizationForAdsCampaignPaths,
+  checkAuthorizationForAdsAdsetPaths,
 } = require("../middlewares/authorize-middleware");
 
 const router = Router();
@@ -37,18 +38,18 @@ router
 
 router
   .route("/adsets")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(authMiddleware, checkAuthorizationForAdsAdsetPaths, validateFbAdHeaders)
   .get(fbAdController.getAdsets)
   .post(fbAdController.createAnAdset);
 
 router
   .route("/adsets/:campaignId")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(authMiddleware, checkAuthorizationForAdsAdsetPaths, validateFbAdHeaders)
   .get(fbAdController.getAdsetsByUsingCampaignId);
 
 router
   .route("/adsets/:adsetId")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(authMiddleware, checkAuthorizationForAdsAdsetPaths, validateFbAdHeaders)
   .delete(fbAdController.deleteAdset)
   .post(fbAdController.updateAdsetByAdsetId);
 
