@@ -29,6 +29,8 @@ const WHATSAPP_USER_ROLE_OBJ = {
 const API_CATEGORY_OBJ = {
   user: "USERS",
   pages: "PAGES",
+  posts: "POSTS",
+  ads: "ADS",
 };
 
 const HTTP_METHODS_OBJ = {
@@ -251,6 +253,11 @@ const ADMIN_CAN_DELETE_USER_WITH_ROLE = [
 
 const CAN_DELETE_USER = [USER_ROLE_OBJ.admin];
 
+const CAN_CREATE_UPDATE_ADCAMPAIGN = [
+  USER_ROLE_OBJ.admin,
+  USER_ROLE_OBJ.manager,
+];
+
 //
 const CAN_UPDATE_USER_ROLE = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
 const CAN_CREATE_PAGE = [USER_ROLE_OBJ.admin];
@@ -291,4 +298,5 @@ module.exports = {
   ADMIN_CAN_UPDATE_USER_WITH_ROLE,
   MANAGER_CAN_UPDATE_USER_WITH_ROLE,
   WHATSAPP_USER_ROLE_OBJ,
+  CAN_CREATE_UPDATE_ADCAMPAIGN,
 };

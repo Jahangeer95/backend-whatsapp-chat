@@ -12,6 +12,7 @@ const {
   CAN_UPDATE_USER,
   ADMIN_CAN_UPDATE_USER_WITH_ROLE,
   MANAGER_CAN_UPDATE_USER_WITH_ROLE,
+  CAN_CREATE_UPDATE_ADCAMPAIGN,
 } = require("../config");
 const userService = require("../services/app-user-service");
 
@@ -273,6 +274,74 @@ const checkAuthorizationForPagesPaths = async (req, res, next) => {
       });
     }
   }
+
+  next();
+};
+
+const checkAuthorizationForAdsCampaignPaths = async (req, res, next) => {
+  const loginUserRole = req?.user?.role;
+  const httpMethod = req.method;
+
+  if (!loginUserRole) {
+    return res.status(401).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "Authentication required",
+    });
+  }
+
+  if (loginUserRole === USER_ROLE_OBJ.owner) {
+    return next();
+  }
+
+  const loginUserPermissions =
+    ROLE_BASED_PERMISSIONS[loginUserRole]?.[API_CATEGORY_OBJ.ads];
+
+  if (!loginUserPermissions) {
+    return res.status(403).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "You are not Unauthorized to perform this action!!!",
+    });
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.post) {
+    if (CAN_CREATE_UPDATE_ADCAMPAIGN?.includes(loginUserRole)) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "You are not authorized to create / update adcampaign.",
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.get) {
+    if (loginUserPermissions?.includes("view_adcampaign")) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "You are not authorized to view adcampaign.",
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.delete) {
+    if (loginUserPermissions?.includes("delete_adcampaign")) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "Only admin and Owner can able to delete Adcampaign.",
+      });
+    }
+  }
+
+  next();
 };
 
 module.exports = {
@@ -281,4 +350,5 @@ module.exports = {
   checkAllowedRoles,
   checkAuthorizationForUserPaths,
   checkAuthorizationForPagesPaths,
+  checkAuthorizationForAdsCampaignPaths,
 };

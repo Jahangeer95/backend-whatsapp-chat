@@ -9,18 +9,29 @@ const {
 } = require("../validator/fb-ad-validator");
 const authMiddleware = require("../middlewares/auth-middlware");
 const { upload } = require("../middlewares/multer");
+const {
+  checkAuthorizationForAdsCampaignPaths,
+} = require("../middlewares/authorize-middleware");
 
 const router = Router();
 
 router
   .route("/campaigns")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(
+    authMiddleware,
+    validateFbAdHeaders,
+    checkAuthorizationForAdsCampaignPaths
+  )
   .post(validateNewCampaign, fbAdController.createfbAdCompaign)
   .get(fbAdController.fetchAllCampaign);
 
 router
   .route("/campaigns/:campaignId")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(
+    authMiddleware,
+    validateFbAdHeaders,
+    checkAuthorizationForAdsCampaignPaths
+  )
   .post(fbAdController.updateAdCampaign)
   .delete(fbAdController.deleteCampaign);
 
