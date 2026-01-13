@@ -12,6 +12,7 @@ const { upload } = require("../middlewares/multer");
 const {
   checkAuthorizationForAdsCampaignPaths,
   checkAuthorizationForAdsAdsetPaths,
+  checkAuthorizationForAdsCreativePaths,
 } = require("../middlewares/authorize-middleware");
 
 const router = Router();
@@ -55,7 +56,11 @@ router
 
 router
   .route("/adcreatives")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(
+    authMiddleware,
+    checkAuthorizationForAdsCreativePaths,
+    validateFbAdHeaders
+  )
   .post(fbAdController.createAdcreative)
   .get(fbAdController.fetchAllAdcreative);
 
@@ -66,12 +71,20 @@ router
 
 router
   .route("/adcreatives/:adcreativeId")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(
+    authMiddleware,
+    checkAuthorizationForAdsCreativePaths,
+    validateFbAdHeaders
+  )
   .delete(fbAdController.deleteAdcreative);
 
 router
   .route("/adcreatives/:adcreativeId/preview")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(
+    authMiddleware,
+    checkAuthorizationForAdsCreativePaths,
+    validateFbAdHeaders
+  )
   .get(validateAdCreativeQueryParams, fbAdController.fetchAdCreativePreview);
 
 router
