@@ -15,6 +15,7 @@ const {
   CAN_CREATE_UPDATE_ADCAMPAIGN,
   CAN_CREATE_UPDATE_ADSET,
   CAN_CREATE_UPDATE_ADCREATIVE,
+  CAN_CREATE_UPDATE_AD,
 } = require("../config");
 const userService = require("../services/app-user-service");
 
@@ -478,6 +479,72 @@ const checkAuthorizationForAdsCreativePaths = async (req, res, next) => {
   next();
 };
 
+const checkAuthorizationForAdsPaths = async (req, res, next) => {
+  const loginUserRole = req?.user?.role;
+  const httpMethod = req.method;
+
+  if (!loginUserRole) {
+    return res.status(401).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "Authentication required",
+    });
+  }
+
+  if (loginUserRole === USER_ROLE_OBJ.owner) {
+    return next();
+  }
+
+  const loginUserPermissions =
+    ROLE_BASED_PERMISSIONS[loginUserRole]?.[API_CATEGORY_OBJ.ads];
+
+  if (!loginUserPermissions) {
+    return res.status(403).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "You are not Unauthorized to perform this action!!!",
+    });
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.post) {
+    if (CAN_CREATE_UPDATE_AD?.includes(loginUserRole)) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "You are not authorized to create / update ad.",
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.get) {
+    if (loginUserPermissions?.includes("view_ad")) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "You are not authorized to view adcreative",
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.delete) {
+    if (loginUserPermissions?.includes("delete_ad")) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "Owner, Admin and Manager can able to delete Ad.",
+      });
+    }
+  }
+
+  next();
+};
+
 module.exports = {
   checkRoleAdmin,
   checkRoleAdminAndManager,
@@ -487,4 +554,5 @@ module.exports = {
   checkAuthorizationForAdsCampaignPaths,
   checkAuthorizationForAdsAdsetPaths,
   checkAuthorizationForAdsCreativePaths,
+  checkAuthorizationForAdsPaths,
 };

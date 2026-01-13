@@ -13,7 +13,10 @@ const {
   checkAuthorizationForAdsCampaignPaths,
   checkAuthorizationForAdsAdsetPaths,
   checkAuthorizationForAdsCreativePaths,
+  checkAuthorizationForAdsPaths,
+  checkAllowedRoles,
 } = require("../middlewares/authorize-middleware");
+const { CAN_VIEW_AD_INSIGHT } = require("../config");
 
 const router = Router();
 
@@ -89,24 +92,28 @@ router
 
 router
   .route("/ads")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(authMiddleware, checkAuthorizationForAdsPaths, validateFbAdHeaders)
   .get(fbAdController.fetchAllAds)
   .post(fbAdController.createAd);
 
 router
   .route("/ads/:adId")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(authMiddleware, checkAuthorizationForAdsPaths, validateFbAdHeaders)
   .delete(fbAdController.deleteAd)
   .post(validateAdUpdate, fbAdController.updateAd);
 
 router
   .route("/ads/:adId/preview")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(authMiddleware, checkAuthorizationForAdsPaths, validateFbAdHeaders)
   .get(validateAdCreativeQueryParams, fbAdController.fetchAdPreview);
 
 router
   .route("/insight")
-  .all(authMiddleware, validateFbAdHeaders)
+  .all(
+    authMiddleware,
+    checkAllowedRoles(CAN_VIEW_AD_INSIGHT),
+    validateFbAdHeaders
+  )
   .get(validateAdInsightQueryParams, fbAdController.fetchAdInsight);
 
 router
