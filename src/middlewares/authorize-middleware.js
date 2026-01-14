@@ -16,6 +16,7 @@ const {
   CAN_CREATE_UPDATE_ADSET,
   CAN_CREATE_UPDATE_ADCREATIVE,
   CAN_CREATE_UPDATE_AD,
+  CAN_CREATE_POST,
 } = require("../config");
 const userService = require("../services/app-user-service");
 
@@ -525,13 +526,91 @@ const checkAuthorizationForAdsPaths = async (req, res, next) => {
       return res.status(403).json({
         success: false,
         error: "FORBIDDEN",
-        message: "You are not authorized to view adcreative",
+        message: "You are not authorized to view ad",
       });
     }
   }
 
   if (httpMethod === HTTP_METHODS_OBJ.delete) {
     if (loginUserPermissions?.includes("delete_ad")) {
+      return next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: "Owner, Admin and Manager can able to delete Ad.",
+      });
+    }
+  }
+
+  next();
+};
+
+const checkAuthorizationForPostsPaths = async (req, res, next) => {
+  const loginUserRole = req?.user?.role;
+  const httpMethod = req.method;
+  const routePath = req.route.path;
+
+  if (!loginUserRole) {
+    return res.status(401).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "Authentication required",
+    });
+  }
+
+  if (loginUserRole === USER_ROLE_OBJ.owner) {
+    return next();
+  }
+
+  const loginUserPermissions =
+    ROLE_BASED_PERMISSIONS[loginUserRole]?.[API_CATEGORY_OBJ.posts];
+
+  if (!loginUserPermissions) {
+    return res.status(403).json({
+      success: false,
+      error: "ACCESS_DENIED",
+      message: "You are not Unauthorized to perform this action!!!",
+    });
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.post) {
+    const { postId } = req.params;
+    if (postId) {
+      next();
+    } else {
+      if (CAN_CREATE_POST?.includes(loginUserRole)) {
+        return next();
+      } else {
+        return res.status(403).json({
+          success: false,
+          error: "FORBIDDEN",
+          message: "You are not authorized to create post.",
+        });
+      }
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.get) {
+    const viewPosttype = routePath?.includes("page-posts")
+      ? "view_publish_posts"
+      : "view_schedule_posts";
+    if (loginUserPermissions?.includes(viewPosttype)) {
+      return next();
+    } else {
+      const postType = routePath?.includes("page-posts")
+        ? "publish"
+        : "schedule";
+      return res.status(403).json({
+        success: false,
+        error: "FORBIDDEN",
+        message: `You are not authorized to view ${postType} posts`,
+      });
+    }
+  }
+
+  if (httpMethod === HTTP_METHODS_OBJ.delete) {
+    if (loginUserPermissions?.includes("delete_post")) {
       return next();
     } else {
       return res.status(403).json({
@@ -555,4 +634,5 @@ module.exports = {
   checkAuthorizationForAdsAdsetPaths,
   checkAuthorizationForAdsCreativePaths,
   checkAuthorizationForAdsPaths,
+  checkAuthorizationForPostsPaths,
 };

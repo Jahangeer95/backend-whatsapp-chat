@@ -6,8 +6,13 @@ const authMiddleware = require("../middlewares/auth-middlware");
 const {
   checkRoleAdmin,
   checkAllowedRoles,
+  checkAuthorizationForPostsPaths,
 } = require("../middlewares/authorize-middleware");
-const { CAN_CREATE_POST, CAN_DELETE_POST } = require("../config");
+const {
+  CAN_CREATE_POST,
+  CAN_DELETE_POST,
+  CAN_VIEW_POST_INSIGHT,
+} = require("../config");
 
 const router = Router();
 
@@ -96,17 +101,13 @@ router.post(
 
 router
   .route("/page-posts")
-  .all(authMiddleware)
+  .all(authMiddleware, checkAuthorizationForPostsPaths)
   .get(fbValidator.validateFbHeaders, facebookController.fetchAllPosts)
-  .post(
-    checkAllowedRoles(CAN_CREATE_POST),
-    fbValidator.validateFbHeaders,
-    facebookController.createTextPost
-  );
+  .post(fbValidator.validateFbHeaders, facebookController.createTextPost);
 
 router
   .route("/page-schedule-posts")
-  .all(authMiddleware)
+  .all(authMiddleware, checkAuthorizationForPostsPaths)
   .get(
     fbValidator.validateFbHeaders,
     facebookController.fetchAllUnPublishedPosts
@@ -114,9 +115,8 @@ router
 
 router
   .route("/page-media-posts")
-  .all(authMiddleware)
+  .all(authMiddleware, checkAuthorizationForPostsPaths)
   .post(
-    checkAllowedRoles(CAN_CREATE_POST),
     fbValidator.validateFbHeaders,
     upload.single("file"),
     facebookController.createPhotoPost
@@ -124,9 +124,8 @@ router
 
 router
   .route("/page-media-posts/:postId")
-  .all(authMiddleware)
+  .all(authMiddleware, checkAuthorizationForPostsPaths)
   .post(
-    checkAllowedRoles(CAN_CREATE_POST),
     fbValidator.validateFbHeaders,
     upload.single("file"),
     facebookController.createPhotoPost
@@ -136,21 +135,13 @@ router
 
 router
   .route("/page-posts/:postId")
-  .all(authMiddleware)
-  .delete(
-    checkAllowedRoles(CAN_DELETE_POST),
-    fbValidator.validateFbHeaders,
-    facebookController.deletePost
-  )
-  .post(
-    checkAllowedRoles(CAN_CREATE_POST),
-    fbValidator.validateFbHeaders,
-    facebookController.createTextPost
-  );
+  .all(authMiddleware, checkAuthorizationForPostsPaths)
+  .delete(fbValidator.validateFbHeaders, facebookController.deletePost)
+  .post(fbValidator.validateFbHeaders, facebookController.createTextPost);
 
 router
   .route("/page-posts/:postId/insights")
-  .all(authMiddleware)
+  .all(authMiddleware, checkAllowedRoles(CAN_VIEW_POST_INSIGHT))
   .get(fbValidator.validateFbHeaders, facebookController.fetchPostsInsight);
 
 router

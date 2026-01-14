@@ -273,16 +273,18 @@ const CAN_CREATE_UPDATE_AD = [
 
 const CAN_VIEW_AD_INSIGHT = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
 
-//
-const CAN_UPDATE_USER_ROLE = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
-const CAN_CREATE_PAGE = [USER_ROLE_OBJ.admin];
-const CAN_DELETE_PAGE = [USER_ROLE_OBJ.admin];
-
 const CAN_CREATE_POST = [
   USER_ROLE_OBJ.admin,
   USER_ROLE_OBJ.manager,
   USER_ROLE_OBJ.editor,
 ];
+
+const CAN_VIEW_POST_INSIGHT = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
+
+//
+const CAN_UPDATE_USER_ROLE = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
+const CAN_CREATE_PAGE = [USER_ROLE_OBJ.admin];
+const CAN_DELETE_PAGE = [USER_ROLE_OBJ.admin];
 
 const CAN_DELETE_POST = [USER_ROLE_OBJ.admin, USER_ROLE_OBJ.manager];
 
@@ -318,4 +320,5 @@ module.exports = {
   CAN_CREATE_UPDATE_ADCREATIVE,
   CAN_CREATE_UPDATE_AD,
   CAN_VIEW_AD_INSIGHT,
+  CAN_VIEW_POST_INSIGHT,
 };
