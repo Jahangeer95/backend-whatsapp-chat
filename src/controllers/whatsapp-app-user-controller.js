@@ -208,10 +208,13 @@ const updateWhatsappAccount = async (req, res) => {
         .send({ success: false, message: "whatsapp_business_id is invalid" });
     }
 
-    const response = await whatsAppUserService.updateWhatsappAccountbyId(_id, {
-      ...req.body,
-      account_name: name,
-    });
+    const response = await whatsAppUserService.updateWhatsappAccountbyId(
+      whatsappDocId,
+      {
+        ...req.body,
+        account_name: name,
+      }
+    );
 
     console.log(response.data, "update wp");
 
