@@ -3,7 +3,7 @@ const { JWT_SECRET_KEY } = require("../config");
 
 function authMiddleware(req, res, next) {
   const token = req.headers["user_auth_token"];
-  console.log({ user_auth_token });
+  console.log({ user_auth_token: token });
 
   if (!token) {
     return res.status(401).json({
