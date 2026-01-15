@@ -2,6 +2,9 @@ const { model, Schema } = require("mongoose");
 
 const whatsAppAccountSchema = new Schema(
   {
+    account_name: {
+      type: String,
+    },
     whatsapp_access_token: {
       type: String,
       required: true,

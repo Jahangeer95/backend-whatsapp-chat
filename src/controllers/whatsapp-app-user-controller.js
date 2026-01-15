@@ -157,6 +157,7 @@ const createNewWhatsappAccount = async (req, res) => {
     );
 
     let whatsapp = await whatsAppUserService.createNewWhatsappAccount({
+      account_name: name,
       whatsapp_access_token,
       phone_no_id,
       whatsapp_business_id,
@@ -207,10 +208,10 @@ const updateWhatsappAccount = async (req, res) => {
         .send({ success: false, message: "whatsapp_business_id is invalid" });
     }
 
-    const response = await whatsAppUserService.updateWhatsappAccountbyId(
-      _id,
-      req.body
-    );
+    const response = await whatsAppUserService.updateWhatsappAccountbyId(_id, {
+      ...req.body,
+      account_name: name,
+    });
 
     console.log(response.data, "update wp");
 

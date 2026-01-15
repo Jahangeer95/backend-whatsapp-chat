@@ -61,12 +61,14 @@ const fetchAllUsers = async () => {
 };
 
 const createNewWhatsappAccount = async ({
+  account_name,
   whatsapp_access_token,
   phone_no_id,
   whatsapp_business_id,
   user_id,
 }) => {
   let whatsapp = new WhatsappAccount({
+    account_name,
     whatsapp_access_token,
     phone_no_id,
     whatsapp_business_id,
@@ -88,6 +90,7 @@ const isValidWhatsappBusinessId = async ({
     `https://graph.facebook.com/${whatsapp_business_id}`,
     {
       params: {
+        fields: "id,name",
         access_token: whatsapp_access_token,
       },
     }
