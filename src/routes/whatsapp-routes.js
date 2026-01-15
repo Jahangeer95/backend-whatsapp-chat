@@ -11,6 +11,7 @@ const {
   validateNewWhatsappAccount,
   validateAssignWhatsappAccount,
 } = require("../validator/whatsapp-user-validator");
+const authMiddleware = require("../middlewares/auth-middlware");
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router
 
 router.post(
   "/send-message",
+  authMiddleware,
   whatsAppValidator.validateWhatsappHeaders,
   whatsappUploads.single("file"),
   whatsappController.sendMessage
@@ -28,6 +30,7 @@ router.post(
 
 router
   .route("/contacts")
+  .all(authMiddleware)
   .get(
     whatsAppValidator.validateWhatsappHeaders,
     whatsappController?.getAllContacts
@@ -35,6 +38,7 @@ router
 
 router
   .route("/messages/:userId")
+  .all(authMiddleware)
   .get(
     whatsAppValidator.validateWhatsappHeaders,
     validateUserId,
@@ -43,6 +47,7 @@ router
 
 router
   .route("/media/:id")
+  .all(authMiddleware)
   .get(
     whatsAppValidator.validateWhatsappHeaders,
     whatsappController.getMediaByMediaId
@@ -50,6 +55,7 @@ router
 
 router.get(
   "/templates",
+  authMiddleware,
   whatsAppValidator.validateWhatsappHeaders,
   whatsappController.fetchAllPageTemplates
 );
@@ -63,17 +69,23 @@ router
 
 router
   .route("/user")
+  .all(authMiddleware)
   .post(validateNewUser, whatsappuserController.createUser)
   .get(whatsappuserController.fetchAllRegisteredUsers);
 
 router
   .route("/user/:userId/accounts")
+  .all(authMiddleware)
   .get(whatsappuserController.getAllUserWhatsappAccounts);
 
-router.route("/user/:userId").delete(whatsappuserController.deleteUserAccount);
+router
+  .route("/user/:userId")
+  .all(authMiddleware)
+  .delete(whatsappuserController.deleteUserAccount);
 
 router
   .route("/accounts")
+  .all(authMiddleware)
   .post(
     validateNewWhatsappAccount,
     whatsappuserController.createNewWhatsappAccount
@@ -81,6 +93,7 @@ router
 
 router
   .route("/accounts/:whatsappDocId")
+  .all(authMiddleware)
   .put(validateNewWhatsappAccount, whatsappuserController.updateWhatsappAccount)
   .delete(whatsappuserController.deleteWhatsappAccount)
   .post(
