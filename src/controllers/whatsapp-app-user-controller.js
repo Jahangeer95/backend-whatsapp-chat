@@ -81,7 +81,6 @@ const createUser = async (req, res) => {
 
     res.send({
       success: true,
-      data: newUser,
       message: "User created successfuly",
     });
   } catch (error) {
@@ -317,12 +316,21 @@ const deleteUserAccount = async (req, res) => {
       });
     }
 
+    let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
+
+    if (!loginUser?.can_delete_user) {
+      return res.status(409).send({
+        success: false,
+        message: "You are not authorized to perform this action!!!",
+      });
+    }
+
     await whatsAppUserService.deleteUserByUserId(userId);
     await whatsAppUserService.removeUserIdFromWhatsappAccount(userId);
 
     res.send({
       success: true,
-      message: "Whatsapp account deleted successfully",
+      message: "Whatsapp user deleted successfully",
     });
   } catch (error) {
     res.json({

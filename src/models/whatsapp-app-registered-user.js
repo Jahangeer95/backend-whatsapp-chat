@@ -155,7 +155,19 @@ whatsappAppRegisteredUserSchema.methods.toJSON = function () {
 };
 
 whatsappAppRegisteredUserSchema.set("toJSON", { virtuals: true });
-whatsappAppRegisteredUserSchema.set("toObject", { virtuals: true });
+whatsappAppRegisteredUserSchema.set("toObject", {
+  virtuals: true,
+  transform: function (doc, obj) {
+    // Remove all can_* fields from root
+    Object.keys(obj).forEach((key) => {
+      if (key.startsWith("can_")) {
+        delete obj[key];
+      }
+    });
+
+    return obj;
+  },
+});
 // virtuals not work with lean menthods
 exports.WhatsappAppRegisteredUser = model(
   "WhatsappAppRegisteredUser",
