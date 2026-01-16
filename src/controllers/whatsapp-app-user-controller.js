@@ -49,6 +49,15 @@ const createUser = async (req, res) => {
   const { name, email, password, role } = req.body;
 
   try {
+    let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
+
+    if (!loginUser?.can_create_user) {
+      return res.status(409).send({
+        success: false,
+        message: "You are not authorized to perform this action!!!",
+      });
+    }
+
     let existingUser = await whatsAppUserService.findUserByEmail(email);
 
     if (existingUser) {
@@ -137,6 +146,15 @@ const createNewWhatsappAccount = async (req, res) => {
   const { whatsapp_access_token, phone_no_id, whatsapp_business_id } = req.body;
 
   try {
+    let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
+
+    if (!loginUser?.can_link_whatsapp_account) {
+      return res.status(409).send({
+        success: false,
+        message: "You are not authorized to perform this action!!!",
+      });
+    }
+
     const { isValid, name } =
       await whatsAppUserService.isValidWhatsappBusinessId({
         whatsapp_business_id,
@@ -189,6 +207,15 @@ const updateWhatsappAccount = async (req, res) => {
   const { whatsappDocId } = req.params;
 
   try {
+    let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
+
+    if (!loginUser?.can_link_whatsapp_account) {
+      return res.status(409).send({
+        success: false,
+        message: "You are not authorized to perform this action!!!",
+      });
+    }
+
     let account = await whatsAppUserService.getWhatsappAccountById(
       whatsappDocId
     );
@@ -269,6 +296,15 @@ const deleteWhatsappAccount = async (req, res) => {
   const { whatsappDocId } = req.params;
 
   try {
+    let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
+
+    if (!loginUser?.can_delete_whatsapp_account) {
+      return res.status(409).send({
+        success: false,
+        message: "You are not authorized to perform this action!!!",
+      });
+    }
+
     let account = await whatsAppUserService.getWhatsappAccountById(
       whatsappDocId
     );
@@ -300,6 +336,15 @@ const deleteUserAccount = async (req, res) => {
   const { userId } = req.params;
 
   try {
+    let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
+
+    if (!loginUser?.can_delete_user) {
+      return res.status(409).send({
+        success: false,
+        message: "You are not authorized to perform this action!!!",
+      });
+    }
+
     let user = await whatsAppUserService.findUserByUserId(userId);
 
     if (!user) {
@@ -313,15 +358,6 @@ const deleteUserAccount = async (req, res) => {
       return res.status(409).send({
         success: false,
         message: "User having role owner cannot be deleted",
-      });
-    }
-
-    let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
-
-    if (!loginUser?.can_delete_user) {
-      return res.status(409).send({
-        success: false,
-        message: "You are not authorized to perform this action!!!",
       });
     }
 
@@ -347,13 +383,31 @@ const assignWhatsappAccountToUser = async (req, res) => {
   const { userId, type } = req.body;
   const { whatsappDocId } = req.params;
 
-  if (!userId) {
-    return res
-      .status(400)
-      .send({ success: false, message: "User Id is required" });
-  }
-
   try {
+    let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
+
+    if (!loginUser?.can_assign_whatsapp_account) {
+      return res.status(409).send({
+        success: false,
+        message: "You are not authorized to perform this action!!!",
+      });
+    }
+
+    if (!userId) {
+      return res
+        .status(400)
+        .send({ success: false, message: "User Id is required" });
+    }
+
+    let user = await whatsAppUserService.findUserByUserId(userId);
+
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "user Id is invalid",
+      });
+    }
+
     let account = await whatsAppUserService.getWhatsappAccountById(
       whatsappDocId
     );
@@ -373,7 +427,9 @@ const assignWhatsappAccountToUser = async (req, res) => {
 
     res.send({
       success: true,
-      message: "Assigned user updated for whatsapp account",
+      message: `Whatsapp account ${
+        type === "remove" ? "unassigned" : "assigned"
+      } successfully.`,
     });
   } catch (error) {
     res.json({

@@ -2,6 +2,7 @@ const axios = require("axios");
 const mime = require("mime-types");
 const { VERIFY_TOKEN } = require("../config");
 const whatsappService = require("../services/whatsapp-service");
+const whatsAppUserService = require("../services/whatsapp-app-user-service");
 
 const verifyWebhook = (req, res) => {
   const mode = req.query["hub.mode"];
@@ -45,6 +46,17 @@ const sendMessage = async (req, res) => {
 
   try {
     if (type === "text") {
+      let loginUser = await whatsAppUserService.findUserByUserId(
+        req?.user?._id
+      );
+
+      if (!loginUser?.can_send_text) {
+        return res.status(409).send({
+          success: false,
+          message: "You are not authorized to perform this action!!!",
+        });
+      }
+
       const response = await whatsappService.sendTextMessage({
         to,
         message,
@@ -64,6 +76,16 @@ const sendMessage = async (req, res) => {
     }
 
     if (type === "template") {
+      let loginUser = await whatsAppUserService.findUserByUserId(
+        req?.user?._id
+      );
+
+      if (!loginUser?.can_send_template) {
+        return res.status(409).send({
+          success: false,
+          message: "You are not authorized to perform this action!!!",
+        });
+      }
       const response = await whatsappService.sendTemplateMessage({
         message: req.body,
         phoneId,
@@ -84,6 +106,17 @@ const sendMessage = async (req, res) => {
     }
 
     if (type === "file") {
+      let loginUser = await whatsAppUserService.findUserByUserId(
+        req?.user?._id
+      );
+
+      if (!loginUser?.can_send_file) {
+        return res.status(409).send({
+          success: false,
+          message: "You are not authorized to perform this action!!!",
+        });
+      }
+
       const mimeType = mime.lookup(file?.originalname);
 
       if (!mimeType || typeof mimeType !== "string") {

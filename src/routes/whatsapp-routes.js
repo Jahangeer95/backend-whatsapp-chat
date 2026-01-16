@@ -77,12 +77,12 @@ router
   .route("/user/:userId/accounts")
   .all(authMiddleware)
   .get(whatsappuserController.getAllUserWhatsappAccounts);
-
+// permission added for delete
 router
   .route("/user/:userId")
   .all(authMiddleware)
   .delete(whatsappuserController.deleteUserAccount);
-
+// permission added for account creation
 router
   .route("/accounts")
   .all(authMiddleware)
@@ -90,7 +90,7 @@ router
     validateNewWhatsappAccount,
     whatsappuserController.createNewWhatsappAccount
   );
-
+//permission added for put,delete,post
 router
   .route("/accounts/:whatsappDocId")
   .all(authMiddleware)
