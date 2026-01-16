@@ -21,7 +21,7 @@ const receiveWebHook = (req, res) => {
   console.log({ body });
 
   if (body?.object === "whatsapp_business_account") {
-    body.entry.forEach((entry) => {
+    body?.entry.forEach((entry) => {
       whatsappService.handleEntry(entry, io);
     });
     console.log("Event Received");
