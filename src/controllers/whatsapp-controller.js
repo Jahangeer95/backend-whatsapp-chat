@@ -20,7 +20,7 @@ const receiveWebHook = (req, res) => {
   const io = req.app.get("io"); // Access socket instance
   console.log({ body });
 
-  if (body.object === "whatsapp_business_account") {
+  if (body?.object === "whatsapp_business_account") {
     body.entry.forEach((entry) => {
       whatsappService.handleEntry(entry, io);
     });
