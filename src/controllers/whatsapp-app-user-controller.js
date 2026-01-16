@@ -156,12 +156,17 @@ const createNewWhatsappAccount = async (req, res) => {
       WHATSAPP_USER_ROLE_OBJ.owner
     );
 
+    const user_id_arr =
+      req?.user?._id === owner?._id
+        ? [owner?._id]
+        : [owner?._id, req?.user?._id];
+
     let whatsapp = await whatsAppUserService.createNewWhatsappAccount({
       account_name: name,
       whatsapp_access_token,
       phone_no_id,
       whatsapp_business_id,
-      user_id: owner?._id,
+      user_id_arr,
     });
     // if(admin create new account then that user id needs to be added)
 

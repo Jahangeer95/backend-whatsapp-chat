@@ -65,14 +65,14 @@ const createNewWhatsappAccount = async ({
   whatsapp_access_token,
   phone_no_id,
   whatsapp_business_id,
-  user_id,
+  user_id_arr,
 }) => {
   let whatsapp = new WhatsappAccount({
     account_name,
     whatsapp_access_token,
     phone_no_id,
     whatsapp_business_id,
-    users: [user_id],
+    users: user_id_arr,
   });
 
   whatsapp = await whatsapp.save();
