@@ -18,6 +18,7 @@ const verifyWebhook = (req, res) => {
 const receiveWebHook = (req, res) => {
   const body = req.body;
   const io = req.app.get("io"); // Access socket instance
+  console.log({ body });
 
   if (body.object === "whatsapp_business_account") {
     body.entry.forEach((entry) => {
