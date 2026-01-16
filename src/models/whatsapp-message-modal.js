@@ -2,6 +2,11 @@ const { model, Schema } = require("mongoose");
 
 const whatsappMessageSchema = new Schema(
   {
+    whatsapp_business_id: {
+      type: String,
+      required: true,
+      index: true,
+    },
     message_id: {
       type: String,
       required: true,
@@ -50,6 +55,14 @@ const whatsappMessageSchema = new Schema(
     timestamps: true,
     versionKey: false,
   }
+);
+
+whatsappMessageSchema.index(
+  {
+    message_id: 1,
+    whatsapp_business_id: 1,
+  },
+  { unique: true }
 );
 
 exports.whatsappMessage = model("whatsappMessage", whatsappMessageSchema);

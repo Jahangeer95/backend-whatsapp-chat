@@ -9,6 +9,7 @@ const { whatsappMessage } = require("../models/whatsapp-message-modal");
 const { getWhatsAppHeaders } = require("../utils/helper");
 
 const createOrUpdateContact = async ({
+  whatsapp_business_id,
   wa_id,
   name,
   profile_pic_url,
@@ -31,7 +32,7 @@ const createOrUpdateContact = async ({
       }
     : {};
   return await whatsappUser.findOneAndUpdate(
-    { wa_id },
+    { wa_id, whatsapp_business_id },
     {
       $set: { ...nameObj, ...profileObj, ...lastMessageTime },
       $currentDate: { updatedAt: true }, // always updates timestamp
@@ -44,8 +45,9 @@ const handleMessageEvent = async (value, io) => {
   try {
     const contact = value.contacts?.[0];
     const message = value.messages?.[0];
+    const { whatsapp_business_id } = value;
 
-    if (!contact || !message) return;
+    if (!contact || !message || !whatsapp_business_id) return;
 
     console.log({ message, test: message.text }, "handle message event");
 
@@ -65,6 +67,7 @@ const handleMessageEvent = async (value, io) => {
     }
 
     const user = await createOrUpdateContact({
+      whatsapp_business_id,
       wa_id,
       name,
       profile_pic_url,
@@ -72,10 +75,14 @@ const handleMessageEvent = async (value, io) => {
     });
 
     // Create Message (only if not exists)
-    const existing = await whatsappMessage.findOne({ message_id });
+    const existing = await whatsappMessage.findOne({
+      message_id,
+      whatsapp_business_id,
+    });
     if (existing) return console.log("Message already exists:", message_id);
 
     await whatsappMessage.create({
+      whatsapp_business_id,
       message_id,
       user: user?._id,
       direction: "incoming",
@@ -102,8 +109,9 @@ const handleMessageEvent = async (value, io) => {
 const handleStatusEvents = async (value, io) => {
   try {
     const { statuses } = value;
+    const { whatsapp_business_id } = value;
 
-    if (!statuses || !Array.isArray(statuses)) return;
+    if (!Array.isArray(statuses) || !whatsapp_business_id) return;
 
     for (const status of statuses) {
       const { id: message_id, status: type, timestamp } = status;
@@ -125,7 +133,7 @@ const handleStatusEvents = async (value, io) => {
       }
 
       await whatsappMessage.findOneAndUpdate(
-        { message_id },
+        { message_id, whatsapp_business_id },
         {
           $set: update,
         },
@@ -135,6 +143,7 @@ const handleStatusEvents = async (value, io) => {
       );
 
       await createOrUpdateContact({
+        whatsapp_business_id,
         wa_id: status?.recipient_id,
       });
 
@@ -152,6 +161,7 @@ const handleStatusEvents = async (value, io) => {
 
 const handleEntry = async (entry, io) => {
   const changes = entry?.changes || [];
+  const whatsapp_business_id = entry?.id; // ✅ WABA ID
 
   for (const change of changes) {
     const { field, value } = change;
@@ -161,11 +171,11 @@ const handleEntry = async (entry, io) => {
     switch (field) {
       case "messages":
         if (value?.messages) {
-          return handleMessageEvent(value, io);
+          return handleMessageEvent({ ...value, whatsapp_business_id }, io);
         }
 
         if (value?.statuses) {
-          return handleStatusEvents(value, io);
+          return handleStatusEvents({ ...value, whatsapp_business_id }, io);
         }
 
       default:
@@ -325,31 +335,39 @@ const saveMediaMessage = async ({
   }
 };
 
-const fetchWhatsappContacts = async (page, limit) => {
+const fetchWhatsappContacts = async ({ page, limit, whatsapp_business_id }) => {
   const skip = (page - 1) * limit || 0;
   return await whatsappUser
-    .find()
+    .find({ whatsapp_business_id })
     .skip(skip)
     .limit(limit)
     .sort({ updatedAt: -1 });
 };
 
-const countWhatsappContacts = async () => {
-  return await whatsappUser.countDocuments();
+const countWhatsappContacts = async (whatsapp_business_id) => {
+  return await whatsappUser.countDocuments({ whatsapp_business_id });
 };
 
-const fetchMessagesByUserId = async (userId, page, limit) => {
+const fetchMessagesByUserId = async ({
+  userId,
+  page,
+  limit,
+  whatsapp_business_id,
+}) => {
   const skip = (page - 1) * limit || 0;
   return await whatsappMessage
-    .find({ user: userId })
+    .find({ user: userId, whatsapp_business_id })
     .skip(skip)
     .limit(limit)
     .populate("user")
     .sort({ timestamp: -1 });
 };
 
-const countMessagesByUserId = async (userId) => {
-  return await whatsappMessage.countDocuments({ user: userId });
+const countMessagesByUserId = async (userId, whatsapp_business_id) => {
+  return await whatsappMessage.countDocuments({
+    user: userId,
+    whatsapp_business_id,
+  });
 };
 
 const getMediaImageById = async ({ mediaId, token }) => {

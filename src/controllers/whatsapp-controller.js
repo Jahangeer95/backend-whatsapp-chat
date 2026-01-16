@@ -126,12 +126,17 @@ const sendMessage = async (req, res) => {
 
 const getAllContacts = async (req, res) => {
   try {
+    const { businessId } = req.whatsapp;
     const { page = 1 } = req.query;
     const limit = 50;
 
-    const total = await whatsappService.countWhatsappContacts();
+    const total = await whatsappService.countWhatsappContacts(businessId);
 
-    const contacts = await whatsappService.fetchWhatsappContacts(page, limit);
+    const contacts = await whatsappService.fetchWhatsappContacts({
+      page,
+      limit,
+      whatsapp_business_id: businessId,
+    });
 
     res.send({
       success: true,
@@ -151,17 +156,22 @@ const getAllContacts = async (req, res) => {
 
 const getAllMessagesForUser = async (req, res) => {
   try {
+    const { businessId } = req.whatsapp;
     const { userId } = req.params;
     const { page = 1 } = req.query;
     const limit = 20;
 
-    const total = await whatsappService.countMessagesByUserId(userId);
+    const total = await whatsappService.countMessagesByUserId(
+      userId,
+      businessId
+    );
 
-    const messages = await whatsappService.fetchMessagesByUserId(
+    const messages = await whatsappService.fetchMessagesByUserId({
       userId,
       page,
-      limit
-    );
+      limit,
+      whatsapp_business_id,
+    });
 
     res.send({
       success: true,
