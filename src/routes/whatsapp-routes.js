@@ -19,7 +19,7 @@ router
   .route("/webhook")
   .get(whatsappController.verifyWebhook)
   .post(whatsappController.receiveWebHook);
-
+// permission added in send message
 router.post(
   "/send-message",
   authMiddleware,
@@ -72,7 +72,7 @@ router
   .all(authMiddleware)
   .post(validateNewUser, whatsappuserController.createUser)
   .get(whatsappuserController.fetchAllRegisteredUsers);
-
+// update user endpoint, fetch user permission
 router
   .route("/user/:userId/accounts")
   .all(authMiddleware)

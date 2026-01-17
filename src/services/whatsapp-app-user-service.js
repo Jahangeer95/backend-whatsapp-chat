@@ -125,7 +125,7 @@ const getAllSavedWhatsappAccountsByUserId = async (user_id) => {
 
 // for user account
 const removeWhatsappAccount = async (_id) => {
-  return await WhatsappApp.findByIdAndDelete(_id);
+  return await WhatsappAccount.findByIdAndDelete(_id);
 };
 
 // for users
