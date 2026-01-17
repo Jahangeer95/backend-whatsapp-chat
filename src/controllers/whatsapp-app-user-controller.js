@@ -66,6 +66,8 @@ const createUser = async (req, res) => {
         .send({ success: false, message: "This email is already registered." });
     }
 
+    existingUser = await whatsAppUserService.findUserByUsername(name);
+
     if (existingUser) {
       return res.status(400).send({
         success: false,
@@ -87,6 +89,65 @@ const createUser = async (req, res) => {
     newUser = newUser.toObject();
 
     delete newUser.password;
+
+    res.send({
+      success: true,
+      message: "User created successfuly",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error?.message || "Something went wrong",
+    });
+  }
+};
+
+const updateUser = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
+
+    if (!loginUser?.can_update_user) {
+      return res.status(409).send({
+        success: false,
+        message: "You are not authorized to perform this action!!!",
+      });
+    }
+
+    let user = await whatsAppUserService.findUserByUserId(userId);
+
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "user Id is invalid",
+      });
+    }
+
+    if (user?.role === WHATSAPP_USER_ROLE_OBJ.owner) {
+      return res.status(409).send({
+        success: false,
+        message: "User having role owner cannot be updated",
+      });
+    }
+
+    let existingUser = await whatsAppUserService.findUserByEmail(email);
+
+    if (existingUser && existingUser?._id?.toString() !== userId) {
+      return res
+        .status(400)
+        .send({ success: false, message: "This email is already registered." });
+    }
+
+    existingUser = await whatsAppUserService.findUserByUsername(name);
+
+    if (existingUser && existingUser?._id?.toString() !== userId) {
+      return res.status(400).send({
+        success: false,
+        message: "This username is already registered.",
+      });
+    }
+
+    await whatsAppUserService.updateUserbyUserId(userId, req.body);
 
     res.send({
       success: true,
@@ -453,4 +514,5 @@ module.exports = {
   deleteWhatsappAccount,
   deleteUserAccount,
   assignWhatsappAccountToUser,
+  updateUser,
 };

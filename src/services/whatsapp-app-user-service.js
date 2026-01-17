@@ -50,6 +50,19 @@ const findUserByUserId = async (_id) => {
   return user;
 };
 
+const updateUserbyUserId = async (_id, updatedData) => {
+  return await WhatsappAppRegisteredUser.findByIdAndUpdate(
+    _id,
+    {
+      ...updatedData,
+    },
+    {
+      upsert: false,
+      new: true,
+    }
+  );
+};
+
 const comparePassword = async ({ savedPassword, password }) => {
   return await compare(password, savedPassword);
 };
@@ -178,4 +191,5 @@ module.exports = {
   deleteUserByUserId,
   removeUserIdFromWhatsappAccount,
   assignWhatsappAccountToUser,
+  updateUserbyUserId,
 };

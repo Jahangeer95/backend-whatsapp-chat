@@ -10,6 +10,7 @@ const {
   validateNewUser,
   validateNewWhatsappAccount,
   validateAssignWhatsappAccount,
+  validateUserUpdate,
 } = require("../validator/whatsapp-user-validator");
 const authMiddleware = require("../middlewares/auth-middlware");
 
@@ -81,7 +82,8 @@ router
 router
   .route("/user/:userId")
   .all(authMiddleware)
-  .delete(whatsappuserController.deleteUserAccount);
+  .delete(whatsappuserController.deleteUserAccount)
+  .put(validateUserUpdate, whatsappuserController.updateUser);
 // permission added for account creation
 router
   .route("/accounts")

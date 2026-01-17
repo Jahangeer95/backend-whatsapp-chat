@@ -58,6 +58,25 @@ function validateNewUser(req, res, next) {
   next();
 }
 
+function validateUserUpdate(req, res, next) {
+  const joiSchema = JOI.object({
+    name: JOI.string().min(5).max(50).required(),
+    email: JOI.string().email().required(),
+    role: JOI.string().valid("ADMIN", "USER").required(),
+  });
+
+  const { error, value } = joiSchema.validate(req.body);
+
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    validationError.statusCode = 400;
+    return next(validationError);
+  }
+
+  req.body = value;
+  next();
+}
+
 function validateNewWhatsappAccount(req, res, next) {
   const joiSchema = JOI.object({
     whatsapp_access_token: JOI.string().required(),
@@ -101,4 +120,5 @@ module.exports = {
   validateNewUser,
   validateNewWhatsappAccount,
   validateAssignWhatsappAccount,
+  validateUserUpdate,
 };
