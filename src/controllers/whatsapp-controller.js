@@ -200,16 +200,12 @@ const getAllMessagesForUser = async (req, res) => {
       businessId
     );
 
-    console.log({ total });
-
     const messages = await whatsappService.fetchMessagesByUserId({
       userId,
       page,
       limit,
-      whatsapp_business_id,
+      whatsapp_business_id: businessId,
     });
-
-    console.log({ messages });
 
     res.send({
       success: true,
