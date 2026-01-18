@@ -201,9 +201,15 @@ const sendTextMessage = async ({ to, message, phoneId, token }) => {
   });
 };
 
-const saveTextMessage = async ({ message_id, userId, message }) => {
+const saveTextMessage = async ({
+  message_id,
+  userId,
+  message,
+  whatsapp_business_id,
+}) => {
   if (message_id) {
     return await whatsappMessage.create({
+      whatsapp_business_id,
       message_id,
       user: userId,
       direction: "outgoing",
@@ -226,9 +232,15 @@ const sendTemplateMessage = async ({ message, phoneId, token }) => {
   });
 };
 
-const saveTemplateMessage = async ({ message_id, userId, template }) => {
+const saveTemplateMessage = async ({
+  message_id,
+  userId,
+  template,
+  whatsapp_business_id,
+}) => {
   if (message_id) {
     return await whatsappMessage.create({
+      whatsapp_business_id,
       message_id,
       user: userId,
       direction: "outgoing",
@@ -317,9 +329,11 @@ const saveMediaMessage = async ({
   type,
   mediaId,
   filename,
+  whatsapp_business_id,
 }) => {
   if (message_id) {
     return await whatsappMessage.create({
+      whatsapp_business_id,
       message_id,
       user: userId,
       direction: "outgoing",

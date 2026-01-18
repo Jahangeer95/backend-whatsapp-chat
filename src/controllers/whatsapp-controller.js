@@ -36,7 +36,7 @@ const receiveWebHook = (req, res) => {
 const sendMessage = async (req, res) => {
   const { to, message, type, userId, template } = req.body;
   const file = req?.file || null;
-  const { phoneId, token } = req.whatsapp;
+  const { phoneId, token, businessId } = req.whatsapp;
 
   if (!to || !type || !userId) {
     return res.status(400).json({
@@ -70,6 +70,7 @@ const sendMessage = async (req, res) => {
         message_id,
         userId,
         message,
+        whatsapp_business_id: businessId,
       });
 
       return res.status(200).json({ success: true, data: response.data });
@@ -100,6 +101,7 @@ const sendMessage = async (req, res) => {
         message_id,
         userId,
         template,
+        whatsapp_business_id: businessId,
       });
 
       return res.status(200).json({ success: true, data: response.data });
@@ -146,15 +148,21 @@ const sendMessage = async (req, res) => {
         type,
         mediaId,
         filename: file?.originalname,
+        whatsapp_business_id: businessId,
       });
       res.json({ success: true, messageId: response.messages[0].id });
     }
   } catch (error) {
     console.error(
       "WhatsApp Send Error:",
-      error.response?.data || error.message
+      error.response?.data || error?.message
     );
-    return res.status(500).json({ error: "Failed to send WhatsApp message." });
+    return res.status(500).json({
+      error:
+        error?.message ||
+        error?.response?.data?.error?.message ||
+        "Failed to send WhatsApp message.",
+    });
   }
 };
 
