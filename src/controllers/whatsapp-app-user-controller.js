@@ -130,7 +130,9 @@ const updateUser = async (req, res) => {
       });
     }
 
-    let existingUser = await whatsAppUserService.findUserByEmail(email);
+    let existingUser = await whatsAppUserService.findUserByEmail(
+      req.body?.email
+    );
 
     if (existingUser && existingUser?._id?.toString() !== userId) {
       return res
@@ -138,7 +140,7 @@ const updateUser = async (req, res) => {
         .send({ success: false, message: "This email is already registered." });
     }
 
-    existingUser = await whatsAppUserService.findUserByUsername(name);
+    existingUser = await whatsAppUserService.findUserByUsername(req.body?.name);
 
     if (existingUser && existingUser?._id?.toString() !== userId) {
       return res.status(400).send({
