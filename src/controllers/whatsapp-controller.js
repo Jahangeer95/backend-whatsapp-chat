@@ -158,6 +158,7 @@ const sendMessage = async (req, res) => {
       error?.response?.data?.error?.message || error?.message
     );
     return res.status(500).json({
+      success: false,
       error:
         error?.response?.data?.error?.message ||
         error?.message ||
