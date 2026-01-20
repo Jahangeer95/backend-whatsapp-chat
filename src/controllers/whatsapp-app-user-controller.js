@@ -471,6 +471,14 @@ const assignWhatsappAccountToUser = async (req, res) => {
       });
     }
 
+    if (user?.role === WHATSAPP_USER_ROLE_OBJ.owner) {
+      return res.status(409).send({
+        success: false,
+        message:
+          "You can not perfrom this action since owner can view all acounts.",
+      });
+    }
+
     let account = await whatsAppUserService.getWhatsappAccountById(
       whatsappDocId
     );
