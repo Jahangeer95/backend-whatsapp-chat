@@ -262,14 +262,6 @@ const createNewWhatsappAccount = async (req, res) => {
         ? [owner?._id]
         : [owner?._id, req?.user?._id];
 
-    console.log(
-      req?.user?._id?.toString() === owner?._id?.toString(),
-      req?.user?._id === owner?._id,
-      req?.user?._id,
-      owner?._id,
-      user_id_arr
-    );
-
     let whatsapp = await whatsAppUserService.createNewWhatsappAccount({
       account_name: name,
       whatsapp_access_token,
