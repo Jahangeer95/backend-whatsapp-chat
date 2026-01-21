@@ -51,16 +51,21 @@ const findUserByUserId = async (_id) => {
 };
 
 const updateUserbyUserId = async (_id, updatedData) => {
-  return await WhatsappAppRegisteredUser.findByIdAndUpdate(
-    _id,
-    {
-      ...updatedData,
-    },
-    {
-      upsert: false,
-      new: true,
-    }
-  );
+  const user = await WhatsappAppRegisteredUser.findById(_id);
+  if (!user) throw new Error("User not found");
+
+  Object.assign(user, updatedData);
+  return await user.save(); // ✅ REQUIRED
+  // return await WhatsappAppRegisteredUser.findByIdAndUpdate(
+  //   _id,
+  //   {
+  //     ...updatedData,
+  //   },
+  //   {
+  //     upsert: false,
+  //     new: true,
+  //   }
+  // );
 };
 
 const comparePassword = async ({ savedPassword, password }) => {
