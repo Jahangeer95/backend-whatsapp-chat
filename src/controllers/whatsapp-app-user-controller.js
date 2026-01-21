@@ -58,6 +58,16 @@ const createUser = async (req, res) => {
       });
     }
 
+    if (
+      loginUser?.role === WHATSAPP_USER_ROLE_OBJ.admin &&
+      role === WHATSAPP_USER_ROLE_OBJ.admin
+    ) {
+      return res.status(409).send({
+        success: false,
+        message: "Only Owner can able to create user with role ADMIN",
+      });
+    }
+
     let existingUser = await whatsAppUserService.findUserByEmail(email);
 
     if (existingUser) {
@@ -127,6 +137,17 @@ const updateUser = async (req, res) => {
       return res.status(409).send({
         success: false,
         message: "User having role owner cannot be updated",
+      });
+    }
+
+    if (
+      loginUser?.role === WHATSAPP_USER_ROLE_OBJ.admin &&
+      (req.body.role === WHATSAPP_USER_ROLE_OBJ.admin ||
+        user?.role === WHATSAPP_USER_ROLE_OBJ.admin)
+    ) {
+      return res.status(409).send({
+        success: false,
+        message: "Only Owner can able to create/Update user with role ADMIN",
       });
     }
 
