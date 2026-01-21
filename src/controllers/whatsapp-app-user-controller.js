@@ -107,7 +107,7 @@ const updateUser = async (req, res) => {
   try {
     let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
 
-    if (!loginUser?.can_update_user) {
+    if (!loginUser?.can_update_user || loginUser._id?.toString() === userId) {
       return res.status(409).send({
         success: false,
         message: "You are not authorized to perform this action!!!",
