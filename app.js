@@ -17,6 +17,11 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app); // Instead of app.listen()
 
+app.use("/whatsapp/webhook", (req, res, next) => {
+  console.log("testing webhook", req.body);
+  next();
+});
+
 const io = new Server(server, {
   cors: {
     origin: "*", // or your frontend domain
