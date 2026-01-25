@@ -17,11 +17,6 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app); // Instead of app.listen()
 
-app.use("/whatsapp/webhook", (req, res, next) => {
-  console.log("testing webhook", req.body);
-  next();
-});
-
 const io = new Server(server, {
   cors: {
     origin: "*", // or your frontend domain
@@ -70,6 +65,11 @@ mongoose
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "30mb" }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
+
+app.use("/whatsapp/webhook", (req, res, next) => {
+  console.log("testing webhook", req.body);
+  next();
+});
 
 app.use(compression());
 app.use(helmet());
