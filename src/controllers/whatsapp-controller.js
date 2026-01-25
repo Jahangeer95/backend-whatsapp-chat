@@ -30,7 +30,7 @@ const receiveWebHook = (req, res) => {
     return res.status(200).send("EVENT_RECEIVED");
   }
 
-  return res.sendStatus(404);
+  return res.status(404).send("Not a message from whatsapp account");
 };
 
 const sendMessage = async (req, res) => {
