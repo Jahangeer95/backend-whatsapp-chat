@@ -50,6 +50,7 @@ const handleMessageEvent = async (value, io) => {
     if (!contact || !message || !whatsapp_business_id) return;
 
     console.log({ message, test: message.text }, "handle message event");
+    console.log({ contact });
 
     const wa_id = contact.wa_id;
     const name = contact?.profile?.name || contact?.name;
