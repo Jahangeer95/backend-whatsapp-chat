@@ -82,6 +82,7 @@ function validateNewWhatsappAccount(req, res, next) {
     whatsapp_access_token: JOI.string().required(),
     phone_no_id: JOI.string().required(),
     whatsapp_business_id: JOI.string().required(),
+    verify_token: JOI.string().required(),
   });
 
   const { error, value } = joiSchema.validate(req.body);

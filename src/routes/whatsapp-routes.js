@@ -17,7 +17,7 @@ const authMiddleware = require("../middlewares/auth-middlware");
 const router = Router();
 
 router
-  .route("/webhook")
+  .route("/webhook/:phone_no_id")
   .get(whatsappController.verifyWebhook)
   .post(whatsappController.receiveWebHook);
 // permission added in send message

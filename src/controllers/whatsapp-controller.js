@@ -1,15 +1,24 @@
 const axios = require("axios");
 const mime = require("mime-types");
-const { VERIFY_TOKEN } = require("../config");
 const whatsappService = require("../services/whatsapp-service");
 const whatsAppUserService = require("../services/whatsapp-app-user-service");
 
-const verifyWebhook = (req, res) => {
+const verifyWebhook = async (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
+  const phone_no_id = req.params.phone_no_id;
 
-  if (mode === "subscribe" && token === VERIFY_TOKEN) {
+  const account = await whatsAppUserService.getWhatsappAccountByPhoneId(
+    phone_no_id
+  );
+
+  if (!account) {
+    console.log(`No WhatsApp account found for phone_no_id: ${phone_no_id}`);
+    return res.sendStatus(404);
+  }
+
+  if (mode === "subscribe" && token === account?.verify_token) {
     console.log("WEBHOOK_VERIFIED");
     return res.status(200).send(challenge);
   }

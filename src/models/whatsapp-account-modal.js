@@ -20,6 +20,10 @@ const whatsAppAccountSchema = new Schema(
       required: true,
       unique: true,
     },
+    verify_token: {
+      type: String,
+      required: true, // required so each webhook has its token
+    },
     users: [
       {
         type: Schema.Types.ObjectId,

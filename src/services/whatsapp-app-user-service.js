@@ -83,6 +83,7 @@ const createNewWhatsappAccount = async ({
   whatsapp_access_token,
   phone_no_id,
   whatsapp_business_id,
+  verify_token,
   user_id_arr,
 }) => {
   let whatsapp = new WhatsappAccount({
@@ -90,6 +91,7 @@ const createNewWhatsappAccount = async ({
     whatsapp_access_token,
     phone_no_id,
     whatsapp_business_id,
+    verify_token,
     users: user_id_arr,
   });
 
@@ -135,6 +137,10 @@ const updateWhatsappAccountbyId = async (_id, updatedData) => {
 
 const getWhatsappAccountById = async (_id) => {
   return await WhatsappAccount.findOne({ _id });
+};
+
+const getWhatsappAccountByPhoneId = async (phone_no_id) => {
+  return await WhatsappAccount.findOne({ phone_no_id });
 };
 
 const getAllSavedWhatsappAccountsByUserId = async (user_id) => {
@@ -197,4 +203,5 @@ module.exports = {
   removeUserIdFromWhatsappAccount,
   assignWhatsappAccountToUser,
   updateUserbyUserId,
+  getWhatsappAccountByPhoneId,
 };

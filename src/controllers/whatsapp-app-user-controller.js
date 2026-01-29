@@ -227,7 +227,12 @@ const fetchAllRegisteredUsers = async (req, res) => {
 };
 
 const createNewWhatsappAccount = async (req, res) => {
-  const { whatsapp_access_token, phone_no_id, whatsapp_business_id } = req.body;
+  const {
+    whatsapp_access_token,
+    phone_no_id,
+    whatsapp_business_id,
+    verify_token,
+  } = req.body;
 
   try {
     let loginUser = await whatsAppUserService.findUserByUserId(req?.user?._id);
@@ -253,6 +258,16 @@ const createNewWhatsappAccount = async (req, res) => {
         .send({ success: false, message: "whatsapp_business_id is invalid" });
     }
 
+    const account = await whatsAppUserService.getWhatsappAccountByPhoneId(
+      phone_no_id
+    );
+
+    if (account) {
+      return res
+        .status(400)
+        .send({ success: false, message: "phone_no_id already exists" });
+    }
+
     const owner = await whatsAppUserService.findUserByRole(
       WHATSAPP_USER_ROLE_OBJ.owner
     );
@@ -267,6 +282,7 @@ const createNewWhatsappAccount = async (req, res) => {
       whatsapp_access_token,
       phone_no_id,
       whatsapp_business_id,
+      verify_token,
       user_id_arr,
     });
     // if(admin create new account then that user id needs to be added)
