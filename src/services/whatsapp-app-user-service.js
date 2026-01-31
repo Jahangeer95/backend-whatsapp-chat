@@ -185,6 +185,15 @@ const assignWhatsappAccountToUser = async (userId, whatsappDocId, type) => {
   });
 };
 
+const fetchCRMUser = async ({ baseUrl, apiKey, username }) => {
+  const url = `${baseUrl}/api-user/user/?username=${username}&api_key=${apiKey}`;
+  const response = await axios.get(url);
+  return {
+    isValidUser: !!response?.data?.meta?.total_count,
+    userData: response?.data?.Objects[0] || {},
+  };
+};
+
 module.exports = {
   findUserByRole,
   createNewWhatsappUser,
@@ -204,4 +213,5 @@ module.exports = {
   assignWhatsappAccountToUser,
   updateUserbyUserId,
   getWhatsappAccountByPhoneId,
+  fetchCRMUser,
 };

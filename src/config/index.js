@@ -24,6 +24,7 @@ const WHATSAPP_USER_ROLE_OBJ = {
   admin: "ADMIN",
   user: "USER",
   owner: "OWNER",
+  manager: "MANAGER",
 };
 
 const API_CATEGORY_OBJ = {

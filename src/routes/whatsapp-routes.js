@@ -11,6 +11,7 @@ const {
   validateNewWhatsappAccount,
   validateAssignWhatsappAccount,
   validateUserUpdate,
+  validateCRMUserAuth,
 } = require("../validator/whatsapp-user-validator");
 const authMiddleware = require("../middlewares/auth-middlware");
 
@@ -67,6 +68,10 @@ router
 router
   .route("/user/login")
   .post(validateLoginUser, whatsappuserController.loginUser);
+
+router
+  .route("/user/crm-auth")
+  .post(validateCRMUserAuth, whatsappuserController.createUserSessionForCRM);
 
 router
   .route("/user")

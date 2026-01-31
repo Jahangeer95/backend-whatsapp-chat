@@ -38,6 +38,25 @@ function validateLoginUser(req, res, next) {
   next();
 }
 
+function validateCRMUserAuth(req, res, next) {
+  const joiSchema = JOI.object({
+    username: JOI.string().required(),
+    apiKey: JOI.string().required(),
+    baseUrl: JOI.string().required(),
+  });
+
+  const { error, value } = joiSchema.validate(req.body);
+
+  if (error) {
+    const validationError = new Error(error.details[0].message);
+    validationError.statusCode = 400;
+    return next(validationError);
+  }
+
+  req.body = value;
+  next();
+}
+
 function validateNewUser(req, res, next) {
   const joiSchema = JOI.object({
     name: JOI.string().min(5).max(50).required(),
@@ -122,4 +141,5 @@ module.exports = {
   validateNewWhatsappAccount,
   validateAssignWhatsappAccount,
   validateUserUpdate,
+  validateCRMUserAuth,
 };

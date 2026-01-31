@@ -210,6 +210,42 @@ const loginUser = async (req, res) => {
   res.header("user_auth_token", token).send(user);
 };
 
+const createUserSessionForCRM = async (req, res) => {
+  const { username, apiKey, baseUrl } = req.body || {};
+  // first find user by using api key and base url
+  // if user not exists then invalid user
+  const { isValidUser, userData } = await whatsAppUserService.fetchCRMUser({
+    baseUrl,
+    apiKey,
+    username,
+  });
+  if (!isValidUser) {
+    return res.status(400).send({ message: "Invalid crm user" });
+  }
+  // if present then create user with session if not exist
+  // otherwise create user session after finding it
+
+  let user = await whatsAppUserService.findUserByUsername(username);
+
+  if (!user) {
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash("crm1234567", salt);
+
+    user = await whatsAppUserService.createNewWhatsappUser({
+      name: userData?.username,
+      email: userData?.email,
+      role: userData?.role,
+      password: hashPassword,
+    });
+  }
+
+  const token = user.generateAuthToken();
+  user = user.toObject();
+  delete user.password;
+
+  res.header("user_auth_token", token).send(user);
+};
+
 const fetchAllRegisteredUsers = async (req, res) => {
   try {
     const users = await whatsAppUserService.fetchAllUsers();
@@ -562,4 +598,5 @@ module.exports = {
   deleteUserAccount,
   assignWhatsappAccountToUser,
   updateUser,
+  createUserSessionForCRM,
 };

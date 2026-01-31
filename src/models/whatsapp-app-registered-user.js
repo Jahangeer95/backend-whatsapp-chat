@@ -15,7 +15,7 @@ const whatsappAppRegisteredUserSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["OWNER", "ADMIN", "USER"],
+      enum: ["OWNER", "ADMIN", "USER", "MANAGER"],
       default: "USER",
     },
     password: {
@@ -88,6 +88,16 @@ whatsappAppRegisteredUserSchema.pre("save", function (next) {
     this.can_assign_whatsapp_account = true;
     this.can_delete_whatsapp_account = true;
   } else if (this.role === WHATSAPP_USER_ROLE_OBJ.admin) {
+    this.can_send_text = true;
+    this.can_send_template = true;
+    this.can_send_file = true;
+    this.can_create_user = true;
+    this.can_update_user = true;
+    this.can_delete_user = false;
+    this.can_link_whatsapp_account = true;
+    this.can_assign_whatsapp_account = true;
+    this.can_delete_whatsapp_account = true;
+  } else if (this.role === WHATSAPP_USER_ROLE_OBJ.manager) {
     this.can_send_text = true;
     this.can_send_template = true;
     this.can_send_file = true;
