@@ -98,9 +98,11 @@ router
     whatsappuserController.createNewWhatsappAccount
   );
 //permission added for put,delete,post
+// For get request business id used as params
 router
   .route("/accounts/:whatsappDocId")
   .all(authMiddleware)
+  .get(whatsappuserController.getWhatsappAccountById)
   .put(validateNewWhatsappAccount, whatsappuserController.updateWhatsappAccount)
   .delete(whatsappuserController.deleteWhatsappAccount)
   .post(

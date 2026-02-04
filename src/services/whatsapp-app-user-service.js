@@ -139,6 +139,10 @@ const getWhatsappAccountById = async (_id) => {
   return await WhatsappAccount.findOne({ _id });
 };
 
+const getWhatsappAccountByBusinessId = async (id) => {
+  return await WhatsappAccount.findOne({ whatsapp_business_id: id });
+};
+
 const getWhatsappAccountByPhoneId = async (phone_no_id) => {
   return await WhatsappAccount.findOne({ phone_no_id });
 };
@@ -215,4 +219,5 @@ module.exports = {
   updateUserbyUserId,
   getWhatsappAccountByPhoneId,
   fetchCRMUser,
+  getWhatsappAccountByBusinessId,
 };

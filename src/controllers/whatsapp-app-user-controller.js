@@ -468,6 +468,29 @@ const deleteWhatsappAccount = async (req, res) => {
   }
 };
 
+const getWhatsappAccountById = async (req, res) => {
+  const { whatsappDocId } = req.params;
+
+  try {
+    let account = await whatsAppUserService.getWhatsappAccountByBusinessId(
+      whatsappDocId
+    );
+
+    res.send({
+      success: true,
+      data: account,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
 const deleteUserAccount = async (req, res) => {
   const { userId } = req.params;
 
@@ -599,4 +622,5 @@ module.exports = {
   assignWhatsappAccountToUser,
   updateUser,
   createUserSessionForCRM,
+  getWhatsappAccountById,
 };
