@@ -140,7 +140,9 @@ const getWhatsappAccountById = async (_id) => {
 };
 
 const getWhatsappAccountByBusinessId = async (id) => {
-  return await WhatsappAccount.findOne({ whatsapp_business_id: id });
+  return await WhatsappAccount.findOne({ whatsapp_business_id: id }).select(
+    "-users -verify_token"
+  );
 };
 
 const getWhatsappAccountByPhoneId = async (phone_no_id) => {
