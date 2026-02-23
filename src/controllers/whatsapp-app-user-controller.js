@@ -237,6 +237,13 @@ const createUserSessionForCRM = async (req, res) => {
       role: userData?.role,
       password: hashPassword,
     });
+  } else {
+    const shouldUpdateRole = user?.role !== userData?.role;
+
+    if (shouldUpdateRole) {
+      user.role = userData?.role;
+      await user.save();
+    }
   }
 
   const token = user.generateAuthToken();
