@@ -13,12 +13,19 @@ const findUserByRole = async (role) => {
   return user;
 };
 
-const createNewWhatsappUser = async ({ name, email, password, role }) => {
+const createNewWhatsappUser = async ({
+  name,
+  email,
+  password,
+  role,
+  company_id,
+}) => {
   let user = new WhatsappAppRegisteredUser({
     name,
     email,
     password,
     role,
+    company_id,
   });
 
   user = await user.save();
@@ -37,6 +44,15 @@ const findUserByEmail = async (email) => {
 const findUserByUsername = async (name) => {
   const user = await WhatsappAppRegisteredUser.findOne({
     name,
+  });
+
+  return user;
+};
+
+const findUserByUsernameAndCompanyId = async (name, company_id) => {
+  const user = await WhatsappAppRegisteredUser.findOne({
+    name,
+    company_id,
   });
 
   return user;
@@ -72,8 +88,8 @@ const comparePassword = async ({ savedPassword, password }) => {
   return await compare(password, savedPassword);
 };
 
-const fetchAllUsers = async () => {
-  return await WhatsappAppRegisteredUser.find()
+const fetchAllUsers = async (company_id) => {
+  return await WhatsappAppRegisteredUser.find({ company_id })
     .sort("role")
     .select("-password");
 };
@@ -113,7 +129,7 @@ const isValidWhatsappBusinessId = async ({
         fields: "id,name",
         access_token: whatsapp_access_token,
       },
-    }
+    },
   );
 
   return {
@@ -131,7 +147,7 @@ const updateWhatsappAccountbyId = async (_id, updatedData) => {
     {
       upsert: false,
       new: true,
-    }
+    },
   );
 };
 
@@ -141,7 +157,7 @@ const getWhatsappAccountById = async (_id) => {
 
 const getWhatsappAccountByBusinessId = async (id) => {
   return await WhatsappAccount.findOne({ whatsapp_business_id: id }).select(
-    "-users -verify_token"
+    "-users -verify_token",
   );
 };
 
@@ -172,7 +188,7 @@ const removeUserIdFromWhatsappAccount = async (_id) => {
       $pull: {
         users: _id,
       },
-    }
+    },
   );
 };
 
@@ -222,4 +238,5 @@ module.exports = {
   getWhatsappAccountByPhoneId,
   fetchCRMUser,
   getWhatsappAccountByBusinessId,
+  findUserByUsernameAndCompanyId,
 };

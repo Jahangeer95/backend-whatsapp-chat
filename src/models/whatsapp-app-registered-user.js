@@ -1,6 +1,7 @@
 const JWT = require("jsonwebtoken");
 const { Schema, model } = require("mongoose");
 const { WHATSAPP_USER_ROLE_OBJ, JWT_SECRET_KEY } = require("../config");
+const { number } = require("joi");
 
 const whatsappAppRegisteredUserSchema = new Schema(
   {
@@ -22,6 +23,10 @@ const whatsappAppRegisteredUserSchema = new Schema(
       type: String,
       minLength: 7,
       maxLength: 100,
+      required: true,
+    },
+    company_id: {
+      type: Number,
       required: true,
     },
     can_send_text: {
@@ -64,11 +69,14 @@ const whatsappAppRegisteredUserSchema = new Schema(
   {
     versionKey: false,
     timestamps: true,
-  }
+  },
 );
 
 whatsappAppRegisteredUserSchema.methods.generateAuthToken = function () {
-  const token = JWT.sign({ _id: this._id, role: this.role }, JWT_SECRET_KEY);
+  const token = JWT.sign(
+    { _id: this._id, role: this.role, company_id: this.company_id },
+    JWT_SECRET_KEY,
+  );
 
   return token;
 };
@@ -128,7 +136,7 @@ whatsappAppRegisteredUserSchema.post("save", function (error, doc, next) {
     const value = error.keyValue[field];
 
     const validationError = new Error(
-      `The ${field} '${value}' is already taken. Please choose a different one.`
+      `The ${field} '${value}' is already taken. Please choose a different one.`,
     );
     validationError.statusCode = 409;
 
@@ -181,5 +189,5 @@ whatsappAppRegisteredUserSchema.set("toObject", {
 // virtuals not work with lean menthods
 exports.WhatsappAppRegisteredUser = model(
   "WhatsappAppRegisteredUser",
-  whatsappAppRegisteredUserSchema
+  whatsappAppRegisteredUserSchema,
 );

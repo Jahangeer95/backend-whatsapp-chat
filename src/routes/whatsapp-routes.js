@@ -27,7 +27,7 @@ router.post(
   authMiddleware,
   whatsAppValidator.validateWhatsappHeaders,
   whatsappUploads.single("file"),
-  whatsappController.sendMessage
+  whatsappController.sendMessage,
 );
 
 router
@@ -35,7 +35,7 @@ router
   .all(authMiddleware)
   .get(
     whatsAppValidator.validateWhatsappHeaders,
-    whatsappController?.getAllContacts
+    whatsappController?.getAllContacts,
   );
 
 router
@@ -44,7 +44,7 @@ router
   .get(
     whatsAppValidator.validateWhatsappHeaders,
     validateUserId,
-    whatsappController.getAllMessagesForUser
+    whatsappController.getAllMessagesForUser,
   );
 
 router
@@ -52,14 +52,14 @@ router
   .all(authMiddleware)
   .get(
     whatsAppValidator.validateWhatsappHeaders,
-    whatsappController.getMediaByMediaId
+    whatsappController.getMediaByMediaId,
   );
 
 router.get(
   "/templates",
   authMiddleware,
   whatsAppValidator.validateWhatsappHeaders,
-  whatsappController.fetchAllPageTemplates
+  whatsappController.fetchAllPageTemplates,
 );
 
 router
@@ -95,7 +95,7 @@ router
   .all(authMiddleware)
   .post(
     validateNewWhatsappAccount,
-    whatsappuserController.createNewWhatsappAccount
+    whatsappuserController.createNewWhatsappAccount,
   );
 //permission added for put,delete,post
 // For get request business id used as params
@@ -107,7 +107,7 @@ router
   .delete(whatsappuserController.deleteWhatsappAccount)
   .post(
     validateAssignWhatsappAccount,
-    whatsappuserController.assignWhatsappAccountToUser
+    whatsappuserController.assignWhatsappAccountToUser,
   );
 
 module.exports = router;

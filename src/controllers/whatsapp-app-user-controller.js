@@ -6,7 +6,7 @@ const createOwner = async (req, res) => {
   const { name, email, password } = req.body;
 
   const owner = await whatsAppUserService.findUserByRole(
-    WHATSAPP_USER_ROLE_OBJ.owner
+    WHATSAPP_USER_ROLE_OBJ.owner,
   );
 
   if (owner) {
@@ -152,7 +152,7 @@ const updateUser = async (req, res) => {
     }
 
     let existingUser = await whatsAppUserService.findUserByEmail(
-      req.body?.email
+      req.body?.email,
     );
 
     if (existingUser && existingUser?._id?.toString() !== userId) {
@@ -225,7 +225,10 @@ const createUserSessionForCRM = async (req, res) => {
   // if present then create user with session if not exist
   // otherwise create user session after finding it
 
-  let user = await whatsAppUserService.findUserByUsername(username);
+  let user = await whatsAppUserService.findUserByUsernameAndCompanyId(
+    username,
+    userData?.company?.company_id,
+  );
 
   if (!user) {
     const salt = await bcrypt.genSalt(10);
@@ -235,6 +238,7 @@ const createUserSessionForCRM = async (req, res) => {
       name: userData?.username,
       email: userData?.email,
       role: userData?.role,
+      company_id: userData?.company?.company_id,
       password: hashPassword,
     });
   } else {
@@ -255,7 +259,8 @@ const createUserSessionForCRM = async (req, res) => {
 
 const fetchAllRegisteredUsers = async (req, res) => {
   try {
-    const users = await whatsAppUserService.fetchAllUsers();
+    const { company_id } = req.user || {};
+    const users = await whatsAppUserService.fetchAllUsers(company_id);
 
     res.json({ success: true, data: users });
   } catch (error) {
@@ -301,9 +306,8 @@ const createNewWhatsappAccount = async (req, res) => {
         .send({ success: false, message: "whatsapp_business_id is invalid" });
     }
 
-    const account = await whatsAppUserService.getWhatsappAccountByPhoneId(
-      phone_no_id
-    );
+    const account =
+      await whatsAppUserService.getWhatsappAccountByPhoneId(phone_no_id);
 
     if (account) {
       return res
@@ -312,7 +316,7 @@ const createNewWhatsappAccount = async (req, res) => {
     }
 
     const owner = await whatsAppUserService.findUserByRole(
-      WHATSAPP_USER_ROLE_OBJ.owner
+      WHATSAPP_USER_ROLE_OBJ.owner,
     );
 
     const user_id_arr =
@@ -359,9 +363,8 @@ const updateWhatsappAccount = async (req, res) => {
       });
     }
 
-    let account = await whatsAppUserService.getWhatsappAccountById(
-      whatsappDocId
-    );
+    let account =
+      await whatsAppUserService.getWhatsappAccountById(whatsappDocId);
 
     if (!account) {
       return res.status(400).send({
@@ -387,7 +390,7 @@ const updateWhatsappAccount = async (req, res) => {
       {
         ...req.body,
         account_name: name,
-      }
+      },
     );
 
     console.log(response.data, "update wp");
@@ -448,9 +451,8 @@ const deleteWhatsappAccount = async (req, res) => {
       });
     }
 
-    let account = await whatsAppUserService.getWhatsappAccountById(
-      whatsappDocId
-    );
+    let account =
+      await whatsAppUserService.getWhatsappAccountById(whatsappDocId);
 
     if (!account) {
       return res.status(400).send({
@@ -479,9 +481,8 @@ const getWhatsappAccountById = async (req, res) => {
   const { whatsappDocId } = req.params;
 
   try {
-    let account = await whatsAppUserService.getWhatsappAccountByBusinessId(
-      whatsappDocId
-    );
+    let account =
+      await whatsAppUserService.getWhatsappAccountByBusinessId(whatsappDocId);
 
     res.send({
       success: true,
@@ -582,9 +583,8 @@ const assignWhatsappAccountToUser = async (req, res) => {
       });
     }
 
-    let account = await whatsAppUserService.getWhatsappAccountById(
-      whatsappDocId
-    );
+    let account =
+      await whatsAppUserService.getWhatsappAccountById(whatsappDocId);
 
     if (!account) {
       return res.status(400).send({
@@ -596,7 +596,7 @@ const assignWhatsappAccountToUser = async (req, res) => {
     await whatsAppUserService.assignWhatsappAccountToUser(
       userId,
       whatsappDocId,
-      type
+      type,
     );
 
     res.send({
