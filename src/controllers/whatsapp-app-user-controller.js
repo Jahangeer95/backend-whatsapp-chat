@@ -260,6 +260,13 @@ const createUserSessionForCRM = async (req, res) => {
 const fetchAllRegisteredUsers = async (req, res) => {
   try {
     const { company_id } = req.user || {};
+
+    if (!company_id) {
+      return res.status(400).json({
+        message: "company_id is required",
+      });
+    }
+
     const users = await whatsAppUserService.fetchAllUsers(company_id);
 
     res.json({ success: true, data: users });
