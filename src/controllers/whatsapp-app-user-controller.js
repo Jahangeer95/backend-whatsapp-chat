@@ -225,9 +225,11 @@ const createUserSessionForCRM = async (req, res) => {
   // if present then create user with session if not exist
   // otherwise create user session after finding it
 
+  const companyId = userData?.company?.split("/").slice(-2)[0] || 1;
+
   let user = await whatsAppUserService.findUserByUsernameAndCompanyId(
     username,
-    userData?.company?.company_id,
+    companyId,
   );
 
   if (!user) {
