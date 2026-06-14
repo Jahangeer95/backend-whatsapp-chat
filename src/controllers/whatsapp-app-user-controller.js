@@ -214,11 +214,13 @@ const createUserSessionForCRM = async (req, res) => {
   const { username, apiKey, baseUrl } = req.body || {};
   // first find user by using api key and base url
   // if user not exists then invalid user
+
   const { isValidUser, userData } = await whatsAppUserService.fetchCRMUser({
     baseUrl,
     apiKey,
     username,
   });
+
   if (!isValidUser) {
     return res.status(400).send({ message: "Invalid crm user" });
   }
@@ -240,7 +242,7 @@ const createUserSessionForCRM = async (req, res) => {
       name: userData?.username,
       email: userData?.email,
       role: userData?.role,
-      company_id: userData?.company?.company_id,
+      company_id: companyId,
       password: hashPassword,
     });
   } else {
