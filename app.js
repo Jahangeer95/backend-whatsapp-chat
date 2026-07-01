@@ -78,10 +78,10 @@ app.use(helmet());
 // Serve the uploads folder as static files
 app.use(
   "/insta-uploads",
-  express.static(path.join(process.cwd(), "insta-uploads"))
+  express.static(path.join(process.cwd(), "insta-uploads")),
 );
 
-app.use("/", routes);
+app.use("/api", routes);
 app.use(errorMiddleware);
 
 server.listen(PORT, () => {
