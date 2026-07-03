@@ -9,9 +9,10 @@ const verifyWebhook = async (req, res) => {
   const challenge = req.query["hub.challenge"];
   const phone_no_id = req.params.phone_no_id;
 
-  const account = await whatsAppUserService.getWhatsappAccountByPhoneId(
-    phone_no_id
-  );
+  console.log(req.query, "=====");
+
+  const account =
+    await whatsAppUserService.getWhatsappAccountByPhoneId(phone_no_id);
 
   if (!account) {
     console.log(`No WhatsApp account found for phone_no_id: ${phone_no_id}`);
@@ -56,7 +57,7 @@ const sendMessage = async (req, res) => {
   try {
     if (type === "text") {
       let loginUser = await whatsAppUserService.findUserByUserId(
-        req?.user?._id
+        req?.user?._id,
       );
 
       if (!loginUser?.can_send_text) {
@@ -87,7 +88,7 @@ const sendMessage = async (req, res) => {
 
     if (type === "template") {
       let loginUser = await whatsAppUserService.findUserByUserId(
-        req?.user?._id
+        req?.user?._id,
       );
 
       if (!loginUser?.can_send_template) {
@@ -118,7 +119,7 @@ const sendMessage = async (req, res) => {
 
     if (type === "file") {
       let loginUser = await whatsAppUserService.findUserByUserId(
-        req?.user?._id
+        req?.user?._id,
       );
 
       if (!loginUser?.can_send_file) {
@@ -146,7 +147,7 @@ const sendMessage = async (req, res) => {
         to,
         mediaId,
         type,
-        file?.originalname
+        file?.originalname,
       );
 
       const message_id = response?.messages?.[0]?.id;
@@ -164,7 +165,7 @@ const sendMessage = async (req, res) => {
   } catch (error) {
     console.error(
       "WhatsApp Send Error:",
-      error?.response?.data?.error?.message || error?.message
+      error?.response?.data?.error?.message || error?.message,
     );
     return res.status(500).json({
       success: false,
@@ -215,7 +216,7 @@ const getAllMessagesForUser = async (req, res) => {
 
     const total = await whatsappService.countMessagesByUserId(
       userId,
-      businessId
+      businessId,
     );
 
     const messages = await whatsappService.fetchMessagesByUserId({
