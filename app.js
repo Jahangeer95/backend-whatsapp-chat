@@ -18,6 +18,7 @@ const app = express();
 const server = http.createServer(app); // Instead of app.listen()
 
 const io = new Server(server, {
+  path: "/api/socket.io",
   cors: {
     origin: "*", // or your frontend domain
     methods: ["GET", "POST"],
