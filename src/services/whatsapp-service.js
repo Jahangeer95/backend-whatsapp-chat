@@ -37,7 +37,7 @@ const createOrUpdateContact = async ({
       $set: { ...nameObj, ...profileObj, ...lastMessageTime },
       $currentDate: { updatedAt: true }, // always updates timestamp
     },
-    { new: true, upsert: true }
+    { new: true, upsert: true },
   );
 };
 
@@ -140,7 +140,7 @@ const handleStatusEvents = async (value, io) => {
         },
         {
           new: true,
-        }
+        },
       );
 
       await createOrUpdateContact({
@@ -286,10 +286,16 @@ const uploadMediaFromFile = async ({ filePath, mimeType, phoneId, token }) => {
   } catch (error) {
     logger.error(
       "Attachment message error:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
 
-    throw new Error(error.response?.data || error.message);
+    throw new Error(
+      typeof error.response?.data === "string"
+        ? error.response.data
+        : error.response?.data?.error?.message ||
+            JSON.stringify(error.response?.data) ||
+            error.message,
+    );
   } finally {
     fs.unlink(filePath, (err) => {
       if (err) logger.error("File cleanup failed:", err.message);
