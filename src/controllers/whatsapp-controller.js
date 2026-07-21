@@ -267,7 +267,14 @@ const getMediaByMediaId = async (req, res) => {
     res.setHeader("Content-Type", metadataRes.data.mime_type || "image/jpeg");
     mediaRes.data.pipe(res);
   } catch (error) {
-    console.error("Error getting media:", error);
+    console.error(
+      "Error getting media:",
+      typeof error.response?.data === "string"
+        ? error.response.data
+        : error.response?.data?.error?.message ||
+            JSON.stringify(error.response?.data) ||
+            error.message,
+    );
     res.status(500).json({ success: false, error: "Failed to fetch media" });
   }
 };
