@@ -165,16 +165,16 @@ const sendMessage = async (req, res) => {
   } catch (error) {
     console.error(
       "WhatsApp Send Error:",
-      error?.response?.data?.error?.message,
-      JSON.stringify(error?.response?.data?.error),
-      error?.message,
+      error?.response?.data?.error?.message ||
+        JSON.stringify(error?.response?.data?.error) ||
+        JSON.stringify(error?.message),
     );
     return res.status(500).json({
       success: false,
       error:
         error?.response?.data?.error?.message ||
         JSON.stringify(error?.response?.data?.error) ||
-        error?.message ||
+        JSON.stringify(error?.message) ||
         "Failed to send WhatsApp message.",
     });
   }
