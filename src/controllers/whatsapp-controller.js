@@ -143,12 +143,14 @@ const sendMessage = async (req, res) => {
         phoneId,
         token,
       });
-      const response = await whatsappService.sendMedia(
+      const response = await whatsappService.sendMedia({
         to,
         mediaId,
         type,
-        file?.originalname,
-      );
+        filename: file?.originalname,
+        phoneId,
+        token,
+      });
 
       const message_id = response?.messages?.[0]?.id;
 
