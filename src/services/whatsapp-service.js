@@ -155,7 +155,7 @@ const handleStatusEvents = async (value, io) => {
       });
     }
   } catch (error) {
-    console.error("Error in handleStatusEvent:", err.message);
+    console.error("Error in handleStatusEvent:", error.message);
     throw new Error(error);
   }
 };
@@ -322,6 +322,8 @@ const sendMedia = async ({
   if (type === "document" && filename) {
     payload.document.filename = filename;
   }
+
+  console.log({ token, url, phoneId });
 
   const response = await axios.post(url, payload, {
     headers: getWhatsAppHeaders(token),
