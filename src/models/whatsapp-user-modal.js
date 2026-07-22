@@ -10,7 +10,7 @@ const whatsappUserSchema = new Schema(
     wa_id: {
       type: String,
       required: true,
-      unique: true,
+      // unique: true,
     },
     name: {
       type: String,
@@ -25,12 +25,12 @@ const whatsappUserSchema = new Schema(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 whatsappUserSchema.index(
   { wa_id: 1, whatsapp_business_id: 1 },
-  { unique: true }
+  { unique: true },
 );
 
 exports.whatsappUser = model("whatsappUser", whatsappUserSchema);

@@ -156,7 +156,7 @@ const handleStatusEvents = async (value, io) => {
     }
   } catch (error) {
     console.error("Error in handleStatusEvent:", err.message);
-    throw new Error(err);
+    throw new Error(error);
   }
 };
 
