@@ -407,6 +407,51 @@ const getPageTemplates = async ({ businessId, token }) => {
   });
 };
 
+const getWhatsappAccountByFacebookPageId = async (pageId) => {
+  return await whatsAppAccount.findOne({
+    fb_page_id: pageId,
+  });
+};
+
+const getLeadById = async ({ leadgenId, pageAccessToken }) => {
+  const response = await axios.get(`${GRAPH_BASE_URL}/${leadgenId}`, {
+    params: {
+      access_token: pageAccessToken,
+    },
+  });
+
+  return response.data;
+};
+
+const handleFacebookLead = async (data) => {
+  const { leadgen_id, page_id, form_id, ad_id, created_time } = data;
+
+  console.log("Facebook Lead:", {
+    leadgen_id,
+    page_id,
+    form_id,
+    ad_id,
+  });
+
+  const account = await getWhatsappAccountByFacebookPageId(page_id);
+
+  if (!account) {
+    console.log(`No account found for Facebook Page: ${page_id}`);
+    return;
+  }
+
+  const lead = await getLeadById({
+    leadgenId: leadgen_id,
+    pageAccessToken: account.fb_page_access_token,
+  });
+
+  console.log("FACEBOOK LEAD DATA:", lead);
+
+  return lead; // Return the lead data for further processing, e.g., creating a CRM lead
+
+  // Create your CRM lead here
+};
+
 module.exports = {
   handleEntry,
   sendTextMessage,
@@ -423,4 +468,5 @@ module.exports = {
   getPageTemplates,
   countWhatsappContacts,
   countMessagesByUserId,
+  handleFacebookLead,
 };

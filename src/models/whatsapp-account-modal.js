@@ -24,6 +24,16 @@ const whatsAppAccountSchema = new Schema(
       type: String,
       required: true, // required so each webhook has its token
     },
+    // Facebook Page
+    fb_page_id: {
+      type: String,
+      unique: true,
+      sparse: true, //sparse: true is useful because not every WhatsApp account necessarily has a Facebook Page.
+    },
+
+    fb_page_access_token: {
+      type: String,
+    },
     users: [
       {
         type: Schema.Types.ObjectId,
@@ -33,7 +43,7 @@ const whatsAppAccountSchema = new Schema(
   },
   {
     versionKey: false,
-  }
+  },
 );
 
 whatsAppAccountSchema.post("save", function (error, doc, next) {
@@ -42,7 +52,7 @@ whatsAppAccountSchema.post("save", function (error, doc, next) {
     const value = error.keyValue[field];
 
     const validationError = new Error(
-      `The ${field} '${value}' is already taken. Please choose a different one.`
+      `The ${field} '${value}' is already taken. Please choose a different one.`,
     );
     validationError.statusCode = 409;
 

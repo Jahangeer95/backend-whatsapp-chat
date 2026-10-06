@@ -40,6 +40,21 @@ const receiveWebHook = (req, res) => {
     return res.status(200).send("EVENT_RECEIVED");
   }
 
+  // Facebook Page
+  if (body?.object === "page") {
+    for (const entry of body?.entry || []) {
+      for (const change of entry?.changes || []) {
+        if (change.field === "leadgen") {
+          whatsappService.handleFacebookLead(change.value);
+        }
+      }
+    }
+
+    console.log("Facebook Lead Event Received");
+
+    return res.status(200).send("EVENT_RECEIVED");
+  }
+
   return res.status(404).send("Not a message from whatsapp account");
 };
 
