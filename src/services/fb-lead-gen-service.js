@@ -31,7 +31,7 @@ exports.updateFbLeadGenByPage_id = async (_id, updatedData) => {
 };
 
 exports.getFbLeadGenByCompanyId = async ({ company_id }) => {
-  return await FbLeadGen.findOne({ company_id });
+  return await FbLeadGen.find({ company_id });
 };
 
 exports.getPageByPageId = async ({ page_id }) => {

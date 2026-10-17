@@ -15,7 +15,7 @@ exports.createFbLeadGen = async (req, res) => {
         .send({ success: false, message: "Facebook page id is invalid" });
     }
 
-    let isPageExist = await fbLeadGenService.getPageByPageId(page_id);
+    let isPageExist = await fbLeadGenService.getPageByPageId({ page_id });
 
     if (isPageExist) {
       return res
@@ -51,7 +51,7 @@ exports.updateFbLeadGenPage = async (req, res) => {
   const { pageId } = req.params; //page_id of the page to update
 
   try {
-    let page = await fbLeadGenService.getPageByPageId(pageId);
+    let page = await fbLeadGenService.getPageByPageId({ page_id: pageId });
 
     if (!page) {
       return res
