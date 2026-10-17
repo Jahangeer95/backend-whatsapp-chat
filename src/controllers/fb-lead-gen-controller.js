@@ -2,7 +2,7 @@ const fbLeadGenService = require("../services/fb-lead-gen-service");
 const pageService = require("../services/app-pages-service");
 
 exports.createFbLeadGen = async (req, res) => {
-  const { page_id, access_token, company_id, user_id } = req.body;
+  const { page_id, access_token, verify_token, company_id, user_id } = req.body;
 
   try {
     const { isValid, name } = await pageService.isValidFbPageId({
@@ -15,7 +15,7 @@ exports.createFbLeadGen = async (req, res) => {
         .send({ success: false, message: "Facebook page id is invalid" });
     }
 
-    let isPageExist = await fbLeadGenService.getPageByPageId(pageId);
+    let isPageExist = await fbLeadGenService.getPageByPageId(page_id);
 
     if (isPageExist) {
       return res
@@ -26,6 +26,7 @@ exports.createFbLeadGen = async (req, res) => {
     const page = await fbLeadGenService.createFbLeadGen({
       page_name: name,
       page_id,
+      verify_token,
       access_token,
       company_id,
       user_id,

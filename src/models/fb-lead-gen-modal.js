@@ -18,6 +18,10 @@ const fbLeadGenSchema = new Schema(
       type: String,
       required: true,
     },
+    verify_token: {
+      type: String,
+      required: true,
+    },
     company_id: {
       type: Number,
       required: true,
