@@ -4,6 +4,7 @@ const whatsappRouter = require("./whatsapp-routes");
 const instagramRouter = require("./instagram-routes");
 const userRouter = require("./app-user-routes");
 const fbAdRouter = require("./fb-ad-routes");
+const fbLeadGenRouter = require("./app-fb-lead-gen-routes");
 
 const router = Router();
 
@@ -18,5 +19,7 @@ router.use("/fb-ad", fbAdRouter);
 router.use("/whatsapp", whatsappRouter);
 
 router.use("/instagram", instagramRouter);
+
+router.use("/fb-lead-gen", fbLeadGenRouter);
 
 module.exports = router;
