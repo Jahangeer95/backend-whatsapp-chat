@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { FbLeadGen } = require("../models/fb-lead-gen-modal");
-const { GRAPH_BASE_URL } = require("../config");
+const { GRAPH_BASE_URL, CRM_BACKEND } = require("../config");
 
 const getLeadGenDataByLeadgenId = async ({ leadgen_id, access_token }) => {
   // collect lead gen info
@@ -66,6 +66,18 @@ exports.handleEntry = async (entry, io) => {
           createdby_user: { id: page?.user_id },
           customer_visited: "No",
         };
+
+        const crmEndpoint = `${CRM_BACKEND}//api-lead/lead`;
+
+        const response = await axios.post(crmEndpoint, rawLead, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "ApiKey sabahat:29b5ca94f4b0f32703beff7436b4d97a700b3e11",
+          },
+        });
+
+        console.log("CRM response:", response.data);
 
         console.log("Lead gen data", leadData);
         console.log("Converted raw lead:", rawLead);
