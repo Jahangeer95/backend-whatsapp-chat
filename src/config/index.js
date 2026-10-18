@@ -12,6 +12,8 @@ const DATABASE_URI = process.env.DATABASE_URI;
 const BACKEND_URL = process.env.BACKEND_URL;
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
+const CRM_BACKEND = process.env.CRM_BACKEND;
+
 const USER_ROLE_OBJ = {
   admin: "ADMIN",
   manager: "MANAGER",

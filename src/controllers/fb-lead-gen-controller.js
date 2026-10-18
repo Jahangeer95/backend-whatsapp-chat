@@ -23,6 +23,26 @@ exports.verifyWebhook = async (req, res) => {
   return res.sendStatus(403);
 };
 
+exports.receiveWebhook = (req, res) => {
+  const body = req.body;
+  const io = req.app.get("io"); // Access socket instance
+
+  if (body.object === "page") {
+    body.entry.forEach((entry) => {
+      try {
+        fbLeadGenService.handleEntry(entry, io);
+      } catch (erro) {
+        console.log(
+          "error",
+          error?.response?.data?.error?.message || error?.message,
+        );
+      }
+    });
+    return res.status(200).send("EVENT_RECEIVED");
+  }
+  return res.sendStatus(404);
+};
+
 exports.createFbLeadGen = async (req, res) => {
   const { page_id, access_token, verify_token, company_id, user_id } = req.body;
 
