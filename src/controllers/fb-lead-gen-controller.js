@@ -29,14 +29,8 @@ exports.receiveWebhook = (req, res) => {
 
   if (body.object === "page") {
     body.entry.forEach((entry) => {
-      try {
-        fbLeadGenService.handleEntry(entry, io);
-      } catch (erro) {
-        console.log(
-          "error",
-          error?.response?.data?.error?.message || error?.message,
-        );
-      }
+      console.log({ entry });
+      fbLeadGenService.handleEntry(entry, io);
     });
     return res.status(200).send("EVENT_RECEIVED");
   }
