@@ -38,3 +38,7 @@ exports.getFbLeadGenByCompanyId = async ({ company_id }) => {
 exports.getPageByPageId = async ({ page_id }) => {
   return await FbLeadGen.findOne({ page_id });
 };
+
+exports.deleteFbLeadGenByPageId = async ({ page_id }) => {
+  return await FbLeadGen.findOneAndDelete({ page_id });
+};

@@ -12,9 +12,12 @@ router
   .all(authMiddleware)
   .post(validateNewFbLeadGenPage, fbLeadGenController.createFbLeadGen);
 
+router.route("/webhook/:pageId").get(fbLeadGenController.verifyWebhook);
+
 router
   .route("/:pageId")
   .all(authMiddleware)
+  .delete(fbLeadGenController.deleteFbLeadGenPageByPageId)
   .put(validateNewFbLeadGenPage, fbLeadGenController.updateFbLeadGenPage);
 
 router

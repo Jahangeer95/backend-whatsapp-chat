@@ -1,6 +1,28 @@
 const fbLeadGenService = require("../services/fb-lead-gen-service");
 const pageService = require("../services/app-pages-service");
 
+exports.verifyWebhook = async (req, res) => {
+  const mode = req.query["hub.mode"];
+  const token = req.query["hub.verify_token"];
+  const challenge = req.query["hub.challenge"];
+  const page_id = req.params.pageId;
+
+  console.log(req.query, "=====");
+
+  const page = await fbLeadGenService.getPageByPageId({ page_id: page_id });
+
+  if (!page) {
+    console.log(`No page data found for page_id: ${page_id}`);
+    return res.sendStatus(404);
+  }
+
+  if (mode === "subscribe" && token === page?.verify_token) {
+    console.log("WEBHOOK_VERIFIED");
+    return res.status(200).send(challenge);
+  }
+  return res.sendStatus(403);
+};
+
 exports.createFbLeadGen = async (req, res) => {
   const { page_id, access_token, verify_token, company_id, user_id } = req.body;
 
@@ -111,6 +133,35 @@ exports.getAllSavedLeadGenPagesByCompanyId = async (req, res) => {
     });
 
     res.send({ success: true, data: pages });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
+  }
+};
+
+exports.deleteFbLeadGenPageByPageId = async (req, res) => {
+  const { pageId } = req.params; //page_id of the page to delete
+
+  try {
+    let page = await fbLeadGenService.getPageByPageId({ page_id: pageId });
+
+    if (!page) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Page Id is invalid" });
+    }
+
+    await fbLeadGenService.deleteFbLeadGenByPageId({ page_id: pageId });
+
+    res.send({
+      success: true,
+      message: "Page data deleted successfully.",
+    });
   } catch (error) {
     res.status(400).json({
       success: false,
