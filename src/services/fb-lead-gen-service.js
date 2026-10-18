@@ -9,6 +9,7 @@ exports.createFbLeadGen = async ({
   user_id,
 }) => {
   let page = new FbLeadGen({
+    page_name,
     page_id,
     access_token,
     verify_token,
