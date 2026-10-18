@@ -14,7 +14,7 @@ const getLeadGenDataByLeadgenId = async ({ leadgen_id, access_token }) => {
     },
   });
 
-  return respose.data;
+  return response.data;
 };
 
 exports.handleEntry = async (entry, io) => {
@@ -42,7 +42,33 @@ exports.handleEntry = async (entry, io) => {
           access_token: page?.access_token,
         });
 
+        const fields = Object.fromEntries(
+          (leadData?.field_data ?? []).map((field) => [
+            field.name,
+            field.values?.[0] ?? null,
+          ]),
+        );
+
+        const rawLead = {
+          phone_number: fields.phone || fields.phone_number || null,
+          comment: null,
+          followup_date: null,
+          lead_priority: "Normal",
+          lead_status: "New",
+          source: "Facebook Lead Ads",
+          task_priority: null,
+          task: null,
+          customer_name: fields.full_name || fields.name || null,
+          customer_address: fields.street_address || fields.address || null,
+          project: null,
+          updatedby_user: { id: page?.user_id },
+          assigned_user: { id: page?.user_id },
+          createdby_user: { id: page?.user_id },
+          customer_visited: "No",
+        };
+
         console.log("Lead gen data", leadData);
+        console.log("Converted raw lead:", rawLead);
       }
     });
   }
