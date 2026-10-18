@@ -27,7 +27,7 @@ const updatePageByPage_id = async (_id, updatedData) => {
     {
       ...updatedData,
     },
-    { upsert: true, new: true }
+    { upsert: true, new: true },
   );
 };
 
@@ -44,12 +44,15 @@ const getAllSavedPagesByUserId = async (userId) => {
 };
 
 const isValidFbPageId = async ({ page_id, access_token }) => {
-  const response = await axios.get(
-    `https://graph.facebook.com/${page_id}?access_token=${access_token}`
-  );
+  const response = await axios.get(`https://graph.facebook.com/${page_id}`, {
+    params: {
+      access_token,
+      fields: "id,name",
+    },
+  });
 
   return {
-    isValid: response?.data?.id === page_id,
+    isValid: String(response.data?.id) === String(page_id),
     name: response?.data?.name,
   };
 };

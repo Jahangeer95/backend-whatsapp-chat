@@ -43,8 +43,16 @@ exports.createFbLeadGen = async (req, res) => {
       message: "Page created successfully For Lead Generation",
     });
   } catch (error) {
-    console.log("error", error);
-    res.status(400).json({ message: error.message });
+    console.log(
+      "error",
+      error?.response?.data?.error?.message || error?.message,
+    );
+    res.status(400).json({
+      message:
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        "Something went wrong",
+    });
   }
 };
 
