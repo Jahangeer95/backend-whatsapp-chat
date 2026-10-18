@@ -27,6 +27,9 @@ exports.receiveWebhook = (req, res) => {
   const body = req.body;
   const io = req.app.get("io"); // Access socket instance
 
+  console.log("FACEBOOK WEBHOOK POST RECEIVED");
+  console.log(JSON.stringify(req.body));
+
   if (body.object === "page") {
     body.entry.forEach((entry) => {
       console.log({ entry });

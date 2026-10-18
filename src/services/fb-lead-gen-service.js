@@ -17,7 +17,9 @@ const getLeadGenDataByLeadgenId = async ({ leadgen_id, access_token }) => {
 };
 
 exports.handleEntry = async (entry, io) => {
+  console.log("WEBHOOK ENTRY:", JSON.stringify(entry));
   const page_id = entry.id;
+  console.log({ page_id }, "====page_id====");
   const page = await FbLeadGen.findOne({ page_id });
 
   if (!page) {
