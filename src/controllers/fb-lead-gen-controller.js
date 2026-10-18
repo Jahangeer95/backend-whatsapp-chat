@@ -43,6 +43,7 @@ exports.createFbLeadGen = async (req, res) => {
       message: "Page created successfully For Lead Generation",
     });
   } catch (error) {
+    console.log("error", error);
     res.status(400).json({ message: error.message });
   }
 };
