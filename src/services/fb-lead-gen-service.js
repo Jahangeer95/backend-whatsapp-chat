@@ -1,5 +1,6 @@
 const axios = require("axios");
 const { FbLeadGen } = require("../models/fb-lead-gen-modal");
+const { GRAPH_BASE_URL } = require("../config");
 
 const getLeadGenDataByLeadgenId = async ({ leadgen_id, access_token }) => {
   // collect lead gen info
