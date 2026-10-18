@@ -42,6 +42,8 @@ exports.handleEntry = async (entry, io) => {
           access_token: page?.access_token,
         });
 
+        console.log("Lead gen data", leadData);
+
         const fields = Object.fromEntries(
           (leadData?.field_data ?? []).map((field) => [
             field.name,
@@ -67,7 +69,9 @@ exports.handleEntry = async (entry, io) => {
           customer_visited: "No",
         };
 
-        const crmEndpoint = `${CRM_BACKEND}//api-lead/lead`;
+        console.log("Converted raw lead:", rawLead);
+
+        const crmEndpoint = `${CRM_BACKEND}/api-lead/lead/`;
 
         const response = await axios.post(crmEndpoint, rawLead, {
           headers: {
@@ -78,9 +82,6 @@ exports.handleEntry = async (entry, io) => {
         });
 
         console.log("CRM response:", response.data);
-
-        console.log("Lead gen data", leadData);
-        console.log("Converted raw lead:", rawLead);
       }
     });
   }
