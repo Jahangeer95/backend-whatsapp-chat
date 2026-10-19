@@ -72,16 +72,22 @@ exports.handleEntry = async (entry, io) => {
         console.log("Converted raw lead:", rawLead);
 
         const crmEndpoint = `${CRM_BACKEND}/api-lead/lead/`;
+        try {
+          const response = await axios.post(crmEndpoint, rawLead, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                "ApiKey sabahat:29b5ca94f4b0f32703beff7436b4d97a700b3e11",
+            },
+          });
 
-        const response = await axios.post(crmEndpoint, rawLead, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "ApiKey sabahat:29b5ca94f4b0f32703beff7436b4d97a700b3e11",
-          },
-        });
-
-        console.log("CRM response:", response.data);
+          console.log("CRM response:", response.data);
+        } catch (error) {
+          console.error(
+            "Error sending lead to CRM:",
+            error.response?.data || error.message,
+          );
+        }
       }
     });
   }
