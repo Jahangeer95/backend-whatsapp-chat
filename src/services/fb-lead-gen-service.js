@@ -51,33 +51,54 @@ exports.handleEntry = async (entry, io) => {
           ]),
         );
 
+        // const rawLead = {
+        //   phone_number: fields.phone || fields.phone_number || null,
+        //   comment: null,
+        //   followup_date: null,
+        //   lead_priority: "Normal",
+        //   lead_status: "New",
+        //   source: "Facebook Lead Ads",
+        //   task_priority: null,
+        //   task: null,
+        //   customer_name: fields.full_name || fields.name || null,
+        //   customer_address: fields.street_address || fields.address || null,
+        //   project: null,
+        //   updatedby_user: { username: "sabahat" },
+        //   assigned_user: { username: "sabahat" },
+        //   createdby_user: { username: "sabahat" },
+        //   customer_visited: "No",
+        // };
         const rawLead = {
           phone_number: fields.phone || fields.phone_number || null,
-          comment: null,
+          comment: "",
           followup_date: null,
           lead_priority: "Normal",
           lead_status: "New",
           source: "Facebook Lead Ads",
-          task_priority: null,
-          task: null,
+          task_priority: "",
+          task: "",
           customer_name: fields.full_name || fields.name || null,
           customer_address: fields.street_address || fields.address || null,
           project: null,
-          updatedby_user: { username: "sabahat" },
-          assigned_user: { username: "sabahat" },
-          createdby_user: { username: "sabahat" },
+          updatedby_user: {
+            username: "sabahat",
+          },
+          assigned_user: {
+            username: "sabahat",
+          },
+          createdby_user: {
+            username: "sabahat",
+          },
           customer_visited: "No",
         };
 
         console.log("Converted raw lead:", rawLead);
 
-        const crmEndpoint = `${CRM_BACKEND}/api-lead/lead/`;
+        const crmEndpoint = `${CRM_BACKEND}/api-lead/lead/?username=sabahat&api_key=29b5ca94f4b0f32703beff7436b4d97a700b3e11`;
         try {
           const response = await axios.post(crmEndpoint, rawLead, {
             headers: {
               "Content-Type": "application/json",
-              Authorization:
-                "ApiKey sabahat:29b5ca94f4b0f32703beff7436b4d97a700b3e11",
             },
           });
 
