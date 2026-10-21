@@ -63,9 +63,9 @@ exports.handleEntry = async (entry, io) => {
           customer_name: fields.full_name || fields.name || null,
           customer_address: fields.street_address || fields.address || null,
           project: null,
-          updatedby_user: { id: page?.user_id },
-          assigned_user: { id: page?.user_id },
-          createdby_user: { id: page?.user_id },
+          updatedby_user: { username: "sabahat" },
+          assigned_user: { username: "sabahat" },
+          createdby_user: { username: "sabahat" },
           customer_visited: "No",
         };
 
