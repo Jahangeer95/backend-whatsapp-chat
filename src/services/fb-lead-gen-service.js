@@ -83,6 +83,7 @@ exports.handleEntry = async (entry, io) => {
 
           console.log("CRM response:", response.data);
         } catch (error) {
+          console.log(error?.response, "====");
           console.error(
             "Error sending lead to CRM:",
             error.response?.data || error.message,
