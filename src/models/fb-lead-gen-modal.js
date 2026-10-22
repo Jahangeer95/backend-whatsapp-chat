@@ -26,8 +26,16 @@ const fbLeadGenSchema = new Schema(
       type: Number,
       required: true,
     },
-    user_id: {
-      type: Number,
+    username: {
+      type: String,
+      required: true,
+    },
+    api_key: {
+      type: String,
+      required: true,
+    },
+    login_user: {
+      type: String,
       required: true,
     },
   },

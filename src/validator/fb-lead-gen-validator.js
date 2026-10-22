@@ -6,7 +6,9 @@ function validateNewFbLeadGenPage(req, res, next) {
     access_token: JOI.string().required(),
     verify_token: JOI.string().required(),
     company_id: JOI.number().required(),
-    user_id: JOI.number().required(),
+    username: JOI.string().required(),
+    api_key: JOI.string().required(),
+    login_user: JOI.string().required(),
   });
 
   const { error, value } = joiSchema.validate(req.body);

@@ -81,20 +81,20 @@ exports.handleEntry = async (entry, io) => {
           customer_address: fields.street_address || fields.address || null,
           project: null,
           updatedby_user: {
-            username: "sabahat",
+            username: page?.login_user,
           },
           assigned_user: {
-            username: "sabahat",
+            username: page?.username,
           },
           createdby_user: {
-            username: "sabahat",
+            username: page?.login_user,
           },
           customer_visited: "No",
         };
 
         console.log("Converted raw lead:", rawLead);
 
-        const crmEndpoint = `${CRM_BACKEND}/api-lead/lead/?username=sabahat&api_key=29b5ca94f4b0f32703beff7436b4d97a700b3e11`;
+        const crmEndpoint = `${CRM_BACKEND}/api-lead/lead/?username=${page?.login_user}&api_key=${page?.api_key}`;
         try {
           const response = await axios.post(crmEndpoint, rawLead, {
             headers: {
@@ -120,7 +120,9 @@ exports.createFbLeadGen = async ({
   access_token,
   company_id,
   verify_token,
-  user_id,
+  username,
+  api_key,
+  login_user,
 }) => {
   let page = new FbLeadGen({
     page_name,
@@ -128,7 +130,9 @@ exports.createFbLeadGen = async ({
     access_token,
     verify_token,
     company_id,
-    user_id,
+    username,
+    api_key,
+    login_user,
   });
 
   page = await page.save();

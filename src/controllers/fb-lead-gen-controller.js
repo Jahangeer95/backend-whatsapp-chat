@@ -41,7 +41,15 @@ exports.receiveWebhook = (req, res) => {
 };
 
 exports.createFbLeadGen = async (req, res) => {
-  const { page_id, access_token, verify_token, company_id, user_id } = req.body;
+  const {
+    page_id,
+    access_token,
+    verify_token,
+    company_id,
+    username,
+    api_key,
+    login_user,
+  } = req.body;
 
   try {
     const { isValid, name } = await pageService.isValidFbPageId({
@@ -68,7 +76,9 @@ exports.createFbLeadGen = async (req, res) => {
       verify_token,
       access_token,
       company_id,
-      user_id,
+      username,
+      api_key,
+      login_user,
     });
 
     if (!page) {
