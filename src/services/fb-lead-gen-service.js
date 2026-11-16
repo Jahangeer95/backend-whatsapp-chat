@@ -51,6 +51,14 @@ exports.handleEntry = async (entry, io) => {
           ]),
         );
 
+        const extraFields = Object.entries(fields).filter(
+          ([key]) => !["full_name", "phone_number"].includes(key),
+        );
+
+        const comment = extraFields
+          .map(([key, value]) => `${key}: ${value}`)
+          .join("\n");
+
         // const rawLead = {
         //   phone_number: fields.phone || fields.phone_number || null,
         //   comment: null,
@@ -70,7 +78,7 @@ exports.handleEntry = async (entry, io) => {
         // };
         const rawLead = {
           phone_number: fields.phone || fields.phone_number || null,
-          comment: "",
+          comment: comment || "",
           followup_date: null,
           lead_priority: "Normal",
           lead_status: "New",
